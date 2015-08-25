@@ -1,15 +1,23 @@
-source :rubygems
+source "https://rubygems.org"
 
-gem 'puppet', '>= 2.6.0'
-gem 'facter', '>= 1.6.1'
-
-group :test, :development do
-  gem 'rspec', '>= 2.13.0'
-  gem 'mocha', '>= 0.13.2'
-  gem 'puppetlabs_spec_helper', '>= 0.4.1' 
-  gem 'rspec-puppet', '>= 0.1.5'
+group :test do
+gem "rake"
+gem "puppet", ENV['PUPPET_VERSION'] || '~> 3.7.3'
+gem "rspec-puppet", :git => 'https://github.com/rodjek/rspec-puppet.git'
+gem "puppetlabs_spec_helper"
+gem 'rspec-puppet-utils', :git => 'https://github.com/Accuity/rspec-puppet-utils.git'
+gem 'hiera-puppet-helper', :git => 'https://github.com/bobtfish/hiera-puppet-helper.git'
+# there seems to be a bug with puppet-blacksmith and metadata-json-lint
+# removing metadata for now
+gem "metadata-json-lint"
+gem 'puppet-syntax'
+gem 'puppet-lint'
 end
 
-if File.exists? "#{__FILE__}.local"
-  eval(File.read("#{__FILE__}.local"), binding)
+group :development do
+gem "travis"
+gem "travis-lint"
+gem "puppet-blacksmith"
+gem "guard-rake"
 end
+

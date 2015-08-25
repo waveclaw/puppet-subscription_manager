@@ -1,0 +1,12 @@
+.*.sw?
+pkg
+spec/fixtures
+!spec/fixtures/hiera.yaml
+!spec/fixtures/hieradata/*.yaml
+!spec/fixtures/manifests/site.pp
+.rspec_system
+.vagrant
+.bundle
+vendor
+.idea
+bin
