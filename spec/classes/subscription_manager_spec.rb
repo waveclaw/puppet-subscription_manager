@@ -15,8 +15,10 @@ describe 'subscription_manager' do
       describe "subscription_manager class without any parameters on #{osfamily}" do
         let(:params) {{ }}
         let(:facts) {{ :osfamily => osfamily, }}
-    it { is_expected.to compile.with_all_deps }
-    it_behaves_like 'on supported operating systems'
+        it { is_expected.to compile.with_all_deps }
+        it_behaves_like 'on supported operating systems'
+      end
+    end
   end
 
   context 'unsupported operating system' do
