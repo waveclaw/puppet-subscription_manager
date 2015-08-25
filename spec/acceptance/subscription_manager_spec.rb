@@ -14,11 +14,15 @@ describe 'subscription_manager class' do
       expect(apply_manifest(pp).exit_code).to eq(0)
     end
 
-    describe package('subscription_manager') do
+    describe package('subscription-manager') do
       it { should be_installed }
     end
 
-    describe service('subscription_manager') do
+    describe package('katello-ca-consumer') do
+      it { should be_installed }
+    end
+
+    describe service('goferd') do
       it { should be_enabled }
       it { should be_running }
     end

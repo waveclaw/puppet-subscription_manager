@@ -9,7 +9,19 @@ class subscription_manager::defaults {
       $package_names = ['subscription-manager','katello-ca-consumer']
       $service_name = 'goferd'
       $service_status = 'running'
-      $subscription_settings = {}
+      $server_hostname = 'https://rhn.redhat.com'
+      $server_insecure = false
+      $server_prefix = ''
+      $rhsm_baseurl = ''
+      $rhsm_cacert = ''
+      $username = undef
+      $password = undef
+      $activationkeys = undef
+      $pool = undef
+      $environment = 'production'
+      $autosubscribe = false
+      $force = false
+      $org = undef
     }
     default: {
       fail("${::operatingsystem} not supported")
