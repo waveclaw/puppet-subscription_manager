@@ -1,6 +1,6 @@
 Puppet::Type.type(:rhsm_pool).provide(:subscription_manager) do
   @doc = <<-EOS
-    This provider registers applies a specific subscription to the system.
+    Manage attachment of a server to specific Entitlement Pools.
   EOS
 
   confine :osfamily => :redhat
