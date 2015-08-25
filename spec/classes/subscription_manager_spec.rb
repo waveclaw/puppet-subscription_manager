@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'subscription_manager' do
-  shared_examples_for 'on supported operating systems' do
+  shared_examples_for 'a supported operating system' do
     it { is_expected.to contain_class('subscription_manager::defaults') }
     it { is_expected.to contain_class('subscription_manager::install').that_comes_before('subscription_manager::config') }
     it { is_expected.to contain_class('subscription_manager::config') }
@@ -16,7 +16,7 @@ describe 'subscription_manager' do
         let(:params) {{ }}
         let(:facts) {{ :osfamily => osfamily, }}
         it { is_expected.to compile.with_all_deps }
-        it_behaves_like 'on supported operating systems'
+        it_behaves_like 'a supported operating system'
       end
     end
   end
