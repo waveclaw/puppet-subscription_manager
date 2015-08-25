@@ -2,12 +2,14 @@ require 'spec_helper'
 
 describe 'subscription_manager' do
   shared_examples_for 'a supported operating system' do
+    it { is_expected.to contain_class('subscription_manager') }
     it { is_expected.to contain_class('subscription_manager::defaults') }
     it { is_expected.to contain_class('subscription_manager::install').that_comes_before('subscription_manager::config') }
     it { is_expected.to contain_class('subscription_manager::config') }
     it { is_expected.to contain_class('subscription_manager::service').that_subscribes_to('subscription_manager::config') }
-    it { is_expected.to contain_service('subscription_manager') }
-    it { is_expected.to contain_package('subscription_manager').with_ensure('present') }
+    it { is_expected.to contain_service('goferd').with_ensure('running') }
+    it { is_expected.to contain_package('subscription-manager').with_ensure('present') }
+    it { is_expected.to contain_package('katello-ca-consumer').with_ensure('present') }
   end
 
   context 'supported operating systems' do

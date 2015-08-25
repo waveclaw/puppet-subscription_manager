@@ -6,8 +6,10 @@
 class subscription_manager::defaults {
   case $::osfamily {
     'RedHat', 'CentOS', 'Fedora': {
-      $package_name = 'subscription_manager'
-      $service_name = 'subscription_manager'
+      $package_names = ['subscription-manager','katello-ca-consumer']
+      $service_name = 'goferd'
+      $service_status = 'running'
+      $subscription_settings = {}
     }
     default: {
       fail("${::operatingsystem} not supported")

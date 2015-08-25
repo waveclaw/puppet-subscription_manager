@@ -4,14 +4,17 @@
 #
 # === Parameters
 #
-# [*sample_parameter*]
-#   Explanation of what this parameter affects and what it defaults to.
+# [*package_names*]
+#   Name of packages to install.
 #
-# === Variables
+# [*service_name*]
+#   Name of the services to run or disable.
 #
-# Here you should define a list of variables that this module would require.
+# [*service_status*]
+#   Status of the services.  Defaults to running.
 #
-# [*sample_variable*]
+# [*subscription_settings*]
+#   Hash of configuration settings to apply (e.g. to register the system)
 #
 # === Examples
 #
@@ -28,8 +31,11 @@
 # Copyright 2013 Gaël Chamoulaud <gchamoul@redhat.com>
 
 class subscription_manager (
-  $package_name = $::subscription_manager::defaults::package_name,
+  $package_names = $::subscription_manager::defaults::package_names,
   $service_name = $::subscription_manager::defaults::service_name,
+  $service_status = $::subscription_manager::defaults::service_status,
+  $subscription_settings =
+    $::subscription_manager::defaults::subscription_settings,
 ) inherits ::subscription_manager::defaults {
 
   # validate parameters here

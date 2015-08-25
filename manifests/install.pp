@@ -4,7 +4,7 @@
 #
 class subscription_manager::install {
 
-  package { $::subscription_manager::package_name:
+  package { $::subscription_manager::package_names:
     ensure => present,
   }
 }
