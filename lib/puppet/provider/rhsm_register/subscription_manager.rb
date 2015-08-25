@@ -51,6 +51,16 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
 
     return params
   end
+  
+  def identity
+    identity = subscription_manager('identity')
+    identity.split('\n').each { |line|
+      if line =~ /.*Current identity is: (\h{8}(?>-\h{4}){3}-\h{12}).*/
+        return $1
+      end
+    }
+    return nil
+  end
 
   def config
     Puppet.debug("This server will be configered for rhsm")
@@ -60,8 +70,12 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
 
   def register
     Puppet.debug("This server will be registered")
-    cmd = build_register_parameters
-    subscription_manager(*cmd)
+    if identity == nil or @resource[:force] == true
+      cmd = build_register_parameters
+      subscription_manager(*cmd)
+    else
+      self.fail("Require force => true to register already registered server")
+    end
   end
 
   def attach
@@ -71,10 +85,10 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   end
 
   def unregister
-    Puppet.debug("This server will be locally unregistered")
-    cmd = []
-    cmd << "unregister"
-    subscription_manager(*cmd)
+    Puppet.debug("This server will be unregistered")
+    subscription-manager(['clean'])
+    subscription-manager(['unsubscribe','--all'])
+    subscription_manager(['unregister'])
   end
 
   def create
@@ -89,11 +103,8 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
 
   def exists?
     Puppet.debug("Verifying if the server is already registered")
-    if File.exists?("/etc/pki/consumer/cert.pem") or File.exists?("/etc/pki/consumer/key.pem")
-      if @resource[:force] == true
-        unregister
-        register
-      end
+    if (File.exists?("/etc/pki/consumer/cert.pem") or
+        File.exists?("/etc/pki/consumer/key.pem")) and identity
       return true
     else
       return false
