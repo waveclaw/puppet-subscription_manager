@@ -41,7 +41,7 @@ class subscription_manager::config {
     $_settings = undef
   }
   if $_settings {
-    $_params = { $::subscription_manager::server_hostname => $_settings, }
+    $_params = { "${::subscription_manager::server_hostname}" => $_settings, }
     create_resources('rhsm_register', $_params)
   }
 }

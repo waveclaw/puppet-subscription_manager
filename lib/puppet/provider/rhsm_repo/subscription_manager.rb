@@ -8,6 +8,8 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
 
   commands :subscription_manager => "subscription-manager"
 
+  mk_resource_methods
+
   def create
     subscription_manager('repos','--enable',@resource[:content_label])
   end
@@ -22,15 +24,12 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
     if File.exists?(repo_file)
       repos = JSON.parse(File.open(repo_file).read)
       repos.each { |repo|
-        enabled = false
         ensured = :absent
         if repo.has_key?('value') and repo['value'] == 1
-          enabled = true
           ensured = :present
         end
         new_repo = {
           :ensure        => ensured,
-          :enabled       => enabled,
           :updated       => Date.parse(repo['updated']),
           :created       => Date.parse(repo['created']),
           :content_label => repo['contentLabel']

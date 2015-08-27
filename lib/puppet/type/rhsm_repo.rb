@@ -48,21 +48,15 @@ end
   newproperty(:updated) do
     desc "The last time this repostory was updated."
     validate do |value|
-     fail("Updated should be a date.  Given #{value}") unless value.is_a Date
+     fail("Updated should be a date.  Given #{value}") unless value.is_a? Date
     end
   end
 
   newproperty(:created) do
     desc "The time when this repostory was created."
     validate do |value|
-     fail("Created should be a date.  Given #{value}") unless value.is_a Date
+     fail("Created should be a date.  Given #{value}") unless value.is_a? Date
     end
   end
-
-  newproperty(:enabled) do
-    desc "Is this repository enabled for use?"
-    newvalues(true, false)
-  end
-
 
 end
