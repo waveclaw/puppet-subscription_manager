@@ -31,10 +31,10 @@ describe Puppet::Type.type(:rhsm_pool), 'type' do
         expect(Puppet::Type.type(:rhsm_pool).attrtype(property)).to eq(:property)
       end
     }
-    it "should have a content_labal parameter" do
+    it "should have an id parameter" do
       expect(Puppet::Type.type(:rhsm_pool).attrtype(:id)).to eq(:param)
     end
-    it 'should accept a name' do
+    it 'should get a name from the id' do
       @resource = Puppet::Type.type(:rhsm_pool).new(
         :id => '123abc')
       expect(@resource[:id]).to eq('123abc')

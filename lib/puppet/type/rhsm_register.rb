@@ -41,6 +41,15 @@ EOD
 
   newparam(:server_hostname, :namevar => true) do
     desc "The rhsm server hostname."
+    validate do |value|
+      fail("Require a valid hostname. Received #{value} instead") unless value =~ /^[.a-zA-Z\-\_1-9]+$/
+    end
+    munge do |value|
+      value.downcase
+    end
+    def insync?(is)
+      is.downcase == should.downcase
+    end
   end
 
   newparam(:server_insecure, :boolean => true, :parent => Puppet::Parameter::Boolean) do
@@ -54,6 +63,9 @@ EOD
 
   newproperty(:rhsm_baseurl) do
     desc "Specify a CDN baseurl to use"
+    validate do |value|
+      fail("Require a baseurl. Received #{value} instead") unless value =~ /^\/(?:[.a-zA-Z\-\_1-9]+\/?)*$/
+    end
   end
 
   newproperty(:rhsm_cacert) do
