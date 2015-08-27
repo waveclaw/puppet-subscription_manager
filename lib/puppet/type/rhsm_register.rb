@@ -2,8 +2,18 @@ require 'puppet/parameter/boolean'
 require 'puppet/type'
 
 Puppet::Type.newtype(:rhsm_register) do
-  @doc = ""
+  @doc = <<-EOD
+ Register a system to a Satellite or Spacewalk server.
 
+ Example:
+
+  rhsm_register { 'rhn.redhat.com':
+    server_insecure => false,
+    username        => 'registered_user',
+    password        => 'password123',
+  }
+
+EOD
   ensurable do
 
     newvalue(:present) do
@@ -38,27 +48,27 @@ Puppet::Type.newtype(:rhsm_register) do
     defaultto false
   end
 
-  newparam(:server_prefix) do
+  newproperty(:server_prefix) do
     desc "The prefix used for registration queries sent to the rhsm server"
   end
 
-  newparam(:rhsm_baseurl) do
+  newproperty(:rhsm_baseurl) do
     desc "Specify a CDN baseurl to use"
   end
 
-  newparam(:rhsm_cacert) do
+  newproperty(:rhsm_cacert) do
     desc "CA certificate for the repository and the issued client certs"
   end
 
-  newparam(:username) do
+  newproperty(:username) do
     desc "The username to use when registering the system"
   end
 
-  newparam(:password) do
+  newproperty(:password) do
     desc "The password to use when registering the system"
   end
 
-  newparam(:activationkeys) do
+  newproperty(:activationkeys) do
     desc "The activation key to use when registering the system (cannot be used with username and password)"
   end
 
@@ -66,23 +76,23 @@ Puppet::Type.newtype(:rhsm_register) do
     desc "The license pool to attach to after registering the system"
   end
 
-  newparam(:environment) do
+  newproperty(:environment) do
     desc "The environment to subscribe to in the case of using katello."
   end
 
-  newparam(:autosubscribe, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+  newproperty(:autosubscribe, :boolean => true, :parent => Puppet::Parameter::Boolean) do
     desc "Automatically attach this system to compatible subscriptions."
     defaultto false
   end
 
-  newparam(:force, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+  newproperty(:force, :boolean => true, :parent => Puppet::Parameter::Boolean) do
     desc "Should the registration be forced. Use this option with caution,
           setting it true will cause the subscription-manager command to be run
           every time runs."
     defaultto false
   end
 
-  newparam(:org) do
+  newproperty(:org) do
     desc "The organization the system should be assigned to."
 
     validate do |value|
