@@ -25,6 +25,11 @@ described_class = Puppet::Type.type(:rhsm_pool)
 
 describe described_class, 'type' do
 
+  # only works if you define the feature in the type, json is a Puppet-wide one
+  #it "should have a json feature" do
+  #   expect(described_class.provider_feature(:json)).to_not be_nil
+  #end
+
     [ :name, :ensure, :provides, :sku, :contract, :account, :serial,
       :active, :quantity_used, :service_level, :service_type,
       :status_details, :subscription_type, :starts, :ends,:system_type,

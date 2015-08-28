@@ -29,4 +29,5 @@ describe provider_class, 'provider' do
     provider_class.new(resource)
   end
 
+
 end

@@ -10,3 +10,4 @@ spec/fixtures
 vendor
 .idea
 bin
+Gemfile.lock
