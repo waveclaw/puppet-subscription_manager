@@ -55,6 +55,27 @@ EOD
   newparam(:server_insecure, :boolean => true, :parent => Puppet::Parameter::Boolean) do
     desc "Should an insecure https connection be used."
     defaultto false
+#    munge do |value|
+#       @resource.munge_boolean(value)
+#     end
+  end
+
+  newparam(:autosubscribe, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+    desc "Automatically attach this system to compatible subscriptions."
+    defaultto false
+#    munge do |value|
+#       @resource.munge_boolean(value)
+#     end
+  end
+
+  newparam(:force, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+    desc "Should the registration be forced. Use this option with caution,
+          setting it true will cause the subscription-manager command to be run
+          every time runs."
+    defaultto false
+#    munge do |value|
+#       @resource.munge_boolean(value)
+#     end
   end
 
   newproperty(:server_prefix) do
@@ -90,18 +111,6 @@ EOD
 
   newproperty(:environment) do
     desc "The environment to subscribe to in the case of using katello."
-  end
-
-  newproperty(:autosubscribe, :boolean => true, :parent => Puppet::Parameter::Boolean) do
-    desc "Automatically attach this system to compatible subscriptions."
-    defaultto false
-  end
-
-  newproperty(:force, :boolean => true, :parent => Puppet::Parameter::Boolean) do
-    desc "Should the registration be forced. Use this option with caution,
-          setting it true will cause the subscription-manager command to be run
-          every time runs."
-    defaultto false
   end
 
   newproperty(:org) do

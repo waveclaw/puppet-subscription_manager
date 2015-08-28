@@ -9,46 +9,64 @@ require 'spec_helper'
 #  content_label => 'rhel-server6-epel'
 #}
 
-describe Puppet::Type.type(:rhsm_repo), 'type' do
+described_class = Puppet::Type.type(:rhsm_repo)
+
+describe described_class, 'type' do
   [ :ensure, :updated, :created].each { |property|
-    it "should have a #{property} property" do
-      expect(Puppet::Type.type(:rhsm_repo).attrtype(property)).to eq(:property)
+    context "for #{property}" do
+      it "should be of type property" do
+        expect(described_class.attrtype(property)).
+          to eq(:property)
+      end
+      it "should be of class property" do
+        expect(described_class.attrclass(property).ancestors).
+          to include(Puppet::Property)
+      end
+      it "should have documentation" do
+        expect(described_class.attrclass(property).doc.strip).
+          not_to be_empty
+      end
     end
   }
-  it "should have a content_labal parameter" do
-    expect(Puppet::Type.type(:rhsm_repo).attrtype(:content_label)).to eq(:param)
+
+  context "for content_label" do
+    it "should have this parameter" do
+      expect(described_class.attrtype(:content_label)).to eq(:param)
+    end
+    it "should have documentation" do
+      expect(described_class.attrclass(:content_label).doc.strip).
+        not_to be_empty
+    end
+    it 'should create a name that matches this parameter' do
+      @resource = described_class.new(
+        :content_label => 'foo')
+      expect(@resource[:content_label]).to eq('foo')
+      expect(@resource[:name]).to eq('foo')
+    end
   end
-  it 'should accept a name' do
-    @resource = Puppet::Type.type(:rhsm_repo).new(
-      :content_label => 'foo')
-    expect(@resource[:content_label]).to eq('foo')
-    expect(@resource[:name]).to eq('foo')
-  end
+
   it 'should support enabled' do
-    @resource = Puppet::Type.type(:rhsm_repo).new(
+    @resource = described_class.new(
       :content_label => 'foo', :ensure => :absent)
     expect(@resource[:ensure]).to eq(:absent)
   end
-  it 'should accept date updated properties' do
-    testdate = Date.parse('2000/01/01')
-    @resource = Puppet::Type.type(:rhsm_repo).new(
-     :content_label => 'foo', :updated => testdate)
-    expect(@resource[:updated]).to eq(testdate)
+
+  [:updated, :created].each { |dates|
+  context "for #{dates}" do
+    it "should have documentation for the property" do
+      expect(described_class.attrclass(dates).doc.strip).not_to be_empty
+    end
+    it 'should accept date updated properties' do
+      testdate = Date.parse('2000/01/01')
+      @resource = described_class.new(
+       :content_label => 'foo', dates => testdate)
+      expect(@resource[dates]).to eq(testdate)
+    end
+    it 'should reject non-date updated properties' do
+      expect{ described_class.new(
+       :content_label => 'foo', dates => 'bad date')}.to raise_error(
+        Puppet::ResourceError, /.*/)
+    end
   end
-  it 'should reject non-date updated properties' do
-    expect{ Puppet::Type.type(:rhsm_repo).new(
-     :content_label => 'foo', :updated => 'bad date')}.to raise_error(
-      Puppet::ResourceError, /.*/)
-  end
-  it 'should accept date created properties' do
-    testdate = Date.parse('2000/01/01')
-    @resource = Puppet::Type.type(:rhsm_repo).new(
-     :content_label => 'foo', :created => testdate)
-    expect(@resource[:created]).to eq(testdate)
-  end
-  it 'should reject non-date created properties' do
-    expect{ Puppet::Type.type(:rhsm_repo).new(
-     :content_label => 'foo', :created => 'bad date')}.to raise_error(
-      Puppet::ResourceError, /.*/)
-  end
+  }
 end

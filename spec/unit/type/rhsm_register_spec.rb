@@ -19,97 +19,103 @@ require 'spec_helper'
 #  org             => 'the cool organization',
 # }
 
-describe Puppet::Type.type(:rhsm_register), 'type' do
+described_class = Puppet::Type.type(:rhsm_register)
+
+describe described_class, 'type' do
 
   [ :ensure, :username, :password, :server_prefix, :org,
     :rhsm_cacert, :username, :password, :activationkeys,
     :pool, :environment ].each { |property|
-    it "should have a #{property} property" do
-      expect(Puppet::Type.type(:rhsm_register).attrtype(property)).to eq(:property)
-    end
-  }
+      context "for #{property}" do
+        it "should be of type property" do
+          expect(described_class.attrtype(property)).
+            to eq(:property)
+        end
+        it "should be of class property" do
+          expect(described_class.attrclass(property).ancestors).
+            to include(Puppet::Property)
+        end
+        it "should have documentation" do
+          expect(described_class.attrclass(property).doc.strip).
+            not_to be_empty
+        end
+      end
+      }
 
   context "for server_hostname" do
     it "should have a server_name parameter" do
-      expect(Puppet::Type.type(:rhsm_register).attrtype(:server_hostname)).to eq(:param)
+      expect(described_class.attrtype(:server_hostname)).to eq(:param)
+    end
+    it "should have documentation" do
+      expect(described_class.attrclass(:server_hostname).doc.strip).
+        not_to be_empty
     end
     it 'should have a name equal too the server_hostname' do
-      @resource = Puppet::Type.type(:rhsm_register).new(
+      @resource = described_class.new(
         :server_hostname => 'foo')
       expect(@resource[:server_hostname]).to eq('foo')
       expect(@resource[:name]).to eq('foo')
     end
     it 'should reject non-hostname server_names' do
-      expect{ Puppet::Type.type(:rhsm_register).new(
+      expect{ described_class.new(
        :server_hostname => '@#$%foooooo^!)')}.to raise_error(
         Puppet::ResourceError, /.*/)
     end
   end
 
-  [ :autosubscribe, :force ].each { |boolean_property|
-    context "for #{boolean_property}" do
-      it "should have an #{boolean_property} property" do
-        expect(Puppet::Type.type(:rhsm_register).attrtype(boolean_property)).to eq(:property)
+  [ :server_insecure, :autosubscribe, :force ].each { |boolean_parameter|
+    context "for #{boolean_parameter}" do
+      it "should be a parameter" do
+        expect(described_class.attrtype(boolean_parameter)).to eq(:param)
+      end
+      it "should have boolean class" do
+        expect(described_class.attrclass(boolean_parameter).ancestors).
+          to include(Puppet::Parameter::Boolean)
+      end
+      it "should have documentation" do
+        expect(described_class.attrclass(boolean_parameter).doc.strip).
+          not_to be_empty
       end
       it 'should accept boolean values' do
-        @resource = Puppet::Type.type(:rhsm_register).new(
-         :server_hostname => 'foo', boolean_property => true)
-        expect(@resource[boolean_property]).to eq(true)
-        @resource = Puppet::Type.type(:rhsm_register).new(
-         :server_hostname => 'bar', boolean_property => false)
-        expect(@resource[boolean_property]).to eq(false)
+        @resource = described_class.new(
+         :server_hostname => 'foo', boolean_parameter => true)
+        expect(@resource[boolean_parameter]).to eq(true)
+        @resource = described_class.new(
+         :server_hostname => 'bar', boolean_parameter => false)
+        expect(@resource[boolean_parameter]).to eq(false)
       end
       it 'should reject non-boolean values' do
-        expect{ Puppet::Type.type(:rhsm_register).new(
-         :server_hostname => 'foo', boolean_property => 'bad date')}.to raise_error(
+        expect{ described_class.new(
+         :server_hostname => 'foo', boolean_parameter => 'bad date')}.to raise_error(
           Puppet::ResourceError, /.*/)
       end
     end
   }
 
-  context "for server_insecure" do
-    it "should have this parameter" do
-      expect(Puppet::Type.type(:rhsm_register).attrtype(:server_insecure)).to eq(:param)
-    end
-    it 'should accept boolean values' do
-      @resource = Puppet::Type.type(:rhsm_register).new(
-       :server_hostname => 'foo', :server_insecure => true)
-      expect(@resource[:server_insecure]).to eq(true)
-      @resource = Puppet::Type.type(:rhsm_register).new(
-       :server_hostname => 'bar', :server_insecure => false)
-      expect(@resource[:server_insecure]).to eq(false)
-    end
-    it 'should reject non-boolean values' do
-      expect{ Puppet::Type.type(:rhsm_register).new(
-       :server_hostname => 'foo', :server_insecure => 'bad date')}.to raise_error(
-        Puppet::ResourceError, /.*/)
-    end
-  end
-
   context "for rhsm_basueurl" do
     it "should have an rhsm_baseurl property" do
-      expect(Puppet::Type.type(:rhsm_register).attrtype(:rhsm_baseurl)).to eq(:property)
+      expect(described_class.attrtype(:rhsm_baseurl)).to eq(:property)
     end
      it 'should accept url path values' do
-       @resource = Puppet::Type.type(:rhsm_register).new(
+       @resource = described_class.new(
         :server_hostname => 'foo', :rhsm_baseurl => '/')
        expect(@resource[:rhsm_baseurl]).to eq('/')
-       @resource = Puppet::Type.type(:rhsm_register).new(
+       @resource = described_class.new(
         :server_hostname => 'bar', :rhsm_baseurl => '/foo/bar')
        expect(@resource[:rhsm_baseurl]).to eq('/foo/bar')
      end
      it 'should reject path values' do
-       expect{ Puppet::Type.type(:rhsm_register).new(
+       expect{ described_class.new(
         :server_hostname => 'foo', :rhsm_baseurl => '@your_momma')}.to raise_error(
          Puppet::ResourceError, /.*/)
-         expect{ Puppet::Type.type(:rhsm_register).new(
+         expect{ described_class.new(
           :server_hostname => 'foo', :rhsm_baseurl => '$%!#^@(((')}.to raise_error(
            Puppet::ResourceError, /.*/)
      end
   end
 
   it 'should support enabled' do
-    @resource = Puppet::Type.type(:rhsm_register).new(
+    @resource = described_class.new(
       :server_hostname => 'foo', :ensure => :absent)
     expect(@resource[:ensure]).to eq(:absent)
   end
