@@ -78,42 +78,42 @@ EOD
 #     end
   end
 
-  newproperty(:server_prefix) do
+  newparam(:server_prefix) do
     desc "The prefix used for registration queries sent to the rhsm server"
   end
 
-  newproperty(:rhsm_baseurl) do
+  newparam(:rhsm_baseurl) do
     desc "Specify a CDN baseurl to use"
     validate do |value|
       fail("Require a baseurl. Received #{value} instead") unless value =~ /^\/(?:[.a-zA-Z\-\_1-9]+\/?)*$/
     end
   end
 
-  newproperty(:rhsm_cacert) do
+  newparam(:rhsm_cacert) do
     desc "CA certificate for the repository and the issued client certs"
   end
 
-  newproperty(:username) do
+  newparam(:username) do
     desc "The username to use when registering the system"
   end
 
-  newproperty(:password) do
+  newparam(:password) do
     desc "The password to use when registering the system"
   end
 
-  newproperty(:activationkeys) do
+  newparam(:activationkeys) do
     desc "The activation key to use when registering the system (cannot be used with username and password)"
   end
 
-  newproperty(:pool) do
+  newparam(:pool) do
     desc "The license pool to attach to after registering the system"
   end
 
-  newproperty(:environment) do
+  newparam(:environment) do
     desc "The environment to subscribe to in the case of using katello."
   end
 
-  newproperty(:org) do
+  newparam(:org) do
     desc "The organization the system should be assigned to."
 
     validate do |value|

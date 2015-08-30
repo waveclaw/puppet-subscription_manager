@@ -1,6 +1,6 @@
 Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   @doc = <<-EOS
-    This provider registers a machine with cert-based Red Hat Subscription
+    This provider registers a machine with cert-based RedHat Subscription
     Manager.  If a machine is already registered it does nothing unless the
     force parameter is set to true.
   EOS
@@ -43,15 +43,6 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     return params
   end
 
-  def build_attach_parameters
-    params = []
-
-    params << "attach"
-    params << "--pool" << @resource[:pool] if ! @resource[:pool].nil?
-
-    return params
-  end
-  
   def identity
     identity = subscription_manager('identity')
     identity.split('\n').each { |line|
@@ -78,12 +69,6 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     end
   end
 
-  def attach
-    Puppet.debug("This server will be attached to a pool")
-    cmd = build_attach_parameters
-    subscription_manager(*cmd)
-  end
-
   def unregister
     Puppet.debug("This server will be unregistered")
     subscription-manager(['clean'])
@@ -94,7 +79,6 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   def create
     config
     register
-    # subscribe
   end
 
   def destroy
@@ -111,16 +95,4 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     end
   end
 
-  def pool
-    Puppet.debug("Checking for subscription PoolID: #{resource[:pool]}")
-    subscriptions = subscription_manager('list','--consumed')
-    if subscriptions =~ /#{Regexp.escape(resource[:pool])}/
-      Puppet.debug("Pool found")
-      return resource[:pool]
-    end
-  end
-
-  def pool=(value)
-    attach
-  end
 end

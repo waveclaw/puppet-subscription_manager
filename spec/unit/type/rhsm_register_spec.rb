@@ -23,20 +23,23 @@ described_class = Puppet::Type.type(:rhsm_register)
 
 describe described_class, 'type' do
 
-  [ :ensure, :username, :password, :server_prefix, :org,
+  it "should be ensurable" do
+    expect(described_class.attrtype(:ensure)).to eq(:property)
+  end
+
+  [ :username, :password, :server_prefix, :org,
     :rhsm_cacert, :username, :password, :activationkeys,
-    :pool, :environment ].each { |property|
-      context "for #{property}" do
-        it "should be of type property" do
-          expect(described_class.attrtype(property)).
-            to eq(:property)
+    :pool, :environment ].each { |params|
+      context "for #{params}" do
+        it "should be of type paramter" do
+          expect(described_class.attrtype(params)).to eq(:param)
         end
-        it "should be of class property" do
-          expect(described_class.attrclass(property).ancestors).
-            to include(Puppet::Property)
+        it "should be of class Paramter" do
+          expect(described_class.attrclass(params).ancestors).
+            to include(Puppet::Parameter)
         end
         it "should have documentation" do
-          expect(described_class.attrclass(property).doc.strip).
+          expect(described_class.attrclass(params).doc.strip).
             not_to be_empty
         end
       end
@@ -99,7 +102,7 @@ describe described_class, 'type' do
 
   context "for rhsm_basueurl" do
     it "should have an rhsm_baseurl property" do
-      expect(described_class.attrtype(:rhsm_baseurl)).to eq(:property)
+      expect(described_class.attrtype(:rhsm_baseurl)).to eq(:param)
     end
      it 'should accept url path values' do
        @resource = described_class.new(
