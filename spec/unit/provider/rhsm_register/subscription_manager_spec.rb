@@ -34,6 +34,10 @@ describe  provider_class, 'rhsm_register provider' do
     :org             => 'the cool organization',
   }
 
+  title = 'example.com'
+  fake_key = '1-my-activation-key'
+  fake_id = '11111111-aaaa-bbbb-cccc-222222222222'
+
   let(:resource) do
     Puppet::Type.type(:rhsm_register).new(parameters)
   end
@@ -66,6 +70,50 @@ describe  provider_class, 'rhsm_register provider' do
     end
   }
 
+  context "ensure" do
+    it "exists? should return true when the resource is present" do
+      expect(provider).to receive(:identity) { true }
+      allow(File).to receive(:exists?).
+        with("/etc/pki/consumer/cert.pem") { true }
+      provider.set(:ensure => :present)
+      expect(provider).to be_exists
+    end
+    it "exists? should return false when the resource is absent" do
+      expect(provider).to receive(:identity) { false }
+      allow(File).to receive(:exists?).
+        with("/etc/pki/consumer/cert.pem") { true }
+      provider.set(:ensure => :absent)
+      expect(provider).to_not be_exists
+    end
+    it "create should register when resource should exist" do
+      expect(provider).to receive(:subscription_manager).
+        with('identity') { fake_id }
+      expect(provider).to receive(:subscription_manager).with(
+      'config', '--server.hostname', title)
+      expect(provider).to receive(:subscription_manager).with(
+      'register', '--activationkey', fake_key, '--org', 'foo')
+      res = Puppet::Type.type(:rhsm_register).new(
+        :name => title,
+        :ensure => :present,
+        :activationkeys => fake_key,
+        :org => 'foo',
+        :provider => provider)
+        allow(provider).to receive(:exists?) { true }
+        provider.create
+    end
+    it "destroy should unregister when resource shouldn't exist" do
+      expect(provider).to receive(:subscription_manager).with(['clean'])
+      expect(provider).to receive(:subscription_manager).
+        with(['unsubscribe','--all'])
+      expect(provider).to receive(:subscription_manager).with(['unregister'])
+      res = Puppet::Type.type(:rhsm_register).new(
+        :name     => title,
+        :ensure   => :absent,
+        :provider => provider)
+        allow(provider).to receive(:exists?) { false }
+        provider.destroy
+    end
+  end
 
 end
 
