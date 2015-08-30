@@ -8,41 +8,20 @@ Puppet::Type.newtype(:rhsm_repo) do
   Example
 
   rhsm_repo { 'rhel-server6-epel':
-    ensure        => present,
-    enabled       => false,
+    ensure        => present, # equal to the enabled property
     updated       => 2015-07-17T14:26:35.064+0000,
     created       => 2015-07-17T14:26:35.064+0000,
     content_label => 'rhel-server6-epel'
 }
 EOD
 
-  ensurable do
-
-  newvalue(:present) do
-    provider.create
-  end
-
-  newvalue(:absent) do
-    provider.destroy
-  end
-
-  def insync?(is)
-
-    @should.each do |should|
-      case should
-      when :present
-        return true if is == :present
-      when :absent
-        return true if is == :absent
-      end
-    end
-    return false
-  end
-  defaultto :present
-end
+  ensurable
 
   newparam(:content_label, :namevar => true) do
     desc "The rhsm channel to subscribe to."
+#    validate do |value|
+#     fail("Updated should be a date.  Given #{value}") unless value =~ /\S+/
+#    end
   end
 
   newproperty(:updated) do
