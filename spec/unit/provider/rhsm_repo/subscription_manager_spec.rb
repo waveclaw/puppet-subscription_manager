@@ -10,7 +10,7 @@ describe provider_class, 'provider' do
 
   repo_file = '/var/lib/rhsm/cache/content_overrides.json'
 
-  raw_data =<<-EOD
+  one_data =<<-EOD
 [
   {
     "updated": "2015-07-17T14:26:35.064+0000",
@@ -28,29 +28,6 @@ EOT
 
   title1 = 'rhel-server6-epel'
   title2 = 'rhel-server5'
-
-  parsed_file = [{
-    'name' => 'enabled',
-    'value' => 1,
-    'updated' => '2015-07-17T14 =>26 =>35.064+0000',
-    'created' => '2015-07-17T14 =>26 =>35.064+0000',
-    'contentLabel' => 'rhel-server6-epel'
-  }]
-
-  two_file = [{
-    'name' => 'enabled',
-    'value' => 1,
-    'updated' => '2015-07-17T14 =>26 =>35.064+0000',
-    'created' => '2015-07-17T14 =>26 =>35.064+0000',
-    'contentLabel' => 'rhel-server6-epel'
-  },
-  {
-    'updated' => '2015-07-17T14 =>26 =>35.060+0000',
-    'contentLabel' => 'rhel-server5',
-    'name' => 'enabled',
-    'value' => 1,
-    'created' => '2015-07-17T14 =>26 =>35.060+0000'
-}]
 
   properties = {
     :ensure        => :present,
@@ -74,24 +51,20 @@ EOT
     allow(Puppet::Util).to receive(:which).with('subscription-manager') { 'subscription-manager' }
   end
 
-  it 'should have a resource from a generic list of propeties' do
+  it "generic resource can exist" do
     expect(resource).to_not eq(nil)
   end
 
-  it 'should have a provider for a generic resource' do
+  it "generic provider instance can exist" do
     expect(provider).to_not eq(nil)
   end
 
   [ :create, :destroy, :exists? ].each { |action|
-    it "should respond to #{action}" do
-      expect(provider).to respond_to(action)
-    end
+    it { expect(provider).to respond_to(action) }
   }
 
   describe 'self.instances' do
-    it 'instances should exist' do
-      expect(provider.class).to respond_to(:instances)
-    end
+    it { expect(provider.class).to respond_to(:instances) }
     context 'should parse the expected values for properties' do
       properties.keys.each { |key|
          it "such as the #{key} property" do
@@ -106,9 +79,7 @@ EOT
   end
 
   describe 'self.prefetch' do
-    it 'exists as a method' do
-      expect(provider.class).to respond_to(:prefetch)
-    end
+    it { expect(provider.class).to respond_to(:prefetch) }
     it 'can be called on the provider' do
       expect(provider.class).to receive(:read_cache) { [ properties ] }
       provider.class.prefetch(properties)
@@ -117,25 +88,22 @@ EOT
 
   describe "read_cache" do
     it 'should return just two repos for a double input' do
+      expect(provider.class).to receive(:get_cache) { two_data }
       repos = provider.class.read_cache
       expect(repos.size).to eq(2)
     end
     it 'should return just one repo for a single input' do
-      expect(File).to receive(:exists).with(repo_file) { true }
-      expect(provider.class).to receive(:parse_repo) { properties }
-      allow(File).to receive(:open)
-      allow(JSON).to receive(:parse) {parsed_file}
+      expect(provider.class).to receive(:get_cache) { one_data }
       repos = provider.class.read_cache
       expect(repos.size).to eq(1)
     end
     it 'should return nothing for an empty list' do
-      expect(File).to receive(:exists).with(repo_file) { true }
-      expect(JSON).to receive(:parse) { [] }
+      expect(provider.class).to receive(:get_cache) { '[]' }
       repos = provider.class.read_cache
       expect(repos.size).to eq(0)
     end
     it 'should return nothing for missing repo file' do
-      expect(File).to receive(:exists).with(repo_file) { false }
+      allow(File).to receive(:exists?) { false }
       repos = provider.class.read_cache
       expect(repos.size).to eq(0)
     end

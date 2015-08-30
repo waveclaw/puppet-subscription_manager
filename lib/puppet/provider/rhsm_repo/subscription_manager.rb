@@ -43,15 +43,21 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
     new_repo
   end
 
-  def self.read_cache
+  def self.get_cache
     repo_file = '/var/lib/rhsm/cache/content_overrides.json'
-    repo_instances = []
     if File.exists?(repo_file)
-      repos = JSON.parse(File.open(repo_file).read)
+      File.open(repo_file).read
+    else
+      '[]'
+    end
+  end
+
+  def self.read_cache
+    repo_instances = []
+      repos = JSON.parse(get_cache)
       repos.each { |repo|
         repo_instances.push(parse_repo(repo))
       }
-    end
     repo_instances
   end
 
