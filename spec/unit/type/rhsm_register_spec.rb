@@ -101,7 +101,7 @@ describe described_class, 'type' do
   }
 
   context "for rhsm_basueurl" do
-    it "should have an rhsm_baseurl property" do
+    it "should have an rhsm_baseurl parameter" do
       expect(described_class.attrtype(:rhsm_baseurl)).to eq(:param)
     end
      it 'should accept url path values' do
