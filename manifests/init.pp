@@ -69,7 +69,7 @@ class subscription_manager (
   $autosubscribe = $::subscription_manager::defaults::autosubscribe,
   $force = $::subscription_manager::defaults::force,
   $org = $::subscription_manager::defaults::org,
-  $repo = undef,
+  $repo = $::subscription_manager::defaults::repo,
 ) inherits ::subscription_manager::defaults {
 
   # TODO: validate parameters here

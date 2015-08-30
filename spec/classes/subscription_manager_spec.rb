@@ -62,4 +62,15 @@ describe 'subscription_manager' do
     it { is_expected.to contain_package('katello-ca-consumer').
       with_ensure('present').that_requires('sm_repo') }
   end
+
+  context 'when told to disable the service' do
+    let(:facts) {{
+      :osfamily        => 'RedHat',
+      :operatingsystem => 'RedHat',
+    }}
+    let(:params) {{
+     :service_status => 'disabled',
+    }}
+    it { is_expected.to contain_service('goferd').with_ensure('disabled') }
+  end
 end

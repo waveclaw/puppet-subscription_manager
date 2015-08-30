@@ -22,6 +22,7 @@ class subscription_manager::defaults {
       $autosubscribe = false
       $force = false
       $org = undef
+      $repo = undef
     }
     default: {
       fail("${::operatingsystem} not supported")
