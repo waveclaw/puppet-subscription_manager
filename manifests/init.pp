@@ -31,6 +31,12 @@
 #    * force
 #    * org
 #
+# [repo]
+#  Options repo class that will be invoked by the install step
+#  as a dependency for every package to install.
+#
+#  Use this if the required packages don't exist in a default repo.
+#
 # === Examples
 #
 #  class { subscription_manager:
@@ -63,6 +69,7 @@ class subscription_manager (
   $autosubscribe = $::subscription_manager::defaults::autosubscribe,
   $force = $::subscription_manager::defaults::force,
   $org = $::subscription_manager::defaults::org,
+  $repo = undef,
 ) inherits ::subscription_manager::defaults {
 
   # TODO: validate parameters here

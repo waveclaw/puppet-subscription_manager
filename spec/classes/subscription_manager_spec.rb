@@ -33,6 +33,7 @@ describe 'subscription_manager' do
       it { expect { is_expected.to contain_package('subscription_manager') }.to raise_error(Puppet::Error, /Nexenta not supported/) }
     end
   end
+
   context 'unsupported operating system' do
     describe 'subscription_manager class without any parameters on Debian/Ubuntu' do
       let(:facts) {{
@@ -42,5 +43,23 @@ describe 'subscription_manager' do
 
       it { expect { is_expected.to contain_package('subscription_manager') }.to raise_error(Puppet::Error, /Ubuntu not supported/) }
     end
+  end
+
+  context 'when given a repo option' do
+    let(:facts) {{
+      :osfamily        => 'RedHat',
+      :operatingsystem => 'RedHat',
+    }}
+    let(:params) {{
+     :repo => 'sm_repo',
+    }}
+    let(:pre_condition) {
+      'class sm_repo {}'
+    }
+    it { is_expected.to contain_class('sm_repo') }
+    it { is_expected.to contain_package('subscription-manager').
+      with_ensure('present').that_requires('sm_repo') }
+    it { is_expected.to contain_package('katello-ca-consumer').
+      with_ensure('present').that_requires('sm_repo') }
   end
 end
