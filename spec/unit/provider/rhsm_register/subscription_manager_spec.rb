@@ -116,36 +116,3 @@ describe  provider_class, 'rhsm_register provider' do
   end
 
 end
-
-=begin
-
-context "ensure" do
-  it "exists? should return false when the resource is absent" do
-    provider.set(:ensure => :absent)
-    expect(provider).to_not be_exists
-  end
-  it "exists? should return true when the resource is present" do
-    provider.set(:ensure => :present)
-    expect(provider).to be_exists
-  end
-  it "create should attach to a pool that should exist" do
-    expect(provider).to receive(:subscription_manager).with(
-    'attach', '--pool', title1)
-    res = Puppet::Type.type(:rhsm_pool).new(:name => title1,
-      :ensure => :present, :provider => provider)
-      allow(provider).to receive(:exists?) { true }
-      provider.create
-  end
-  it "destroy should detach from a pool that shouldn't exist" do
-    serial = '1234567890123456789'
-    expect(provider).to receive(:subscription_manager).with(
-    'remove', '--serial', serial)
-    res = Puppet::Type.type(:rhsm_pool).new(
-      :name     => title1,
-      :ensure   => :absent,
-      :serial   => serial,
-      :provider => provider)
-      allow(provider).to receive(:exists?) { false }
-      provider.destroy
-  end
-=end

@@ -95,7 +95,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     end
   end
 
-  # No self.instances?  Have to manually make all resources
+  # No self.instances?  Have to manually make all parameters
   def provider=(value)
     @resource[:provider]  = value
   end
