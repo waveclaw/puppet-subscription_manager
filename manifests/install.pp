@@ -9,7 +9,7 @@ class subscription_manager::install {
   }
 
   if $::subscription_manager::repo {
-    if versioncmp($::puppetversion, '3.0.0') > 0 {
+    if versioncmp($::puppetversion, '3.4.1') > 0 {
       contain $::subscription_manager::repo
     } else {
       include $::subscription_manager::repo
