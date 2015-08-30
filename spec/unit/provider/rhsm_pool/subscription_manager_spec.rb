@@ -6,7 +6,7 @@ require 'puppet/type/rhsm_pool'
 
 provider_class = Puppet::Type.type(:rhsm_pool).provider(:subscrption_manager)
 
-describe provider_class, 'provider' do
+describe  provider_class, 'rhsm_pool provider' do
 
   raw_data =<<-EOD
   Subscription Name: Extra Packages for Enterprise Linux

@@ -6,7 +6,8 @@ require 'spec_helper'
 require 'puppet/type/rhsm_repo'
 
 provider_class = Puppet::Type.type(:rhsm_repo).provider(:subscription_manager)
-describe provider_class, 'provider' do
+
+describe provider_class, 'rhsm_repo provider' do
 
   repo_file = '/var/lib/rhsm/cache/content_overrides.json'
 

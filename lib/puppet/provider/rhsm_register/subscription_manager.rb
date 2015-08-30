@@ -71,8 +71,8 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
 
   def unregister
     Puppet.debug("This server will be unregistered")
-    subscription-manager(['clean'])
-    subscription-manager(['unsubscribe','--all'])
+    subscription_manager(['clean'])
+    subscription_manager(['unsubscribe','--all'])
     subscription_manager(['unregister'])
   end
 
@@ -95,4 +95,107 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     end
   end
 
+  # No self.instances?  Have to manually make all resources
+  def provider=(value)
+    @resource[:provider]  = value
+  end
+  def provider?(value)
+    @resource[:provider]  = value
+  end
+  def name=(value)
+    @resource[:name] = value
+  end
+  def name?
+    @resource[:name]
+  end
+  def server_hostname=(value)
+    @resource[:server_hostname] = value
+  end
+  def server_hostname?
+    @resource[:server_hostname]
+  end
+  def server_insecure=(value)
+    @resource[:server_insecure] = value
+  end
+  def server_insecure?
+    @resource[:server_insecure]
+  end
+  def username=(value)
+    @resource[:username] = value
+  end
+  def username?
+    @resource[:username]
+  end
+  def password=(value)
+    @resource[:password] = value
+  end
+  def password?
+    @resource[:password]
+  end
+  def server_prefix=(value)
+    @resource[:server_prefix] = value
+  end
+  def server_prefix?
+    @resource[:server_prefix]
+  end
+  def rhsm_baseurl=(value)
+    @resource[:rhsm_baseurl] = value
+  end
+  def rhsm_baseurl?
+    @resource[:rhsm_baseurl]
+  end
+  def rhsm_cacert=(value)
+    @resource[:rhsm_cacert] = value
+  end
+  def rhsm_cacert?
+    @resource[:rhsm_cacert]
+  end
+  def username=(value)
+    @resource[:username] = value
+  end
+  def username?
+    @resource[:username]
+  end
+  def password=(value)
+    @resource[:password] = value
+  end
+  def password?
+    @resource[:password]
+  end
+  def activationkeys=(value)
+    @resource[:activationkeys] = value
+  end
+  def activationkeys?
+    @resource[:activationkeys]
+  end
+  def pool=(value)
+    @resource[:pool] = value
+  end
+  def pool?
+    @resource[:pool]
+  end
+  def environment=(value)
+    @resource[:environment] = value
+  end
+  def environment?
+    @resource[:environment]
+  end
+  def autosubscribe=(value)
+    @resource[:autosubscribe] = value
+  end
+  def autosubscribe?
+    @resource[:autosubscribe]
+  end
+  def force=(value)
+    @resource[:force] = value
+  end
+  def force?
+    @resource[:force]
+  end
+  def org=(value)
+    @resource[:org] = value
+  end
+  def org?
+    @resource[:org]
+  end
 end
