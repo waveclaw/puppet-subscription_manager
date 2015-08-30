@@ -29,20 +29,28 @@ describe described_class, 'type' do
     end
   }
 
-  context "for content_label" do
-    it "should have this parameter" do
-      expect(described_class.attrtype(:content_label)).to eq(:param)
-    end
-    it "should have documentation" do
-      expect(described_class.attrclass(:content_label).doc.strip).
-        not_to be_empty
-    end
-    it 'should create a name that matches this parameter' do
-      @resource = described_class.new(
-        :content_label => 'foo')
-      expect(@resource[:content_label]).to eq('foo')
-      expect(@resource[:name]).to eq('foo')
-    end
+  context "for a ContentLabel" do
+      namevar = :content_label
+      it "should be a parameter" do
+        expect(described_class.attrtype(namevar)).to eq(:param)
+      end
+      it "should have documentation" do
+        expect(described_class.attrclass(namevar).doc.strip).
+          not_to be_empty
+      end
+      it "should be the namevar" do
+        expect(described_class.key_attributes).to eq([namevar])
+      end
+      it "should return a name equal to this parameter" do
+        @resource = described_class.new(
+          namevar => '123')
+        expect(@resource[namevar]).to eq('123')
+        expect(@resource[:name]).to eq('123')
+      end
+#      it 'should reject invalid values' do
+#        expect{ described_class.new(namevar => '@#_$)=')}.
+#           to raise_error(Puppet::ResourceError, /.*/)
+#      end
   end
 
   it 'should support enabled' do

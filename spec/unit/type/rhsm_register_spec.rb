@@ -42,23 +42,28 @@ describe described_class, 'type' do
       end
       }
 
+
   context "for server_hostname" do
-    it "should have a server_name parameter" do
-      expect(described_class.attrtype(:server_hostname)).to eq(:param)
+    namevar = :server_hostname
+    it "should be a parameter" do
+      expect(described_class.attrtype(namevar)).to eq(:param)
     end
     it "should have documentation" do
-      expect(described_class.attrclass(:server_hostname).doc.strip).
+      expect(described_class.attrclass(namevar).doc.strip).
         not_to be_empty
     end
-    it 'should have a name equal too the server_hostname' do
+    it "should be the namevar" do
+      expect(described_class.key_attributes).to eq([namevar])
+    end
+    it "should return a name equal to this parameter" do
       @resource = described_class.new(
-        :server_hostname => 'foo')
-      expect(@resource[:server_hostname]).to eq('foo')
+        namevar => 'foo')
+      expect(@resource[namevar]).to eq('foo')
       expect(@resource[:name]).to eq('foo')
     end
-    it 'should reject non-hostname server_names' do
+    it 'should reject invalid values' do
       expect{ described_class.new(
-       :server_hostname => '@#$%foooooo^!)')}.to raise_error(
+       namevar => '@#$%foooooo^!)')}.to raise_error(
         Puppet::ResourceError, /.*/)
     end
   end

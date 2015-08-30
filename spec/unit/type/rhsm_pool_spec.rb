@@ -30,7 +30,7 @@ describe described_class, 'type' do
   #   expect(described_class.provider_feature(:json)).to_not be_nil
   #end
 
-    [ :name, :ensure, :provides, :sku, :contract, :account, :serial,
+    [ :subscription_name, :ensure, :provides, :sku, :contract, :account, :serial,
       :active, :quantity_used, :service_level, :service_type,
       :status_details, :subscription_type, :starts, :ends,:system_type,
     ].each { |property|
@@ -49,23 +49,31 @@ describe described_class, 'type' do
       end
     end
     }
-    it "should have an id parameter" do
-      expect(described_class.attrtype(:id)).to eq(:param)
-      expect(described_class.attrclass(:id).ancestors).to include(Puppet::Parameter)
+
+    context "for Pool ID" do
+      namevar = :id
+      it "should be a parameter" do
+        expect(described_class.attrtype(namevar)).to eq(:param)
+      end
+      it "should have documentation" do
+        expect(described_class.attrclass(namevar).doc.strip).
+          not_to be_empty
+      end
+      it "should be the namevar" do
+        expect(described_class.key_attributes).to eq([namevar])
+      end
+      it "should return a name equal to this parameter" do
+        @resource = described_class.new(
+          namevar => '123')
+        expect(@resource[namevar]).to eq('123')
+        expect(@resource[:name]).to eq('123')
+      end
+      it 'should reject invalid values' do
+        expect{ described_class.new(namevar => '@#_$)=')}.
+           to raise_error(Puppet::ResourceError, /.*/)
+      end
     end
-    it "should have documentation for the id parameter" do
-      expect(described_class.attrclass(:id).doc.strip).not_to be_empty
-    end
-    it 'should get a name from the id' do
-      @resource = described_class.new(
-        :id => '123abc')
-      expect(@resource[:id]).to eq('123abc')
-      expect(@resource[:name]).to eq('123abc')
-    end
-    it 'should reject non-hex names' do
-      expect{ described_class.new(:id => 'foobar')}.
-         to raise_error(Puppet::ResourceError, /.*/)
-    end
+
     it 'should support enabled' do
       @resource = described_class.new(
         :id => '123abc', :ensure => :absent)

@@ -69,9 +69,10 @@ end
 
   newproperty(:sku) do
     desc "Stockkeeping Unit identification for this item?"
-    validate do |value|
-     raise fail("SKU must be an number, was given #{value}") unless value.is_a? Numeric
-    end
+# real SKUs can be strange
+#    validate do |value|
+#     raise fail("SKU must be an number, was given #{value}") unless value.is_a? Numeric
+#    end
   end
 
   newproperty(:contract) do
@@ -84,18 +85,27 @@ end
 
   newproperty(:serial) do
     desc "Serial number on the server for this pool"
-    validate do |value|
-     raise fail("Serial number must be an number, was given #{value}") unless value.is_a? Numeric
-    end
+# not all NO. are numbers
+#    validate do |value|
+#     raise fail("Serial number must be an number, was given #{value}") unless value.is_a? Numeric
+#    end
   end
 
-  newproperty(:name) do
+  newproperty(:subscription_name) do
     desc "A locally unique idenification for this pool"
   end
 
   newproperty(:active) do
     desc "Is this pool active or inactive for this system"
-    newvalues('True','False')
+    newvalues(true, false)
+    munge do |value|
+      case value
+        when "True", "true", "Yes", "yes", true
+          return true
+        else
+         return false
+      end
+    end
   end
 
   newproperty(:quantity_used) do
@@ -121,7 +131,6 @@ end
     desc "The type of subscription to this pool the server has"
   end
 
-
   newproperty(:starts) do
     desc "When does this subscription to the pool start?"
     validate do |value|
@@ -138,7 +147,7 @@ end
 
   newproperty(:system_type) do
     desc "Is this a physcial, virtual or container system"
-    newvalues('physical', 'virtual', 'container')
+    newvalues('Physical', 'Virtual', 'Container')
   end
 
 end

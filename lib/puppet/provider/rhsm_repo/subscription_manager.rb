@@ -1,3 +1,7 @@
+require 'puppet'
+require 'puppet/type/rhsm_repo'
+require 'json'
+
 Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
   @doc = <<-EOS
     This provider registers a software repository via RedHat subscription manager.
@@ -32,7 +36,8 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
           :ensure        => ensured,
           :updated       => Date.parse(repo['updated']),
           :created       => Date.parse(repo['created']),
-          :content_label => repo['contentLabel']
+          :content_label => repo['contentLabel'],
+          :name          => repo['contentLabel'],
         }
         repo_instances.push(new(new_repo))
       }
