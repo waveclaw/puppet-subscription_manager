@@ -7,7 +7,6 @@ class subscription_manager::service {
 
   service { $::subscription_manager::service_name:
     ensure     => $::subscription_manager::service_status,
-    enable     => true,
     hasstatus  => true,
     hasrestart => true,
   }
