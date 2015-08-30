@@ -15,7 +15,7 @@ describe  provider_class, 'rhsm_register provider' do
   # process like light and matter into a blackhole.
   #
   parameters = {
-    :provider        => provider_class,
+    :provider        => :subscription_manager,
     :name            => 'example.com',
     :server_hostname => 'example.com',
     :server_insecure => false,
@@ -39,7 +39,7 @@ describe  provider_class, 'rhsm_register provider' do
   end
 
   let(:provider) do
-    provider_class
+    resource.provider
   end
 
   before :each do
@@ -62,7 +62,7 @@ describe  provider_class, 'rhsm_register provider' do
     :config, :register, :unregister, :create, :destroy, :exists?
   ].each { |action|
     it "should respond to #{action}" do
-      expect(provider_class).to respond_to(action)
+      expect(provider).to respond_to(action)
     end
   }
 
