@@ -14,7 +14,7 @@ class subscription_manager::install {
     } else {
       include $::subscription_manager::repo
     }
-    Class [ $::subscription_manager::repo ] ->
+    Class[ $::subscription_manager::repo ] ->
       Package[ $::subscription_manager::package_names ]
   }
 }
