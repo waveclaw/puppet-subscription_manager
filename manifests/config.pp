@@ -43,5 +43,14 @@ class subscription_manager::config {
   if $_settings {
     $_params = { "${::subscription_manager::server_hostname}" => $_settings, }
     create_resources('rhsm_register', $_params)
+    $http = $::subscription_manager::server_prefix
+    $host = $::subscription_manager::server_hostname
+    package {'katello-ca-consumer-latest':
+      ensure   => 'installed',
+      provider => 'rpm',
+      source   => "${http}://${host}/pub/katello-ca-consumer-latest.noarch.rpm",
+    }
+    Package['katello-ca-consumer-latest'] ->
+    Rhsm_register[$::subscription_manager::server_hostname]
   }
 }

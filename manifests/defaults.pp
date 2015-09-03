@@ -6,14 +6,14 @@
 class subscription_manager::defaults {
   case $::osfamily {
     'RedHat', 'CentOS', 'Fedora': {
-      $package_names = ['subscription-manager','katello-ca-consumer']
+      $package_names = ['subscription-manager']
       $service_name = 'goferd'
       $service_status = 'running'
-      $server_hostname = 'https://rhn.redhat.com'
+      $server_hostname = 'rhn.redhat.com'
       $server_insecure = false
-      $server_prefix = ''
-      $rhsm_baseurl = ''
-      $rhsm_cacert = ''
+      $server_prefix = 'https'
+      $rhsm_baseurl = '/'
+      $rhsm_cacert = undef
       $username = undef
       $password = undef
       $activationkeys = undef
@@ -21,7 +21,7 @@ class subscription_manager::defaults {
       $environment = 'production'
       $autosubscribe = false
       $force = false
-      $org = undef
+      $org = 'Default_Organization'
       $repo = undef
     }
     default: {
