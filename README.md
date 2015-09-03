@@ -37,14 +37,16 @@ class repo::subscription_manager {
   }
 }
 
+# put this in either a Profile module or classify in your ENC equivalently
 Class { 'subscription_manager':
   repo                  => 'repo::subscription_manager',
-  subscription settings => {
+  subscription_settings => {
     'server_hostname'   => 'my_katello.example.com',
     'activationkeys'    => '1-2-3-example.com-key',
     'environment'       => 'production',
     'force'             => true,
     'org'               => 'My_Example_Org',
+  }
 }
 ```
 
