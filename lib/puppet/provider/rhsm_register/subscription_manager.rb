@@ -68,8 +68,8 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
         if cert.subject.to_s =~ /.+CN=(.+)/
           ca = $1
         end
-      rescue Error
-        Puppet.debug('Unable to guess server_hostname based on available certs')
+      rescue Exception => e
+        Puppet.debug("Unable to guess server name with available certs: #{e}")
         ca
       end
     end
@@ -79,8 +79,8 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   def identity
     begin
       identity = subscription_manager('identity')
-    rescue Puppet::ExecutionError
-      Puppet.debug('This server was never registered')
+    rescue Exception => e
+      Puppet.debug("This server was never registered: #{e}")
       return nil
     end
     identity.split('\n').each { |line|
