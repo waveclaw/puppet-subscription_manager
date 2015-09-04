@@ -28,6 +28,7 @@
 #    * pool
 #    * environment
 #    * autosubscribe
+#    * servicelevel
 #    * force
 #    * org
 #
@@ -67,6 +68,7 @@ class subscription_manager (
   $pool = $::subscription_manager::defaults::pool,
   $environment = $::subscription_manager::defaults::environment,
   $autosubscribe = $::subscription_manager::defaults::autosubscribe,
+  $servicelevel = $::subscription_manager::defaults::servicelevel,
   $force = $::subscription_manager::defaults::force,
   $org = $::subscription_manager::defaults::org,
   $repo = $::subscription_manager::defaults::repo,

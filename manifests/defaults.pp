@@ -19,6 +19,7 @@ class subscription_manager::defaults {
       $password = undef
       $activationkeys = undef
       $pool = undef
+      $servicelevel = undef
       $environment = 'production'
       $autosubscribe = false
       $force = false

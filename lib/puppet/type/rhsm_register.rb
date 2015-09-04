@@ -114,6 +114,10 @@ EOD
     desc "The environment to subscribe to in the case of using katello."
   end
 
+  newparam(:servicelevel) do
+    desc "A service level for automatic attachement with Satellite servers."
+  end
+
   newparam(:org) do
     desc "The organization the system should be assigned to."
 

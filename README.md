@@ -54,9 +54,11 @@ Setup a RedHat Enterprise 7 or CentOS 7 agent to RHN.
 
 ```puppet
 Class { 'subscription_manager':
-   org      => 'My_Company_Org_in_RHN',
-   username => 'some_rhn_special_user',
-   password => 'password123',
+   org           => 'My_Company_Org_in_RHN',
+   username      => 'some_rhn_special_user',
+   password      => 'password123',
+   autosubscribe => true,
+   servicelevel  => 'STANDARD',
 }
 ```
 Not putting the explicit password in the code is a good idea. Using hiera-gpg or hiera-eyaml backends is strongly encouraged for this example.
@@ -93,7 +95,8 @@ to register.  Both cannot be provided and will cause an error.
 - **server_prefix**: The subscription path.  Usually /subscription for RHN and /rhsm for a Katello installation.
 - **rhsm_baseurl**: The Content base URL in case the registration server has no content. An example would be https://cdn.redhat.com or https://katello.example.com/pulp/repos
 - **rhsm_cacert**: Path to a CA certificate for HTTPS connections to the server
-- **autosubscribe**: Enable automatic subscription to repositories based on default Pool settings. Must be false when using an activation key.
+- **autosubscribe**: Enable automatic subscription to repositories based on default Pool settings. Must be false when using an activation key unless specifiying a service leve.
+- **servicelevel**: provide automatic attachement to a service level in Satellite. Not applicable to katello installations.
 
 ### rhsm_register Examples
 

@@ -32,6 +32,7 @@ describe  provider_class, 'rhsm_register provider' do
     :autosubscribe   => true,
     :force           => true,
     :org             => 'the cool organization',
+    :servicelevel    => 'STANDARD',
   }
 
   title = 'example.com'
@@ -106,12 +107,16 @@ describe  provider_class, 'rhsm_register provider' do
       'config', '--server.hostname', title)
       expect(provider).to receive(:subscription_manager).with(
       'register', '--activationkey', fake_key, '--force', '--org', 'foo')
+      expect(provider).to receive(:subscription_manager).with(
+      ['attach', '--servicelevel', 'STANDARD', '--auto'])
       res = Puppet::Type.type(:rhsm_register).new(
         :name => title,
         :ensure => :present,
         :activationkeys => fake_key,
         :org => 'foo',
         :force => 'true',
+        :servicelevel => 'STANDARD',
+        :autosubscribe => true,
         :provider => provider)
         allow(provider).to receive(:exists?) { true }
         provider.create

@@ -2,7 +2,7 @@
 require 'puppet'
 require 'puppet/type/rhsm_register'
 require 'openssl'
-require 'facter'
+require 'facter/rhsm_identity'
 
 Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   @doc = <<-EOS
@@ -42,7 +42,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     params << "--password" << @resource[:password] if ! @resource[:password].nil?
     params << "--activationkey" <<  @resource[:activationkeys] if ! @resource[:activationkeys].nil?
     params << "--force" if @resource[:force]
-    params << "--autosubscribe" if @resource[:autosubscribe]
+    params << "--autosubscribe" if @resource[:autosubscribe] and @resource[:activationkeys].nil?
     params << "--environment" << @resource[:environment] if ! @resource[:environment].nil?
     params << "--org" << @resource[:org]
 
@@ -50,7 +50,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   end
 
   def identity
-    Facter.value('rhsm_identity')
+    Facter::Util::Rhsm_identity.rhsm_identity
   end
 
   def certified
@@ -92,6 +92,10 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     if identity == nil or @resource[:force] == true
       cmd = build_register_parameters
       subscription_manager(*cmd)
+      if ! @resource[:autosubscribe].nil? and ! @resource[:servicelevel].nil?
+        subscription_manager(['attach', '--servicelevel',
+          @resource[:servicelevel], '--auto'])
+      end
     else
       self.fail("Require force => true to register already registered server")
     end
@@ -205,6 +209,12 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     @resource[:pool] = value
   end
   def pool?
+    @resource[:pool]
+  end
+  def servicelevel=(value)
+    @resource[:pool] = value
+  end
+  def servicelevel?
     @resource[:pool]
   end
   def environment=(value)
