@@ -1,5 +1,5 @@
 name          'puppet-subscription_manager'
-version       '0.3.0'
+version       '0.3.1'
 source        'https://github.com/jlaska/puppet-subscription_manager'
 author        'James Laska <jlaska@redhat.com>'
 license       'Apache License, Version 2.0'
@@ -7,4 +7,4 @@ summary 'subscription_manager provider for Puppet'
 description 'This module provides Custom Providers for RedHat Network Registering.'
 project_page  'https://github.com/jlaska/puppet-subscription_manager'
 
-dependency 'adrien-boolean'
+dependency 'adrien-boolean','>= 0.5.0'
