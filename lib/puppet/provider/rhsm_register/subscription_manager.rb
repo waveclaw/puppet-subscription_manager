@@ -87,14 +87,25 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     subscription_manager(*cmd)
   end
 
+  def attach
+    if @resource[:autosubscribe] and ! @resource[:servicelevel].nil?
+      begin
+        subscription_manager(['attach',
+          "--servicelevel=#{@resource[:servicelevel]}", '--auto'])
+        rescue Exception => e
+          Puppet.debug("Auto-attach did not succeed: #{e}")
+        end
+    end
+  end
+
   def register
-    Puppet.debug("This server will be registered")
-    if identity == nil or @resource[:force] == true
+    if identity == nil or  @resource[:force] == true
+      Puppet.debug("This server will be registered")
       cmd = build_register_parameters
-      subscription_manager(*cmd)
-      if ! @resource[:autosubscribe].nil? and ! @resource[:servicelevel].nil?
-        subscription_manager(['attach', '--servicelevel',
-          @resource[:servicelevel], '--auto'])
+      begin
+        subscription_manager(*cmd)
+      rescue Exception => e
+        Puppet.debug("Either registration failed or this is a re-registation: #{e}")
       end
     else
       self.fail("Require force => true to register already registered server")
@@ -111,6 +122,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   def create
     config
     register
+    attach
   end
 
   def destroy

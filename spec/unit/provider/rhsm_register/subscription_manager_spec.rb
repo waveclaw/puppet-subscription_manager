@@ -108,7 +108,7 @@ describe  provider_class, 'rhsm_register provider' do
       expect(provider).to receive(:subscription_manager).with(
       'register', '--activationkey', fake_key, '--force', '--org', 'foo')
       expect(provider).to receive(:subscription_manager).with(
-      ['attach', '--servicelevel', 'STANDARD', '--auto'])
+      ['attach', '--servicelevel=STANDARD', '--auto'])
       res = Puppet::Type.type(:rhsm_register).new(
         :name => title,
         :ensure => :present,
