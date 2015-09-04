@@ -1,3 +1,8 @@
+#!/usr/bin/ruby
+#require 'puppet'
+#require 'puppet/type/rhsm_register'
+require 'openssl'
+
 Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   @doc = <<-EOS
     This provider registers a machine with cert-based RedHat Subscription
@@ -43,8 +48,41 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     return params
   end
 
+  def certified
+    if File.exists?('/etc/pki/consumer/cert.pem') or
+      File.exists?('/etc/pki/consumer/key.pem')
+        true
+    else
+        false
+    end
+  end
+
+  # this leads to the possiblity that is provider could use
+  # self.instances since name is actually a propety-like pseudo-parameter
+  def ca_certified
+    cafile = '/etc/rhsm/ca/katello-server-ca.pem'
+    ca = nil
+    if File.exists?(cafile)
+      begin
+        cert = OpenSSL::X509::Certificate.new(File.open(cafile).read)
+        if cert.subject.to_s =~ /.+CN=(.+)/
+          ca = $1
+        end
+      rescue Error
+        Puppet.debug('Unable to guess server_hostname based on available certs')
+        ca
+      end
+    end
+    ca
+  end
+
   def identity
-    identity = subscription_manager('identity')
+    begin
+      identity = subscription_manager('identity')
+    rescue Puppet::ExecutionError
+      Puppet.debug('This server was never registered')
+      return nil
+    end
     identity.split('\n').each { |line|
       if line =~ /.*Current identity is: (\h{8}(?>-\h{4}){3}-\h{12}).*/
         return $1
@@ -87,8 +125,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
 
   def exists?
     Puppet.debug("Verifying if the server is already registered")
-    if (File.exists?("/etc/pki/consumer/cert.pem") or
-        File.exists?("/etc/pki/consumer/key.pem")) and identity
+    if certified and identity
       return true
     else
       return false
@@ -104,15 +141,21 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   end
   def name=(value)
     @resource[:name] = value
+    @resource[:server_hostname] = value
   end
   def name?
-    @resource[:name]
+    server_hostname?
   end
   def server_hostname=(value)
     @resource[:server_hostname] = value
   end
   def server_hostname?
-    @resource[:server_hostname]
+    name = ca_certified
+    if name
+      name
+    else
+      @resource[:server_hostname]
+    end
   end
   def server_insecure=(value)
     @resource[:server_insecure] = value

@@ -18,15 +18,15 @@ describe 'subscription_manager' do
         let(:facts) {{ :osfamily => osfamily, }}
         it { is_expected.to compile.with_all_deps }
         it_behaves_like 'a supported operating system'
-        it { is_expected.not_to contain_package('katello-ca-consumer-latest') }
+        it { is_expected.not_to contain_package('katello-ca-consumer-') }
         it { is_expected.not_to contain_rhsm_register('rhn.redhat.com') }
       end
-      describe "subscription_manager class with an activateion key on #{osfamily}" do
+      describe "subscription_manager class with an activation key on #{osfamily}" do
         let(:params) {{ :activationkeys => 'foo-bar', }}
         let(:facts) {{ :osfamily => osfamily, }}
         it { is_expected.to compile.with_all_deps }
         it_behaves_like 'a supported operating system'
-        it { is_expected.to contain_package('katello-ca-consumer-latest') }
+        it { is_expected.to contain_package('katello-ca-consumer-rhn.redhat.com') }
         it { is_expected.to contain_rhsm_register('rhn.redhat.com') }
       end
 

@@ -43,14 +43,15 @@ class subscription_manager::config {
   if $_settings {
     $_params = { "${::subscription_manager::server_hostname}" => $_settings, }
     create_resources('rhsm_register', $_params)
-    $http = $::subscription_manager::server_prefix
+    # the cert is stored on the HTTP side
+    #$http = $::subscription_manager::server_prefix
     $host = $::subscription_manager::server_hostname
-    package {'katello-ca-consumer-latest':
+    package { "katello-ca-consumer-${host}":
       ensure   => 'installed',
       provider => 'rpm',
-      source   => "${http}://${host}/pub/katello-ca-consumer-latest.noarch.rpm",
+      source   => "http://${host}/pub/katello-ca-consumer-latest.noarch.rpm",
     }
-    Package['katello-ca-consumer-latest'] ->
+    Package["katello-ca-consumer-${host}"] ->
     Rhsm_register[$::subscription_manager::server_hostname]
   }
 }
