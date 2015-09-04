@@ -106,18 +106,15 @@ describe described_class, 'type' do
     end
      it 'should accept url path values' do
        @resource = described_class.new(
-        :server_hostname => 'foo', :rhsm_baseurl => '/')
-       expect(@resource[:rhsm_baseurl]).to eq('/')
+        :server_hostname => 'foo', :rhsm_baseurl => 'http://foo:123/')
+       expect(@resource[:rhsm_baseurl]).to eq('http://foo:123/')
        @resource = described_class.new(
-        :server_hostname => 'bar', :rhsm_baseurl => '/foo/bar')
-       expect(@resource[:rhsm_baseurl]).to eq('/foo/bar')
+        :server_hostname => 'bar', :rhsm_baseurl => 'https://a.b.c')
+       expect(@resource[:rhsm_baseurl]).to eq('https://a.b.c')
      end
      it 'should reject path values' do
-       expect{ described_class.new(
-        :server_hostname => 'foo', :rhsm_baseurl => '@your_momma')}.to raise_error(
-         Puppet::ResourceError, /.*/)
          expect{ described_class.new(
-          :server_hostname => 'foo', :rhsm_baseurl => '$%!#^@(((')}.to raise_error(
+          :server_hostname => 'foo', :rhsm_baseurl => '$%,,_,..!#^@(((,,,...')}.to raise_error(
            Puppet::ResourceError, /.*/)
      end
   end

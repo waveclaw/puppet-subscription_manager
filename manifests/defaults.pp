@@ -9,10 +9,10 @@ class subscription_manager::defaults {
       $package_names = ['subscription-manager']
       $service_name = 'goferd'
       $service_status = 'running'
-      $server_hostname = 'rhn.redhat.com'
+      $server_hostname = 'samserv.redhat.com'
       $server_insecure = false
-      $server_prefix = 'https'
-      $rhsm_baseurl = '/'
+      $server_prefix = '/subscription'
+      $rhsm_baseurl = undef # "https://${server_hostname}:8080"
       $rhsm_cacert = undef
       $username = undef
       $password = undef

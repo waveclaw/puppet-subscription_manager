@@ -1,5 +1,6 @@
 require 'puppet/parameter/boolean'
 require 'puppet/type'
+require 'uri'
 
 Puppet::Type.newtype(:rhsm_register) do
   @doc = <<-EOD
@@ -85,7 +86,7 @@ EOD
   newparam(:rhsm_baseurl) do
     desc "Specify a CDN baseurl to use"
     validate do |value|
-      fail("Require a baseurl. Received #{value} instead") unless value =~ /^\/(?:[.a-zA-Z\-\_1-9]+\/?)*$/
+      fail("Require a baseurl. Received #{value} instead") unless URI.parse(value)
     end
   end
 
