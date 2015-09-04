@@ -1,3 +1,4 @@
+#!/usr/bin/ruby
 require 'puppet'
 require 'puppet/type/rhsm_pool'
 require 'date'

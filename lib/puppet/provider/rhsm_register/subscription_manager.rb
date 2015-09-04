@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
-#require 'puppet'
-#require 'puppet/type/rhsm_register'
+require 'puppet'
+require 'puppet/type/rhsm_register'
 require 'openssl'
 
 Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
