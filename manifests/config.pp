@@ -6,7 +6,7 @@ class subscription_manager::config {
   if $::subscription_manager::server_hostname {
     $_host = $::subscription_manager::server_hostname
     if $::subscription_manager::rhsm_baseurl == undef {
-      $_baseurl = "https://${_host}:8080"
+      $_baseurl = "https://${_host}/pulp/repos"
     } else {
       $_baseurl = $::subscription_manager::rhsm_baseurl
     }

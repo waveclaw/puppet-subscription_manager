@@ -22,7 +22,7 @@ deployment.
 
 ## Examples
 
-Setup to and register one CentOS 6 client to a Katello or RHN Satellite 6 server
+Setup to and register one CentOS 6 client to a Katello server
 
 ```puppet
 class repo::subscription_manager {
@@ -43,9 +43,10 @@ Class { 'subscription_manager':
     repo            => 'repo::subscription_manager',
     server_hostname => 'my_katello.example.com',
     activationkeys  => '1-2-3-example.com-key',
-    environment     => 'production',
     force           => true,
     org             => 'My_Example_Org',
+    server_prefix   => '/rhsm',
+    rhsm_baseurl    => 'https://my_katello.example.com/pulp/repos',
   }
 }
 ```
@@ -72,7 +73,7 @@ The module adds the following new types:
 
 #### Mandatory
 
-- **server_hostname**: Specify a url to use as a server
+- **server_hostname**: Specify a registration server hostname such as subscription.rhn.redhat.com.
 - **org**: provide an organization to join (defaults to the Default_Organization
 )
 On of either the activation key or a username and password combination is needed
@@ -89,11 +90,10 @@ to register.  Both cannot be provided and will cause an error.
 - **pool**: A specific license pool to attach the system to
 - **environment**: which environment to join at registration time
 - **server_insecure**: If HTTP is used or HTTPS with an untrusted certificate
-- **server_prefix**: HTTP or HTTPS connection style.
-- **rhsm_baseurl**: Altnerate URL path on the server for the server's application
+- **server_prefix**: The subscription path.  Usually /subscription for RHN and /rhsm for a Katello installation.
+- **rhsm_baseurl**: The Content base URL in case the registration server has no content. An example would be https://cdn.redhat.com or https://katello.example.com/pulp/repos
 - **rhsm_cacert**: Path to a CA certificate for HTTPS connections to the server
 - **autosubscribe**: Enable automatic subscription to repositories based on default Pool settings.
-
 
 ### rhsm_register Examples
 
@@ -121,16 +121,18 @@ Register clients to RedHat Subscription management and attach to a specific lice
 
 <pre>
 rhsm_register { 'subscription.rhn.example.com':
-  username        => 'myusername',
-  password        => 'mypassword',
+  username  => 'myusername',
+  password  => 'mypassword',
   pool		  => 'mypoolid',
 }
 </pre>
 
 ### rhsm_repo Parameters
 
+If absolutely necessary the individual yum repositories can be filtered.
+
 - **ensure**: Valid values are `present`, `absent`. Default value is `present`.
-- **name**: The name of the repo registration to add
+- **name**: The name of the repository registration to filter.
 
 ### rhsm_repo Examples
 
