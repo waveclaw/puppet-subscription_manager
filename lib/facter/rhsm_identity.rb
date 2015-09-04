@@ -5,24 +5,26 @@ module Facter::Util::Rhsm_identity
   Identity for this client.
 EOF
   class << self
-    def identity
-      identity = nil
+    def rhsm_identity
+      value = nil
       begin
-        sm_identity =  Facter::Util::Resolution.exec("subscription_manager identity")
-        sm_identity.split('\n').each { |line|
-            if line =~ /.*Current identity is: (\h{8}(?>-\h{4}){3}-\h{12}).*/
-              identity = $1
-            end
+        #awk = Facter::Util::Resolution.exec('/usr/bin/which awk')
+        sm = Facter::Util::Resolution.exec('/usr/bin/which subscription-manager')
+        output = Facter::Util::Resolution.exec("#{sm} identity")
+        output.split("\n").each { |line|
+          if line =~ /.* identity(?: is)?: (\h{8}\-\h{4}\-\h{4}\-\h{4}\-\h{12}).*/
+            value = $1
+          end
         }
       rescue Exception => e
           Facter.debug("#{e.backtrace[0]}: #{$!}.")
       end
-      identity
+      value
     end
   end
 end
 
-Facter.add("rhsm_identity") do
+Facter.add(:rhsm_identity) do
     confine :kernel => "Linux"
-      setcode { Facter:Util::Rhsm_identity.identity }
+      setcode { Facter::Util::Rhsm_identity.rhsm_identity }
 end

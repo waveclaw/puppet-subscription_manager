@@ -2,6 +2,7 @@
 require 'puppet'
 require 'puppet/type/rhsm_register'
 require 'openssl'
+require 'facter'
 
 Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   @doc = <<-EOS
@@ -48,6 +49,10 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     return params
   end
 
+  def identity
+    Facter.value('rhsm_identity')
+  end
+
   def certified
     if File.exists?('/etc/pki/consumer/cert.pem') or
       File.exists?('/etc/pki/consumer/key.pem')
@@ -74,21 +79,6 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
       end
     end
     ca
-  end
-
-  def identity
-    begin
-      identity = subscription_manager('identity')
-    rescue Exception => e
-      Puppet.debug("This server was never registered: #{e}")
-      return nil
-    end
-    identity.split('\n').each { |line|
-      if line =~ /.*Current identity is: (\h{8}(?>-\h{4}){3}-\h{12}).*/
-        return $1
-      end
-    }
-    return nil
   end
 
   def config

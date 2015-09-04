@@ -85,18 +85,33 @@ describe  provider_class, 'rhsm_register provider' do
       provider.set(:ensure => :absent)
       expect(provider).to_not be_exists
     end
-    it "create should register when resource should exist" do
-      expect(provider).to receive(:subscription_manager).
-        with('identity') { fake_id }
+    it "create should require force when resource already exists" do
+      expect(provider).to receive(:identity) { fake_id }
       expect(provider).to receive(:subscription_manager).with(
       'config', '--server.hostname', title)
-      expect(provider).to receive(:subscription_manager).with(
+      expect(provider).not_to receive(:subscription_manager).with(
       'register', '--activationkey', fake_key, '--org', 'foo')
       res = Puppet::Type.type(:rhsm_register).new(
         :name => title,
         :ensure => :present,
         :activationkeys => fake_key,
         :org => 'foo',
+        :provider => provider)
+        allow(provider).to receive(:exists?) { true }
+        expect{ provider.create }.to raise_error(Puppet::Error, /.*force.*/)
+    end
+    it "should re-register when resource already exists" do
+      expect(provider).to receive(:identity) { fake_id }
+      expect(provider).to receive(:subscription_manager).with(
+      'config', '--server.hostname', title)
+      expect(provider).to receive(:subscription_manager).with(
+      'register', '--activationkey', fake_key, '--force', '--org', 'foo')
+      res = Puppet::Type.type(:rhsm_register).new(
+        :name => title,
+        :ensure => :present,
+        :activationkeys => fake_key,
+        :org => 'foo',
+        :force => 'true',
         :provider => provider)
         allow(provider).to receive(:exists?) { true }
         provider.create

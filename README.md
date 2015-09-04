@@ -39,7 +39,7 @@ class repo::subscription_manager {
 }
 
 # put this in either a Profile module or classify in your ENC equivalently
-Class { 'subscription_manager':
+class { 'subscription_manager':
     repo            => 'repo::subscription_manager',
     server_hostname => 'my_katello.example.com',
     activationkeys  => '1-2-3-example.com-key',
@@ -87,13 +87,13 @@ to register.  Both cannot be provided and will cause an error.
 - - **ensure**: Valid values are `present`, `absent`. Default value is `present`.
 - **force**: Should the registration be forced. Use this option with caution, setting it true will cause the system to be unregistered before running 'subscription-manager register'. Default value `false`.
 - **hardware**: Whether or not the hardware information should be probed. Default value is `true`.
-- **pool**: A specific license pool to attach the system to
+- **pool**: A specific license pool to attach the system to. Can include a default view using the formant pool-name/view-name.
 - **environment**: which environment to join at registration time
 - **server_insecure**: If HTTP is used or HTTPS with an untrusted certificate
 - **server_prefix**: The subscription path.  Usually /subscription for RHN and /rhsm for a Katello installation.
 - **rhsm_baseurl**: The Content base URL in case the registration server has no content. An example would be https://cdn.redhat.com or https://katello.example.com/pulp/repos
 - **rhsm_cacert**: Path to a CA certificate for HTTPS connections to the server
-- **autosubscribe**: Enable automatic subscription to repositories based on default Pool settings.
+- **autosubscribe**: Enable automatic subscription to repositories based on default Pool settings. Must be false when using an activation key.
 
 ### rhsm_register Examples
 
