@@ -1,6 +1,6 @@
 {
   "name": "puppet-subscription_manager",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "author": "James Laska <jlaska@redhat.com>",
   "summary": "This module provides Custom Providers for RedHat Network Registering.",
   "license": "Apache License, Version 2.0",

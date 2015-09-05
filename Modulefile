@@ -1,5 +1,5 @@
 name          'puppet-subscription_manager'
-version       '0.3.2'
+version       '0.4.0'
 source        'https://github.com/jlaska/puppet-subscription_manager'
 author        'James Laska <jlaska@redhat.com>'
 license       'Apache License, Version 2.0'
