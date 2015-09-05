@@ -92,21 +92,21 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
       begin
         subscription_manager(['attach',
           "--servicelevel=#{@resource[:servicelevel]}", '--auto'])
-        rescue Exception => e
-          Puppet.debug("Auto-attach did not succeed: #{e}")
-        end
+      rescue Exception => e
+        Puppet.debug("Auto-attach did not succeed: #{e}")
+      end
     end
   end
 
   def register
     if identity == nil or  @resource[:force] == true
       Puppet.debug("This server will be registered")
-      cmd = build_register_parameters
-      begin
-        subscription_manager(*cmd)
-      rescue Exception => e
-        Puppet.debug("Either registration failed or this is a re-registation: #{e}")
-      end
+      # Command will fail with various return codes on re-registration
+      # RETCODE 1 for new registrations to new servers with an old registration
+      # RETCODE 2 for re-registrations to the same server after unregister
+      cmd = [self.class.command(:subscription_manager),
+        build_register_parameters.join(' ')]
+      execute(cmd, { :failonfail => false, :combine => true})
     else
       self.fail("Require force => true to register already registered server")
     end
