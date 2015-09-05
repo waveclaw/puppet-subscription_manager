@@ -68,14 +68,36 @@ public
 
   def exists?
     Puppet.debug("Verifying if the server is already registered")
-    if certified and identity
+    if certified? and identity
       return true
     else
       return false
     end
   end
 
+  # Override the name to pull from server_hostname
+  # @return [String] the service hostname from server_hostname
+  # @see #server_hostname?
+  # @api public
+  def name?
+    server_hostname?
+  end
+
+  # Override the server_hostname field to pull from the on-disk certificates
+  # @return [String] the service hostname to which the server is registered
+  # @see #name?
+  # @api public
+  def server_hostname?
+    name = ca_hostname
+    if name
+      name
+    else
+      @resource[:server_hostname]
+    end
+  end
+
   # No self.instances?  Have to manually make all parameters
+  # self.instances, self.prefech -> replace all this with mk_resource_methods
   def provider=(value)
     @resource[:provider]  = value
   end
@@ -85,20 +107,6 @@ public
   def name=(value)
     @resource[:name] = value
     @resource[:server_hostname] = value
-  end
-  def name?
-    server_hostname?
-  end
-  def server_hostname=(value)
-    @resource[:server_hostname] = value
-  end
-  def server_hostname?
-    name = ca_certified
-    if name
-      name
-    else
-      @resource[:server_hostname]
-    end
   end
   def server_insecure=(value)
     @resource[:server_insecure] = value
@@ -193,6 +201,9 @@ public
 
   private
 
+  # Build a config option string
+  # @return [Array(String)] the options for a config command
+  # @api private
   def build_config_parameters
     params = []
     params << "config"
@@ -205,6 +216,9 @@ public
     return params
   end
 
+  # Build a registration option string
+  # @return [Array(String)] the options for a registration command
+  # @api private
   def build_register_parameters
     params = []
     if @resource[:username].nil? and @resource[:activationkeys].nil?
@@ -227,7 +241,10 @@ public
     return params
   end
 
-  def certified
+  # Check for post-registration success certificates
+  # @return [boolean] do we have certificates from a registration?
+  # @api private
+  def certified?
     if File.exists?('/etc/pki/consumer/cert.pem') or
       File.exists?('/etc/pki/consumer/key.pem')
         true
@@ -236,9 +253,13 @@ public
     end
   end
 
-  # this leads to the possiblity that is provider could use
-  # self.instances since name is actually a propety-like pseudo-parameter
-  def ca_certified
+  # What host have we registered to?
+  # @return [String] the hostname of the Katello or Satellite service
+  # or an nil if we failed to parse
+  # @api private
+  # @comment This function implies the possiblity that is provider could use
+  #  self.instances since name is actually a propety-like pseudo-parameter
+  def ca_hostname
     cafile = '/etc/rhsm/ca/katello-server-ca.pem'
     ca = nil
     if File.exists?(cafile)
@@ -255,6 +276,10 @@ public
     ca
   end
 
+  # What is our identity string?
+  # @return [String] the identity set by the Katello or Satellite service
+  #  or an nil if we failed to parse
+  # @api private
   def identity
     Facter::Util::Rhsm_identity.rhsm_identity
   end

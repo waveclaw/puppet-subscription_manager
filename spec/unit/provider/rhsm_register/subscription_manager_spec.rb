@@ -49,7 +49,10 @@ describe  provider_class, 'rhsm_register provider' do
 
   before :each do
     allow(provider.class).to receive(:suitable?) { true }
-    allow(Puppet::Util).to receive(:which).with("subscription-manager") { "subscription-manager" }
+    allow(Puppet::Util).to receive(:which).with("subscription-manager") {
+      "subscription-manager" }
+      allow(provider.class).to receive(:command).with(:subscription_manager) {
+        "subscription-manager" }
   end
 
   after :each do
@@ -63,8 +66,7 @@ describe  provider_class, 'rhsm_register provider' do
     expect(provider).to_not eq(nil)
   end
 
-  [ :build_config_parameters, :build_register_parameters, :identity,
-    :config, :register, :unregister, :create, :destroy, :exists?
+  [ :config, :register, :unregister, :create, :destroy, :exists?
   ].each { |action|
     it "should respond to #{action}" do
       expect(provider).to respond_to(action)
@@ -105,8 +107,9 @@ describe  provider_class, 'rhsm_register provider' do
       expect(provider).to receive(:identity) { fake_id }
       expect(provider).to receive(:subscription_manager).with(
       'config', '--server.hostname', title)
-      expect(provider).to receive(:subscription_manager).with(
-      'register', '--activationkey', fake_key, '--force', '--org', 'foo')
+      expect(provider).to receive(:execute).with(["subscription-manager",
+        "register --activationkey #{fake_key} --force --org foo"],
+        {:failonfail=>false, :combine=>true})
       expect(provider).to receive(:subscription_manager).with(
       ['attach', '--servicelevel=STANDARD', '--auto'])
       res = Puppet::Type.type(:rhsm_register).new(
