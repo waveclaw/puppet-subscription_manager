@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 require 'puppet'
-require 'puppet/type/rhsm_register'
 require 'openssl'
+require 'puppet/type/rhsm_register'
 require 'facter/rhsm_identity'
 
 Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
@@ -15,84 +15,21 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
 
   commands :subscription_manager => "subscription-manager"
 
-  def build_config_parameters
-    params = []
-    params << "config"
-    params << "--server.hostname" << @resource[:server_hostname] if ! @resource[:server_hostname].nil?
-    params << "--server.prefix" << @resource[:server_prefix] if ! @resource[:server_prefix].nil?
-    params << ["--server.insecure", "1"] if @resource[:server_insecure]
-    params << "--rhsm.repo_ca_cert" << @resource[:rhsm_cacert] if ! @resource[:rhsm_cacert].nil?
-    params << "--rhsm.baseurl" <<  @resource[:rhsm_baseurl] if ! @resource[:rhsm_baseurl].nil?
-
-    return params
-  end
-
-  def build_register_parameters
-    params = []
-    if @resource[:username].nil? and @resource[:activationkeys].nil?
-        self.fail("Either an activation key or username/password is required to register")
-    end
-
-    if @resource[:org].nil?
-        self.fail("The 'org' paramater is required to register the system")
-    end
-
-    params << "register"
-    params << "--username" << @resource[:username] if ! @resource[:username].nil?
-    params << "--password" << @resource[:password] if ! @resource[:password].nil?
-    params << "--activationkey" <<  @resource[:activationkeys] if ! @resource[:activationkeys].nil?
-    params << "--force" if @resource[:force]
-    params << "--autosubscribe" if @resource[:autosubscribe] and @resource[:activationkeys].nil?
-    params << "--environment" << @resource[:environment] if ! @resource[:environment].nil?
-    params << "--org" << @resource[:org]
-
-    return params
-  end
-
-  def identity
-    Facter::Util::Rhsm_identity.rhsm_identity
-  end
-
-  def certified
-    if File.exists?('/etc/pki/consumer/cert.pem') or
-      File.exists?('/etc/pki/consumer/key.pem')
-        true
-    else
-        false
-    end
-  end
-
-  # this leads to the possiblity that is provider could use
-  # self.instances since name is actually a propety-like pseudo-parameter
-  def ca_certified
-    cafile = '/etc/rhsm/ca/katello-server-ca.pem'
-    ca = nil
-    if File.exists?(cafile)
-      begin
-        cert = OpenSSL::X509::Certificate.new(File.open(cafile).read)
-        if cert.subject.to_s =~ /.+CN=(.+)/
-          ca = $1
-        end
-      rescue Exception => e
-        Puppet.debug("Unable to guess server name with available certs: #{e}")
-        ca
-      end
-    end
-    ca
-  end
+public
 
   def config
-    Puppet.debug("This server will be configered for rhsm")
+    Puppet.debug("This server will be configured for rhsm")
     cmd = build_config_parameters
     subscription_manager(*cmd)
   end
 
   def attach
     if @resource[:autosubscribe] and ! @resource[:servicelevel].nil?
+      Puppet.debug("This server will be attached to a service level")
       begin
         subscription_manager(['attach',
           "--servicelevel=#{@resource[:servicelevel]}", '--auto'])
-      rescue Exception => e
+      rescue Puppet::ExecutionFailure => e
         Puppet.debug("Auto-attach did not succeed: #{e}")
       end
     end
@@ -253,4 +190,73 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   def org?
     @resource[:org]
   end
+
+  private
+
+  def build_config_parameters
+    params = []
+    params << "config"
+    params << "--server.hostname" << @resource[:server_hostname] if ! @resource[:server_hostname].nil?
+    params << "--server.prefix" << @resource[:server_prefix] if ! @resource[:server_prefix].nil?
+    params << ["--server.insecure", "1"] if @resource[:server_insecure]
+    params << "--rhsm.repo_ca_cert" << @resource[:rhsm_cacert] if ! @resource[:rhsm_cacert].nil?
+    params << "--rhsm.baseurl" <<  @resource[:rhsm_baseurl] if ! @resource[:rhsm_baseurl].nil?
+
+    return params
+  end
+
+  def build_register_parameters
+    params = []
+    if @resource[:username].nil? and @resource[:activationkeys].nil?
+        self.fail("Either an activation key or username/password is required to register")
+    end
+
+    if @resource[:org].nil?
+        self.fail("The 'org' paramater is required to register the system")
+    end
+
+    params << "register"
+    params << "--username" << @resource[:username] if ! @resource[:username].nil?
+    params << "--password" << @resource[:password] if ! @resource[:password].nil?
+    params << "--activationkey" <<  @resource[:activationkeys] if ! @resource[:activationkeys].nil?
+    params << "--force" if @resource[:force]
+    params << "--autosubscribe" if @resource[:autosubscribe] and @resource[:activationkeys].nil?
+    params << "--environment" << @resource[:environment] if ! @resource[:environment].nil?
+    params << "--org" << @resource[:org]
+
+    return params
+  end
+
+  def certified
+    if File.exists?('/etc/pki/consumer/cert.pem') or
+      File.exists?('/etc/pki/consumer/key.pem')
+        true
+    else
+        false
+    end
+  end
+
+  # this leads to the possiblity that is provider could use
+  # self.instances since name is actually a propety-like pseudo-parameter
+  def ca_certified
+    cafile = '/etc/rhsm/ca/katello-server-ca.pem'
+    ca = nil
+    if File.exists?(cafile)
+      begin
+        cert = OpenSSL::X509::Certificate.new(File.open(cafile).read)
+        if cert.subject.to_s =~ /.+CN=(.+)/
+          ca = $1
+        end
+      rescue Exception => e
+        Puppet.debug("Unable to guess server name with available certs: #{e}")
+        ca
+      end
+    end
+    ca
+  end
+
+  def identity
+    Facter::Util::Rhsm_identity.rhsm_identity
+  end
+
 end
