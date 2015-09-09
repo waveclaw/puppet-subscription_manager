@@ -1,4 +1,12 @@
 #!/usr/bin/ruby
+#
+#  Provide a mechanism to subscribe to a katello or Satellite 6
+#  server.
+#
+#   Copyright 2014-2015 Gaël Chamoulaud, James Laska
+#
+#   See LICENSE for licensing.
+#
 require 'puppet'
 require 'openssl'
 require 'puppet/type/rhsm_register'
