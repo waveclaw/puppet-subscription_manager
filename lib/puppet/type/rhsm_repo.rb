@@ -1,3 +1,11 @@
+#!/usr/bin/ruby
+#
+# Control enablement of specific repositories.
+#
+#   Copyright 2014-2015 Gaël Chamoulaud, James Laska
+#
+#   See LICENSE for licensing.
+#
 require 'puppet/property/boolean'
 require 'puppet/type'
 require 'uri'
