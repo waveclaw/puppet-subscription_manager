@@ -7,7 +7,6 @@ class subscription_manager::install {
   package { $::subscription_manager::package_names:
     ensure => present,
   }
-
   if $::subscription_manager::repo {
     if versioncmp($::puppetversion, '3.4.1') > 0 {
       contain $::subscription_manager::repo
@@ -16,5 +15,12 @@ class subscription_manager::install {
     }
     Class[ $::subscription_manager::repo ] ->
       Package[ $::subscription_manager::package_names ]
+  }
+
+  package { "katello-ca-consumer-${::subscription_manager::server_hostname}":
+    ensure   => 'installed',
+    provider => 'rpm',
+    source   =>
+  "http://${::subscription_manager::server_hostname}/pub/katello-ca-consumer-latest.noarch.rpm",
   }
 }

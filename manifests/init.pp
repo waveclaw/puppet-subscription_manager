@@ -16,12 +16,15 @@
 #   Status of the services.  Defaults to running.
 #
 # [*subscription settings*]
-#  Settings per the resource rhsm_register
+#  Settings per the resource rhsm_config
 #    * server_hostname
 #    * server_insecure
 #    * server_prefix
 #    * rhsm_baseurl
 #    * rhsm_cacert
+#
+# [*registration settings*]
+#  Settings per the resource rhsm_register
 #    * username
 #    * password
 #    * activationkeys
@@ -33,7 +36,7 @@
 #    * org
 #
 # [repo]
-#  Options repo class that will be invoked by the install step
+#  Optional repo class that will be invoked by the install step
 #  as a dependency for every package to install.
 #
 #  Use this if the required packages don't exist in a default repo.
@@ -41,7 +44,7 @@
 # === Examples
 #
 #  class { subscription_manager:
-#
+#     activationkey = 'my-rhn-key',
 #  }
 #
 # === Authors
@@ -54,24 +57,21 @@
 # Copyright 2015 Gaël Chamoulaud <gchamoul@redhat.com>
 #
 class subscription_manager (
-  $package_names = $::subscription_manager::defaults::package_names,
-  $service_name = $::subscription_manager::defaults::service_name,
-  $service_status = $::subscription_manager::defaults::service_status,
+  $package_names   = $::subscription_manager::defaults::package_names,
+  $service_name    = $::subscription_manager::defaults::service_name,
+  $service_status  = $::subscription_manager::defaults::service_status,
   $server_hostname = $::subscription_manager::defaults::server_hostname,
-  $server_insecure = $::subscription_manager::defaults::server_insecure,
-  $server_prefix = $::subscription_manager::defaults::server_prefix,
-  $rhsm_baseurl = $::subscription_manager::defaults::rhsm_baseurl,
-  $rhsm_cacert = $::subscription_manager::defaults::rhsm_cacert,
-  $username = $::subscription_manager::defaults::username,
-  $password = $::subscription_manager::defaults::password,
-  $activationkeys = $::subscription_manager::defaults::activationkeys,
-  $pool = $::subscription_manager::defaults::pool,
-  $environment = $::subscription_manager::defaults::environment,
-  $autosubscribe = $::subscription_manager::defaults::autosubscribe,
-  $servicelevel = $::subscription_manager::defaults::servicelevel,
-  $force = $::subscription_manager::defaults::force,
-  $org = $::subscription_manager::defaults::org,
-  $repo = $::subscription_manager::defaults::repo,
+  $username        = $::subscription_manager::defaults::username,
+  $password        = $::subscription_manager::defaults::password,
+  $activationkey   = $::subscription_manager::defaults::activationkey,
+  $pool            = $::subscription_manager::defaults::pool,
+  $environment     = $::subscription_manager::defaults::environment,
+  $autosubscribe   = $::subscription_manager::defaults::autosubscribe,
+  $servicelevel    = $::subscription_manager::defaults::servicelevel,
+  $force           = $::subscription_manager::defaults::force,
+  $org             = $::subscription_manager::defaults::org,
+  $repo            = $::subscription_manager::defaults::repo,
+  $config_hash     = $::subscription_manager::defaults::config_hash,
 ) inherits ::subscription_manager::defaults {
 
   # TODO: validate parameters here

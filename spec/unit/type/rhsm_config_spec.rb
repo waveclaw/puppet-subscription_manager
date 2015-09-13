@@ -39,8 +39,8 @@ describe described_class, 'type' do
   [ :server_proxy_hostname, :server_proxy_user, :server_ssl_verify_depth,
   :server_proxy_password, :server_proxy_port, :server_prefix, :server_port,
   :rhsm_entitlementcertdir,:rhsm_pluginconfdir, :rhsm_baseurl, :rhsm_plugindir,
-  :rhsm_ca_cert_dir, :rhsm_productcertdir, :rhsm_report_package_profile,
-  :rhsm_consumercertdir, :rhsm_repo_ca_cert, :rhsmcertd_certcheckinterval,
+  :rhsm_ca_cert_dir, :rhsm_productcertdir, :rhsm_consumercertdir,
+  :rhsm_repo_ca_cert, :rhsmcertd_certcheckinterval,
   :rhsmcertd_autoattachinterval ].each { |params|
       context "for #{params}" do
         it "should be of type property" do
@@ -83,7 +83,7 @@ describe described_class, 'type' do
     end
   end
 
-  [ :server_insecure, :rhsm_manage_repos,
+  [ :server_insecure, :rhsm_report_package_profile, :rhsm_manage_repos,
     :rhsm_full_refresh_on_yum ].each { |boolean_property|
     context "for #{boolean_property}" do
       it "should be a property" do

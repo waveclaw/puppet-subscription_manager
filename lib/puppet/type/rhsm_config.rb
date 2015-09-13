@@ -107,7 +107,7 @@ end
    newproperty(:server_proxy_hostname) do
     desc "The name of the proxy to connect through to reach the server."
     validate do |value|
-      fail("Require a valid hostname. Received #{value} instead") unless value =~ /^[.a-zA-Z\-\_1-9]+$/
+      fail("Require a valid hostname. Received #{value} instead") unless value.nil? or value == '' or  value =~ /^[.a-zA-Z\-\_1-9]+$/
     end
     munge do |value|
       value.downcase
@@ -124,7 +124,7 @@ end
   newproperty(:server_ssl_verify_depth) do
     desc "How far up an intermediate chain should we check for SSL certificate signatures?"
     validate do |value|
-      fail("Require a small positive number. Was given #{value}.") unless value.to_i and (value.to_i >= 0)
+      fail("Require a small positive number. Was given #{value}.") unless value.nil? or ( value.to_i and (value.to_i >= 0))
     end
   end
 
@@ -135,7 +135,7 @@ end
   newproperty(:server_proxy_port) do
     desc "Proxy port to connect to"
     validate do |value|
-      fail("Require a small positive number. Was given #{value}.") unless value.to_i and (value.to_i >= 0)
+      fail("Require a small positive number. Was given #{value}.") unless value.nil? or ( value.to_i and (value.to_i >= 0))
     end
   end
 
@@ -236,9 +236,6 @@ end
 
   newproperty(:rhsm_repo_ca_cert) do
     desc "Path to Repository CA certificates."
-    validate do |value|
-      fail("Require a valid aboslute UNIX path.  Was given #{value}.") unless value =~ /^\/[\/_\-0-9a-zA-Z.]*$/ or value =~ /.*\.\..*/
-    end
   end
 
   newproperty(:rhsmcertd_certcheckinterval) do

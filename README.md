@@ -1,10 +1,17 @@
-# PUPPET-SUBSCRIPTION_MANAGER
+# Puppet-Subscription_manager
 
-This module provides Custom Puppet Provider to handle registration and consumption of RedHat subscriptions using subscription-manager. This module was derived from [puppet-rhnreg_ks module](https://github.com/strider/puppet-rhnreg_ks) by Gaël Chamoulaud.
+This module provides Custom Puppet Provider to handle registration and
+consumption of RedHat subscriptions using subscription-manager. This module was
+derived from [puppet-rhnreg_ks module](https://github.com/strider/puppet-rhnreg_ks) by Gaël Chamoulaud.
+
+Due to various terminology differences between RHN Satellite, the upstream
+Katello project and the further upstream component projects of Candlepin, The
+Foreman, Puppet and Dogtag that the names of properties and resources may be
+confusing.
 
 ## License
 
-Read Licence file for more information.
+Apache License, Version 2.0. Read the LICENSE file for details of the licensing.
 
 ## Requirements
 * puppet-boolean [on GitHub](https://github.com/adrienthebo/puppet-boolean)
@@ -18,15 +25,18 @@ Read Licence file for more information.
 
 This module provides the standard install-configure-service pattern. It also wraps
 the provided native resources with a convenience class to enable simple or complex
-deployment.
+deployment.  A simple facter fact about the registered identity is provided.
 
 ## Examples
 
-Setup to and register one CentOS 6 client to a Katello server
+Setup to and register one CentOS 6 client to a Katello server using a public
+repositry to obtain the agent.
 
 ```puppet
+# Place this code in a .pp file some where on your Puppet's modulepath such
+# as a file named subscription_manager.pp in a module named repo.  
+# The autoloader will be triggered by the rhsm module to search for this class.
 class repo::subscription_manager {
-# put this in a .pp file somewhere on your Puppet's modulepath
   yumrepo { 'dgoodwin-subscription-manager':
   ensure              => 'present',
   baseurl             => 'https://copr-be.cloud.fedoraproject.org/results/dgoodwin/subscription-manager/epel-6-$basearch/',
@@ -38,7 +48,9 @@ class repo::subscription_manager {
   }
 }
 
-# put this in either a Profile module or classify in your ENC equivalently
+# Place this this in either a raw .pp manifest, a profile-like module or
+# classify the node to require subscription_manager with these parameters in
+# your ENC.
 class { 'subscription_manager':
     repo            => 'repo::subscription_manager',
     server_hostname => 'my_katello.example.com',
@@ -50,7 +62,9 @@ class { 'subscription_manager':
   }
 }
 ```
-Setup a RedHat Enterprise 7 or CentOS 7 agent to RHN.
+
+Register a RedHat Enterprise 7 or CentOS 7 node to the RedHat Network with
+Satellite 6.
 
 ```puppet
 Class { 'subscription_manager':
@@ -61,97 +75,157 @@ Class { 'subscription_manager':
    servicelevel  => 'STANDARD',
 }
 ```
-Not putting the explicit password in the code is a good idea. Using hiera-gpg or hiera-eyaml backends is strongly encouraged for this example.
+Putting the explicit password in the code is a *bad* idea. Using hiera-gpg or
+hiera-eyaml back-ends is strongly encouraged for this example.
 
 ## Types and Providers
 
 The module adds the following new types:
 
 * `rhsm_register` for managing RedHat Subscriptions
+* `rhsm_config`   for configurating RedHat Subscriptions
 * `rhsm_repo`     for managing RedHat Subscriptions to Repositories
-* `rhsm_pool`     for managing RedHat Entitlement Pools (Subscription Collections)
+* `rhsm_override` for managing the Subscrption yumrepo override cache
+* `rhsm_pool`     for managing RedHat Entitlement Pools (Satellite Subscription Collections)
 
-### rhsm_register Parameters
+### rhsm_register
 
-#### Mandatory
+#### Parameters
+
+##### Mandatory
 
 - **server_hostname**: Specify a registration server hostname such as subscription.rhn.redhat.com.
 - **org**: provide an organization to join (defaults to the Default_Organization
 )
+
 On of either the activation key or a username and password combination is needed
 to register.  Both cannot be provided and will cause an error.
+
 - **activationkeys**: The activation key to use when registering the system (cannot be used with username and password)
 - **password**: The password to use when registering the system
 - **username**: The username to use when registering the system
 
 ##### Optional
 
-- - **ensure**: Valid values are `present`, `absent`. Default value is `present`.
-- **force**: Should the registration be forced. Use this option with caution, setting it true will cause the system to be unregistered before running 'subscription-manager register'. Default value `false`.
-- **hardware**: Whether or not the hardware information should be probed. Default value is `true`.
 - **pool**: A specific license pool to attach the system to. Can include a default view using the formant pool-name/view-name.
 - **environment**: which environment to join at registration time
-- **server_insecure**: If HTTP is used or HTTPS with an untrusted certificate
-- **server_prefix**: The subscription path.  Usually /subscription for RHN and /rhsm for a Katello installation.
-- **rhsm_baseurl**: The Content base URL in case the registration server has no content. An example would be https://cdn.redhat.com or https://katello.example.com/pulp/repos
-- **rhsm_cacert**: Path to a CA certificate for HTTPS connections to the server
 - **autosubscribe**: Enable automatic subscription to repositories based on default Pool settings. Must be false when using an activation key unless specifiying a service leve.
 - **servicelevel**: provide automatic attachement to a service level in Satellite. Not applicable to katello installations.
+- **force**: Should the registration be forced. Use this option with caution, setting it true will cause the system to be unregistered before running 'subscription-manager register'. Default value `false`.
 
 ### rhsm_register Examples
 
 Register clients to RedHat Subscription Management using an activation key:
 
-<pre>
+```puppet
 rhsm_register { 'satelite.example.com':
   server_hostname => 'my-satelite.example.com',
   activationkeys => '1-myactivationkey',
 }
-</pre>
+```
 
 Register clients to RedHat Subscription management using a username and password:
 
-<pre>
+```puppet
 rhsm_register { 'subscription.rhn.example.com':
   username        => 'myusername',
   password        => 'mypassword',
   autosubscribe   => true,
   force           => true,
 }
-</pre>
+```
 
 Register clients to RedHat Subscription management and attach to a specific license pool:
 
-<pre>
+```puppet
 rhsm_register { 'subscription.rhn.example.com':
   username  => 'myusername',
   password  => 'mypassword',
   pool		  => 'mypoolid',
 }
-</pre>
+```
 
-### rhsm_repo Parameters
+### rhsm_config
+
+##### rhsm_config options
+
+See the documentation at [RedHat Support](https://access.redhat.com/documentation/en-US/Red_Hat_Subscription_Management/1/html/RHSM/rhsm-config.html#tab.rhsm.conf-parameters) for details on the /etc/rhsm/rhsm.conf file.
+
+The most important settings are given bellow
+
+- **server_hostname**: Same as the title or name of the resource
+- **server_insecure**: If HTTP is used or HTTPS with an untrusted certificate
+- **server_prefix**: The subscription path.  Usually /subscription for RHN and /rhsm for a Katello installation.
+- **rhsm_baseurl**: The Content base URL in case the registration server has no content. An example would be https://cdn.redhat.com or https://katello.example.com/pulp/repos
+
+rhsmcerd is not the same as Katello's goferd.
+
+##### rhsm_config Examples
+
+```puppet
+rhsm_config { 'katello.example.com':
+    server_hostname             => 'katello.example.com',
+    server_insecure             => false,
+    server_port                 => 443,
+    server_prefix               => '/rhsm',
+    server_ssl_verify_depth     => 3,
+    rhsm_baseurl                => 'https://katello.example.com/pulp/repos',
+    rhsm_ca_cert_dir            => '/etc/rhsm/ca/',
+    rhsm_consumercertdir        => '/etc/pki/consumer',
+    rhsm_entitlementcertdir     => '/etc/pki/entitlement',
+    rhsm_full_refresh_on_yum    => true,
+    rhsm_manage_repos           => true,
+    rhsm_pluginconfdir          => '/etc/rhsm/pluginconf_d',
+    rhsm_plugindir              => '/usr/share/rhsm-plugins',
+    rhsm_productcertdir         => '/etc/pki/product',
+    rhsm_repo_ca_cert           => '/etc/rhsm/ca/',
+    rhsm_report_package_profile => 1,
+    rhsmcertd_autoattachinterval => 1440,
+}
+```
+
+### rhsm_repo
+
+#### rhsm_repo Parameters
 
 If absolutely necessary the individual yum repositories can be filtered.
 
 - **ensure**: Valid values are `present`, `absent`. Default value is `present`.
 - **name**: The name of the repository registration to filter.
 
-### rhsm_repo Examples
+#### rhsm_repo Examples
 
-Add a repo:
+Example of a repository from an override
 
-<pre>
-rhsm_repo { 'rhel-7-server-optional-rpms': }
-</pre>
+Example of a repository from the Server
 
-Remove a repo:
-
-<pre>
-rhsm_repo { 'rhel-7-server-optional-rpms':
-  ensure	  => 'absent',
+```puppet
+rhsm_repo { 'rhel-6-server-java-rpms':
+  ensure        => present, # equal to the enabled property
+  url           => 'https://katello.example.com/pulp/repos/abc-corp/production/reg-key-1/content/dist/rhel/server/6/6Server/$basearch/java-repo/os',
+  content_label => 'rhel-6-java-rpms',
+  id            => 'rhel-6-java-rpms',
+  name          => 'RedHat Enterprise Linux 6 Server - Java (RPMs)',
+  repo_type     => channel,
 }
-</pre>
+```
+
+### rhsm_override
+
+## rhsm_override Example
+
+This is returned by the Puppet resource command but it not managable in a
+meaningful way through the type.
+
+```puppet
+rhsm_repo { 'rhel-server6-epel':
+  ensure        => present, # equal to the enabled property
+  updated       => 2015-07-17T14:26:35.064+0000,
+  created       => 2015-07-17T14:26:35.064+0000,
+  content_label => 'rhel-server6-epel'
+  repo_type     => override,
+}
+```
 
 ### rhsm_pool
 
@@ -210,6 +284,10 @@ rhsm_pool { '1a2b3c4d5e6f1234567890abcdef12345':
 ```
 
 ## Installing
+
+For released version the module can be installed with the Puppet module tool from the Puppet Forge.
+
+For pre-release code the GitHub repository can be cloned.
 
 In your puppet modules directory:
 
