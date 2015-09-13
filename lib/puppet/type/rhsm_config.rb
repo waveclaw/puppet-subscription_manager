@@ -1,0 +1,258 @@
+#!/usr/bin/ruby
+#
+#  Describe a client configuration for katello or Satellite 6.
+#
+# based on https://access.redhat.com/documentation/en-US/Red_Hat_Subscription_Management/1/html/RHSM/rhsm-config.html#tab.rhsm.conf-parameters
+#
+#   Copyright 2014-2015 Gaël Chamoulaud, James Laska
+#
+#   See LICENSE for licensing.
+#
+require 'puppet/parameter/boolean'
+require 'puppet/type'
+require 'uri'
+
+Puppet::Type.newtype(:rhsm_config) do
+  @doc = <<-EOD
+ Configure a system to user a Satellite or Spacewalk server.
+
+ Example:
+
+  rhsm_config { 'katello.example.com':
+     insecure               => false,
+     port                   => 443,
+     prefix                 => '/rhsm',
+     ssl_verify_depth       => 3,
+     baseurl                => 'https://katello.example.com/pulp/repos',
+     ca_cert_dir            => '/etc/rhsm/ca/',
+     consumercertdir        => '/etc/pki/consumer',
+     entitlementcertdir     => '/etc/pki/entitlement',
+     full_refresh_on_yum    => true,
+     manage_repos           => true,
+     pluginconfdir          => '/etc/rhsm/pluginconf_d',
+     plugindir              => '/usr/share/rhsm-plugins',
+     productcertdir         => '/etc/pki/product',
+     repo_ca_cert           => '/etc/rhsm/ca/,'
+     report_package_profile => 1,
+  }
+
+EOD
+
+ensurable do
+
+  newvalue(:present) do
+    provider.create
+  end
+
+  newvalue(:absent) do
+    provider.destroy
+  end
+
+  def insync?(is)
+    @should.each { |should|
+      case should
+      when :present
+        return true if is == :present
+      when :absent
+        return true if is == :absent
+      end
+    }
+    return false
+  end
+  defaultto :present
+end
+
+def self.regular_options
+  {:server_proxy_hostname => 'server.proxy_hostname',
+  :server_proxy_user => 'server.proxy_user',
+  :server_hostname => 'server.hostname',
+  :server_ssl_verify_depth => 'server.ssl_verify_depth',
+  :server_proxy_password => 'server.proxy_password',
+  :server_proxy_port => 'server.proxy_port',
+  :server_prefix => 'server.prefix',
+  :server_port => 'server.port',
+  :rhsm_entitlementcertdir => 'rhsm.entitlementcertdir',
+  :rhsm_pluginconfdir => 'rhsm.pluginconfdir',
+  :rhsm_baseurl => 'rhsm.baseurl',
+  :rhsm_plugindir => 'rhsm.plugindir',
+  :rhsm_ca_cert_dir => 'rhsm.ca_cert_dir',
+  :rhsm_productcertdir => 'rhsm.productcertdir',
+  :rhsm_consumercertdir => 'rhsm.consumercertdir',
+  :rhsm_repo_ca_cert => 'rhsm.repo_ca_cert',
+  :rhsmcertd_certcheckinterval => 'rhsmcertd.certcheckinterval',
+  :rhsmcertd_autoattachinterval => 'rhsmcertd.autoattachinterval'}
+end
+
+
+def self.binary_options
+  {:server_insecure => 'server.insecure',
+  :rhsm_manage_repos => 'rhsm.manage_repos',
+  :rhsm_full_refresh_on_yum => 'rhsm.full_refresh_on_yum',
+  :rhsm_report_package_profile => 'rhsm.report_package_profile' }
+end
+
+  newparam(:server_hostname, :namevar => true) do
+    desc "The rhsm server hostname."
+    validate do |value|
+      fail("Require a valid hostname. Received #{value} instead") unless value =~ /^[.a-zA-Z\-\_1-9]+$/
+    end
+    munge do |value|
+      value.downcase
+    end
+    def insync?(is)
+      is.downcase == should.downcase
+    end
+  end
+
+   newproperty(:server_proxy_hostname) do
+    desc "The name of the proxy to connect through to reach the server."
+    validate do |value|
+      fail("Require a valid hostname. Received #{value} instead") unless value =~ /^[.a-zA-Z\-\_1-9]+$/
+    end
+    munge do |value|
+      value.downcase
+    end
+    def insync?(is)
+      is.downcase == should.downcase
+    end
+  end
+
+   newproperty(:server_proxy_user) do
+    desc "Proxy username"
+  end
+
+  newproperty(:server_ssl_verify_depth) do
+    desc "How far up an intermediate chain should we check for SSL certificate signatures?"
+    validate do |value|
+      fail("Require a small positive number. Was given #{value}.") unless value.to_i and (value.to_i >= 0)
+    end
+  end
+
+  newproperty(:server_proxy_password) do
+    desc "Password for the proxy."
+  end
+
+  newproperty(:server_proxy_port) do
+    desc "Proxy port to connect to"
+    validate do |value|
+      fail("Require a small positive number. Was given #{value}.") unless value.to_i and (value.to_i >= 0)
+    end
+  end
+
+  newproperty(:server_prefix) do
+    desc "Path on the server for the Candlepin service."
+    validate do |value|
+      fail("Require a url-valid path.  Was given #{value}.") unless value =~ /^\/[_\-0-9a-zA-Z.\/]+/
+    end
+  end
+
+  newproperty(:server_port) do
+    desc "Port on the server for the RHSM service."
+    validate do |value|
+      fail("Require a small positive number. Was given #{value}.") unless value.to_i and (value.to_i >= 0)
+    end
+  end
+
+  newproperty(:rhsm_entitlementcertdir) do
+    desc "The certificate directory of the RHSM entitlements."
+    validate do |value|
+      fail("Require a valid aboslute UNIX path.  Was given #{value}.") unless value =~ /^\/[\/_\-0-9a-zA-Z.]*$/ or value =~ /.*\.\..*/
+    end
+  end
+
+  newproperty(:rhsm_pluginconfdir) do
+    desc "The RHN Plugin configuration directory."
+    validate do |value|
+      fail("Require a valid aboslute UNIX path.  Was given #{value}.") unless value =~ /^\/[\/_\-0-9a-zA-Z.]*$/ or value =~ /.*\.\..*/
+    end
+  end
+
+  newproperty(:rhsm_baseurl) do
+    desc "The content server.  Usually a full URL of the Pulp service endpoint."
+    validate do |value|
+      fail("Require a proper url to the Pulp instance.  Was given #{value}.") unless !!URI.parse(value)
+    end
+  end
+
+  newproperty(:rhsm_plugindir) do
+    desc "The RHN Plugin directory."
+    validate do |value|
+      fail("Require a valid aboslute UNIX path.  Was given #{value}.") unless value =~ /^\/[\/_\-0-9a-zA-Z.]*$/ or value =~ /.*\.\..*/
+    end
+  end
+
+  newproperty(:rhsm_ca_cert_dir) do
+    desc "The CA certificate directory."
+    validate do |value|
+      fail("Require a valid aboslute UNIX path.  Was given #{value}.") unless value =~ /^\/[\/_\-0-9a-zA-Z.]*$/ or value =~ /.*\.\..*/
+    end
+  end
+
+  newproperty(:rhsm_productcertdir) do
+    desc "The certificate directory of the RHSM Products."
+    validate do |value|
+      fail("Require a valid aboslute UNIX path.  Was given #{value}.") unless value =~ /^\/[\/_\-0-9a-zA-Z.]*$/ or value =~ /.*\.\..*/
+    end
+  end
+
+  newproperty(:rhsm_consumercertdir) do
+    desc "The Consumer certificate directory."
+    validate do |value|
+      fail("Require a valid aboslute UNIX path.  Was given #{value}.") unless value =~ /^\/[\/_\-0-9a-zA-Z.]*$/ or value =~ /.*\.\..*/
+    end
+  end
+
+  newproperty(:rhsm_report_package_profile, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+    desc "Should the package profile be reported?"
+    newvalues(true, false)
+    munge do |value|
+      (value == 1 or value == true ) ? true : false
+    end
+  end
+
+  newproperty(:server_insecure, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+    desc "Either use HTTP or do not verify the SSL ceriticate for HTTPS"
+    newvalues(true, false)
+    munge do |value|
+      (value == 1 or value == true) ? true : false
+    end
+ end
+
+  newproperty(:rhsm_manage_repos, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+    desc "Create and use a redhat.repo yum file?"
+    newvalues(true, false)
+    munge do |value|
+      (value == 1 or value == true) ? true : false
+    end
+  end
+
+  newproperty(:rhsm_full_refresh_on_yum, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+    desc "Force a Full refresh when yum is run?"
+    newvalues(true, false)
+    munge do |value|
+      (value == 1 or value == true ) ? true : false
+    end
+  end
+
+  newproperty(:rhsm_repo_ca_cert) do
+    desc "Path to Repository CA certificates."
+    validate do |value|
+      fail("Require a valid aboslute UNIX path.  Was given #{value}.") unless value =~ /^\/[\/_\-0-9a-zA-Z.]*$/ or value =~ /.*\.\..*/
+    end
+  end
+
+  newproperty(:rhsmcertd_certcheckinterval) do
+    desc "Mintes for rhsmcertd to wait between checking the certificates."
+    validate do |value|
+      fail("Require a small positive number. Was given #{value}.") unless value.to_i and (value.to_i >= 0)
+    end
+  end
+
+  newproperty(:rhsmcertd_autoattachinterval) do
+    desc "How long in minutes should rhsmcertd wait between checking for subscriptions to re-attach? 0 implies the default frequency of daily (1440 minutes)."
+    validate do |value|
+      fail("Require a small positive number. Was given #{value}.") unless value.to_i and (value.to_i >= 0)
+    end
+  end
+
+end
