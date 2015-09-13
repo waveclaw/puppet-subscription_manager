@@ -1,13 +1,20 @@
 # Puppet-Subscription_manager
 
 This module provides Custom Puppet Provider to handle registration and
-consumption of RedHat subscriptions using subscription-manager. This module was
-derived from [puppet-rhnreg_ks module](https://github.com/strider/puppet-rhnreg_ks) by Gaël Chamoulaud.
+consumption of RedHat subscriptions using subscription-manager.
+
+This module is a fork of the [puppet-subscription_manager](https://github.com/jlaska/puppet-subscription_manager)
+module by James Laska that was in turn derived from [puppet-rhnreg_ks module](https://github.com/strider/puppet-rhnreg_ks)
+ by Gaël Chamoulaud.  This fork provides an incompatible dedicated rhsm_config resource and separates
+ repository management from control of the Yum overrides.
 
 Due to various terminology differences between RHN Satellite, the upstream
 Katello project and the further upstream component projects of Candlepin, The
 Foreman, Puppet and Dogtag that the names of properties and resources may be
-confusing.
+confusing.  Katello Pools and Satellite Subscriptions are different things
+presented through the same underlying system resources.  Also Satellite will
+require attachment to such subscriptions whenever paid-for RedHat Network Channels
+are made available through a repository view.
 
 ## License
 
@@ -20,6 +27,8 @@ Apache License, Version 2.0. Read the LICENSE file for details of the licensing.
 * Gaël Chamoulaud (gchamoul at redhat dot com)
 * James Laska (jlaska at redhat dot com)
 * JD Powell (waveclaw at hotmail dot com)
+
+See CONTRIBUTORS for others that have code consumed by this fork.
 
 ## Classes and Defines
 
