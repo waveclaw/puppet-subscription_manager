@@ -1,3 +1,11 @@
+#!/usr/bin/ruby
+#
+# Descript a subscription pool through a subscrition taken from it.
+#
+#   Copyright 2014-2015 Gaël Chamoulaud, James Laska
+#
+#   See LICENSE for licensing.
+#
 require 'puppet/property/boolean'
 require 'puppet/type'
 
@@ -5,10 +13,11 @@ Puppet::Type.newtype(:rhsm_pool) do
   @doc = <<EOD
 An Entitlement Pool from which active subscriptions can be drawn.
 
-This is also commonly called a subscription, RPM Pool or repository but
-properly refers to the synthetic view of repositories created inside the server.
+This is also commonly called a subscription, RPM Pool or (incorrectly) a
+repository but properly refers to the rights to a view of repositories
+created inside the server.
 
-Example:
+Example: an entitlement to access the EPEL repositories on the current server.
 
 rhsm_pool { '1a2b3c4d5e6f1234567890abcdef12345':
   name              => 'Extra Packages for Enterprise Linux',
