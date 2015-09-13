@@ -22,12 +22,12 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
   mk_resource_methods
 
   def create
-    subscription_manager('repos','--enable',@resource[:content_label])
+    subscription_manager('repos','--enable',@resource[:id])
     @resource[:ensure] = :present
   end
 
   def destroy
-    subscription_manager('repos','--disable',@resource[:content_label])
+    subscription_manager('repos','--disable',@resource[:id])
     @resource[:ensure] = :absent
   end
 
@@ -56,6 +56,7 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
       if line =~ /Repo ID:\s+(\S.*)/
         name = $1.chomp
         new_repo[:id] = name
+        new_repo[:name] = name
         new_repo[:provider] = :subscription_manager
         next
       end

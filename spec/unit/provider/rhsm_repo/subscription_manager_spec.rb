@@ -37,6 +37,7 @@ EOT
   properties = {
     :ensure    => :present,
     :id        => title1,
+    :name      => title1,
     :repo_name => 'RedHat Enterprise Linux 5 Server (RPMs)',
     :url       => 'https://katello.example.com/pulp/repos/myorg/production/myview/content/dist/rhel/server/5/5Server/$basearch/rhel/os',
     :provider  => :subscription_manager
@@ -87,34 +88,28 @@ EOT
       }
     end
   end
-=begin
+
   describe 'self.prefetch' do
     it { expect(provider.class).to respond_to(:prefetch) }
     it 'can be called on the provider' do
-      expect(provider.class).to receive(:read_cache) { [ properties ] }
+      expect(provider.class).to receive(:read_channels) { [ properties ] }
       provider.class.prefetch(properties)
     end
   end
-
-  describe "read_cache" do
+  describe "read_channels" do
     it 'should return just two repos for a double input' do
-      expect(provider.class).to receive(:get_cache) { two_data }
-      repos = provider.class.read_cache
+      expect(provider.class).to receive(:subscription_manager).with('repos') { two_data }
+      repos = provider.class.read_channels
       expect(repos.size).to eq(2)
     end
     it 'should return just one repo for a single input' do
-      expect(provider.class).to receive(:get_cache) { one_data }
-      repos = provider.class.read_cache
+      expect(provider.class).to receive(:subscription_manager).with('repos') { one_data }
+      repos = provider.class.read_channels
       expect(repos.size).to eq(1)
     end
     it 'should return nothing for an empty list' do
-      expect(provider.class).to receive(:get_cache) { '[]' }
-      repos = provider.class.read_cache
-      expect(repos.size).to eq(0)
-    end
-    it 'should return nothing for missing repo file' do
-      allow(File).to receive(:exists?) { false }
-      repos = provider.class.read_cache
+      expect(provider.class).to receive(:subscription_manager).with('repos') { '' }
+      repos = provider.class.read_channels
       expect(repos.size).to eq(0)
     end
   end
@@ -131,7 +126,7 @@ EOT
     it 'create should enable a repo that should exist' do
       expect(provider).to receive(:subscription_manager).with(
       'repos', '--enable', title1)
-      res = Puppet::Type.type(:rhsm_repo).new(:name => title1,
+      res = Puppet::Type.type(:rhsm_repo).new(:name => title1, :id => title1,
         :ensure => :present, :provider => provider)
       allow(provider).to receive(:exists?) { true }
       provider.create
@@ -141,11 +136,12 @@ EOT
       'repos', '--disable', title1)
       res = Puppet::Type.type(:rhsm_repo).new(
         :name     => title1,
+        :id       => title1,
         :ensure   => :absent,
         :provider => provider)
       allow(provider).to receive(:exists?) { false }
       provider.destroy
     end
   end
-=end
+
 end
