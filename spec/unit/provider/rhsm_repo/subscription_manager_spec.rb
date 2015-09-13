@@ -9,34 +9,37 @@ provider_class = Puppet::Type.type(:rhsm_repo).provider(:subscription_manager)
 
 describe provider_class, 'rhsm_repo provider' do
 
-  repo_file = '/var/lib/rhsm/cache/content_overrides.json'
+  config_file = '/etc/rhsm/rhsm.conf'
 
   one_data =<<-EOD
-[
-  {
-    "updated": "2015-07-17T14:26:35.064+0000",
-    "contentLabel": "rhel-server6-epel",
-    "name": "enabled",
-    "value": "0",
-    "created": "2015-07-17T14:26:35.064+0000"
-  }
-]
+  Repo ID:   rhel-5-server-rpms
+  Repo Name: RedHat Enterprise Linux 5 Server (RPMs)
+  Repo URL:  https://katello.example.com/pulp/repos/myorg/production/myview/content/dist/rhel/server/5/5Server/$basearch/rhel/os
+  Enabled:   1
 EOD
 
   two_data =<<-EOT
-  [{"updated": "2015-07-17T14:26:35.064+0000", "contentLabel": "rhel-server6-epel", "name": "enabled", "value": "0", "created": "2015-07-17T14:26:35.064+0000"}, {"updated": "2015-07-17T14:26:35.060+0000", "contentLabel": "rhel-server5", "name": "enabled", "value": "1", "created": "2015-07-17T14:26:35.060+0000"}]
+  Repo ID:   rhel-5-server-rpms
+  Repo Name: RedHat Enterprise Linux 5 Server (RPMs)
+  Repo URL:  https://katello.example.com/pulp/repos/myorg/production/myview/content/dist/rhel/server/5/5Server/$basearch/rhel/os
+  Enabled:   0
+
+  Repo ID:   rhel-5-epel-rpms
+  Repo Name: Extra Packages for RedHat Enterprise Linux 5 Server (RPMs)
+  Repo URL:  https://katello.example.com/pulp/repos/myorg/production/myview/content/dist/rhel/server/5/5Server/$basearch/epel/os
+  Enabled:   1
+
 EOT
 
-  title1 = 'rhel-server6-epel'
-  title2 = 'rhel-server5'
+  title1 = 'rhel-5-server-rpms'
+  title2 = 'rhel-5-epel-rpms'
 
   properties = {
-    :ensure        => :present,
-    :updated       => Date.parse('2015-07-17T14:26:35.064+0000'),
-    :created       => Date.parse('2015-07-17T14:26:35.064+0000'),
-    :content_label => 'rhel-server6-epel',
-    :name          => 'rhel-server6-epel',
-    :provider      => :subscription_manager
+    :ensure    => :present,
+    :id        => title1,
+    :repo_name => 'RedHat Enterprise Linux 5 Server (RPMs)',
+    :url       => 'https://katello.example.com/pulp/repos/myorg/production/myview/content/dist/rhel/server/5/5Server/$basearch/rhel/os',
+    :provider  => :subscription_manager
   }
 
   let(:resource) do
@@ -64,21 +67,27 @@ EOT
     it { expect(provider).to respond_to(action) }
   }
 
+    [ :instances, :prefetch ].each { |action|
+      it { expect(provider.class).to respond_to(action) }
+    }
+
+
   describe 'self.instances' do
     it { expect(provider.class).to respond_to(:instances) }
     context 'should parse the expected values for properties' do
       properties.keys.each { |key|
          it "such as the #{key} property" do
-            expect(provider.class).to receive(:read_cache) {[properties]}
+            #expect(provider.class).to receive(:read_channels) {[properties]}
+            expect(provider.class).to receive(:subscription_manager).with('repos') { one_data }
             pools = provider.class.instances
             pool = pools[0]
             expect(pool).to respond_to(key)
-            expect(pool.public_send(key)).to      eq(resource[key])
+            expect(pool.public_send(key)).to eq(resource[key])
         end
       }
     end
   end
-
+=begin
   describe 'self.prefetch' do
     it { expect(provider.class).to respond_to(:prefetch) }
     it 'can be called on the provider' do
@@ -138,4 +147,5 @@ EOT
       provider.destroy
     end
   end
+=end
 end

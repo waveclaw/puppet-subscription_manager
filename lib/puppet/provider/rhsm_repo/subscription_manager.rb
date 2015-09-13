@@ -1,7 +1,14 @@
 #!/usr/bin/ruby
+#
+#  Provide a mechanism to subscribe to a katello or Satellite 6
+#  server.
+#
+#   Copyright 2014-2015 Gaël Chamoulaud, James Laska
+#
+#   See LICENSE for licensing.
+#
 require 'puppet'
 require 'puppet/type/rhsm_repo'
-require 'json'
 
 Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
   @doc = <<-EOS
@@ -9,7 +16,6 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
   EOS
 
   confine :osfamily => :redhat
-  confine :feature => :json
 
   commands :subscription_manager => "subscription-manager"
 
@@ -25,60 +31,58 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
     @resource[:ensure] = :absent
   end
 
-  def self.parse_repo(repo)
-    new_repo = {}
-    ensured = :absent
-    if repo.has_key?('value') and repo['value'] == 1
-      ensured = :present
-    end
-    new_repo = {:ensure => ensured }
-    if repo.include? 'contentLabel' and repo['contentLabel'].nil? == false
-      new_repo[:content_label] = repo['contentLabel']
-      new_repo[:name] = repo['contentLabel']
-    end
-    new_repo[:updated] = Date.parse(repo['updated']) if
-      repo.include? 'updated' and repo['updated'].nil? == false
-    new_repo[:created] = Date.parse(repo['created']) if
-      repo.include? 'created' and repo['created'].nil? == false
-    new_repo[:provider] = :subscription_manager
-    new_repo
-  end
-
-  def self.get_cache
-    repo_file = '/var/lib/rhsm/cache/content_overrides.json'
-    if File.exists?(repo_file)
-      File.open(repo_file).read
-    else
-      '[]'
-    end
-  end
-
-  def self.read_cache
-    repo_instances = []
-      repos = JSON.parse(get_cache)
-      repos.each { |repo|
-        repo_instances.push(parse_repo(repo))
-      }
-    repo_instances
-  end
-
   def self.instances
-    read_cache.collect do |repo|
-      new(repo)
-    end
+    read_channels.collect { |channel| new(channel) }
   end
 
   def self.prefetch(resources)
     repos = instances
-    resources.keys.each do |name|
+    resources.keys.each { |name|
       if provider = repos.find{ |repo| repo.name == name }
         resources[name].provider = provider
       end
-    end
+    }
   end
 
   def exists?
     @property_hash[:ensure] == :present
+  end
+
+  private
+
+  def self.parse_channel_repo(repo)
+    new_repo = {}
+    repo.split("\n").each { |line|
+      if line =~ /Repo ID:\s+(\S.*)/
+        name = $1.chomp
+        new_repo[:id] = name
+        new_repo[:provider] = :subscription_manager
+        next
+      end
+      if line =~ /Repo Name:\s+(\S.*)/
+        new_repo[:repo_name] = $1.chomp
+        next
+      end
+      if line =~ /Repo URL:\s+(\S.*)/
+        new_repo[:url] = $1.chomp
+        next
+      end
+      if line =~ /Enabled:\s+(\d)/
+        value = $1.chomp.to_i
+        new_repo[:ensure] = ( value == 1 ) ? :present : :absent
+        next
+      end
+    }
+    new_repo
+  end
+
+  def self.read_channels
+    repo_instances = []
+    repos = subscription_manager('repos')
+    repos.split("\n\n").each { |repo|
+      repo_instances.push(parse_channel_repo(repo))
+    }
+    repo_instances
   end
 
 end

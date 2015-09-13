@@ -2,17 +2,16 @@
 require 'spec_helper'
 
 #rhsm_repo { 'rhel-server6-epel':
-#  ensure        => present,
-#  enabled       => false,
-#  updated       => 2015-07-17T14:26:35.064+0000,
-#  created       => 2015-07-17T14:26:35.064+0000,
-#  content_label => 'rhel-server6-epel'
+# ensure    => present,
+# id        => 'rhel-server6-epel',
+# repo_name => 'RedHat Enterprise Linux 5 Server (RPMs)',
+# url       => 'https://katello.example.com/pulp/repos/myorg/production/myview/content/dist/rhel/server/5/5Server/$basearch/rhel/os',
 #}
 
 described_class = Puppet::Type.type(:rhsm_repo)
 
 describe described_class, 'type' do
-  [ :ensure, :updated, :created].each { |property|
+  [ :ensure, :repo_name, :url ].each { |property|
     context "for #{property}" do
       it "should be of type property" do
         expect(described_class.attrtype(property)).
@@ -29,8 +28,8 @@ describe described_class, 'type' do
     end
   }
 
-  context "for a ContentLabel" do
-      namevar = :content_label
+  context "for a Registration ID" do
+      namevar = :id
       it "should be a parameter" do
         expect(described_class.attrtype(namevar)).to eq(:param)
       end
@@ -55,26 +54,8 @@ describe described_class, 'type' do
 
   it 'should support enabled' do
     @resource = described_class.new(
-      :content_label => 'foo', :ensure => :absent)
+      :id => 'foo', :ensure => :absent)
     expect(@resource[:ensure]).to eq(:absent)
   end
 
-  [:updated, :created].each { |dates|
-  context "for #{dates}" do
-    it "should have documentation for the property" do
-      expect(described_class.attrclass(dates).doc.strip).not_to be_empty
-    end
-    it 'should accept date updated properties' do
-      testdate = Date.parse('2000/01/01')
-      @resource = described_class.new(
-       :content_label => 'foo', dates => testdate)
-      expect(@resource[dates]).to eq(testdate)
-    end
-    it 'should reject non-date updated properties' do
-      expect{ described_class.new(
-       :content_label => 'foo', dates => 'bad date')}.to raise_error(
-        Puppet::ResourceError, /.*/)
-    end
-  end
-  }
 end
