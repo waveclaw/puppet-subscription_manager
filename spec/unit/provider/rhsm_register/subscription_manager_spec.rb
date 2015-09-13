@@ -8,31 +8,20 @@ provider_class = Puppet::Type.type(:rhsm_register).provider(:subscrption_manager
 
 describe  provider_class, 'rhsm_register provider' do
 
-  # this is a pure 'command' type which has no on-system representation
-  # beyond that the result exists or not.
-  #
-  # The many parameters of registartion disapear down a one-sided
-  # process like light and matter into a blackhole.
+  # this is a 'command' type which has limited on-system representation
   #
   parameters = {
-    :provider        => :subscription_manager,
-    :name            => 'example.com',
-    :server_hostname => 'example.com',
-    :server_insecure => false,
-    :username        => 'registered_user',
-    :password        => 'password123',
-    :server_prefix   => 'https',
-    :rhsm_baseurl    => '/repos',
-    :rhsm_cacert     => '/path/to/ca.pem',
-    :username        => 'jdoe',
-    :password        => 'password123',
-    :activationkeys  => '1-my-activation-key',
-    :pool            => 'my_awesome_subscription',
-    :environment     => 'lab',
-    :autosubscribe   => true,
-    :force           => true,
-    :org             => 'the cool organization',
-    :servicelevel    => 'STANDARD',
+    :provider      => :subscription_manager,
+    :name          => 'example.com',
+    :hostname      => 'example.com',
+    :username      => 'registered_user',
+    :password      => 'password123',
+    :activationkey => '1-my-activation-key',
+    :environment   => 'lab',
+    :autosubscribe => true,
+    :force         => true,
+    :org           => 'the cool organization',
+    :servicelevel  => 'STANDARD',
   }
 
   title = 'example.com'
@@ -66,75 +55,79 @@ describe  provider_class, 'rhsm_register provider' do
     expect(provider).to_not eq(nil)
   end
 
-  [ :config, :register, :unregister, :create, :destroy, :exists?
-  ].each { |action|
+  [  :create, :destroy, :exists?, :flush ].each { |action|
     it "should respond to #{action}" do
       expect(provider).to respond_to(action)
     end
   }
 
+  [  :instances, :prefetch ].each { |action|
+    it "should respond to #{action}" do
+      expect(provider.class).to respond_to(action)
+    end
+  }
+
   context "ensure" do
     it "exists? should return true when the resource is present" do
-      expect(provider).to receive(:identity) { true }
-      allow(File).to receive(:exists?).
-        with("/etc/pki/consumer/cert.pem") { true }
+      #exist_test = Puppet::Type.type(:rhsm_register)
+      #allow(exist_test).to receive(:identity) { true }
+      #allow(exist_test).to receive(:certifed?) { true }
+      #expect(exist_test).to receive(:subscrption_manager).with(['config','--list']) { 'hostname = foo\n' }
       provider.set(:ensure => :present)
-      expect(provider).to be_exists
+      expect(provider.exists?).to be(true)
     end
     it "exists? should return false when the resource is absent" do
-      expect(provider).to receive(:identity) { false }
-      allow(File).to receive(:exists?).
-        with("/etc/pki/consumer/cert.pem") { true }
+      #exist_test = Puppet::Type.type(:rhsm_register)
+      #allow(exist_test).to receive(:identity) { false }
+      #allow(exist_test).to receive(:certifed?) { false }
+      #expect(exist_test).to receive(:subscrption_manager).with(['config','--list']) { '' }
       provider.set(:ensure => :absent)
-      expect(provider).to_not be_exists
+      expect(provider.exists?).to be(false)
     end
     it "create should require force when resource already exists" do
       expect(provider).to receive(:identity) { fake_id }
-      expect(provider).to receive(:subscription_manager).with(
-      'config', '--server.hostname', title)
-      expect(provider).not_to receive(:subscription_manager).with(
-      'register', '--activationkey', fake_key, '--org', 'foo')
       res = Puppet::Type.type(:rhsm_register).new(
         :name => title,
         :ensure => :present,
-        :activationkeys => fake_key,
+        :activationkey => fake_key,
         :org => 'foo',
+        :servicelevel => 'STANDARD',
+        :autosubscribe => true,
         :provider => provider)
-        allow(provider).to receive(:exists?) { true }
-        expect{ provider.create }.to raise_error(Puppet::Error, /.*force.*/)
+      allow(provider).to receive(:exists?) { true }
+      expect{ provider.flush }.to raise_error(Puppet::Error, /.*force.*/)
     end
     it "should re-register when resource already exists" do
       expect(provider).to receive(:identity) { fake_id }
-      expect(provider).to receive(:subscription_manager).with(
-      'config', '--server.hostname', title)
       expect(provider).to receive(:execute).with(["subscription-manager",
-        "register --activationkey #{fake_key} --force --org foo"],
+        "register --force --activationkey #{fake_key} --org foo"],
         {:failonfail=>false, :combine=>true})
       expect(provider).to receive(:subscription_manager).with(
       ['attach', '--servicelevel=STANDARD', '--auto'])
       res = Puppet::Type.type(:rhsm_register).new(
         :name => title,
         :ensure => :present,
-        :activationkeys => fake_key,
+        :activationkey => fake_key,
         :org => 'foo',
         :force => 'true',
         :servicelevel => 'STANDARD',
         :autosubscribe => true,
         :provider => provider)
-        allow(provider).to receive(:exists?) { true }
-        provider.create
+      allow(provider).to receive(:exists?) { true }
+      provider.flush
     end
     it "destroy should unregister when resource shouldn't exist" do
-      expect(provider).to receive(:subscription_manager).with(['clean'])
+      expect(provider).to receive(:subscription_manager).with(['clean']) { true }
       expect(provider).to receive(:subscription_manager).
-        with(['unsubscribe','--all'])
-      expect(provider).to receive(:subscription_manager).with(['unregister'])
+        with(['unsubscribe','--all']) { true }
+      expect(provider).to receive(:subscription_manager).with(['unregister']) { true }
       res = Puppet::Type.type(:rhsm_register).new(
         :name     => title,
         :ensure   => :absent,
         :provider => provider)
         allow(provider).to receive(:exists?) { false }
         provider.destroy
+        provider.flush
     end
   end
 

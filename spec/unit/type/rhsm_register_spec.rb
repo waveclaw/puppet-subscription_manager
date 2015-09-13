@@ -2,18 +2,10 @@
 require 'spec_helper'
 
 #rhsm_register { 'example.com':
-#  server_insecure => false,
 #  username        => 'registered_user',
 #  password        => 'password123',
-#  server_hostname => 'example.com',
-#  server_prefix   => 'https',
-#  rhsm_baseurl    => '/repos',
-#  rhsm_cacert     => '/path/to/ca.pem',
-#  username        => 'doej',
-#  password        => 'password123',
-#  activationkeys  => '1-my-activation-key',
-#  pool            => 'my_awesome_subscription',
-#  environment     => 'lab',
+#  hostname        => 'example.com',
+#  activationkey  => '1-my-activation-key',
 #  autosubscribe   => true,
 #  force           => true,
 #  org             => 'the cool organization',
@@ -27,9 +19,8 @@ describe described_class, 'type' do
     expect(described_class.attrtype(:ensure)).to eq(:property)
   end
 
-  [ :username, :password, :server_prefix, :org,
-    :rhsm_cacert, :username, :password, :activationkeys,
-    :pool, :environment, :servicelevel ].each { |params|
+  [ :username, :password, :org, :activationkey, :environment,
+    :pool, :servicelevel ].each { |params|
       context "for #{params}" do
         it "should be of type paramter" do
           expect(described_class.attrtype(params)).to eq(:param)
@@ -46,8 +37,8 @@ describe described_class, 'type' do
       }
 
 
-  context "for server_hostname" do
-    namevar = :server_hostname
+  context "for hostname" do
+    namevar = :hostname
     it "should be a parameter" do
       expect(described_class.attrtype(namevar)).to eq(:param)
     end
@@ -71,7 +62,7 @@ describe described_class, 'type' do
     end
   end
 
-  [ :server_insecure, :autosubscribe, :force ].each { |boolean_parameter|
+  [ :autosubscribe, :force ].each { |boolean_parameter|
     context "for #{boolean_parameter}" do
       it "should be a parameter" do
         expect(described_class.attrtype(boolean_parameter)).to eq(:param)
@@ -86,42 +77,23 @@ describe described_class, 'type' do
       end
       it 'should accept boolean values' do
         @resource = described_class.new(
-         :server_hostname => 'foo', boolean_parameter => true)
+         :hostname => 'foo', boolean_parameter => true)
         expect(@resource[boolean_parameter]).to eq(true)
         @resource = described_class.new(
-         :server_hostname => 'bar', boolean_parameter => false)
+         :hostname => 'bar', boolean_parameter => false)
         expect(@resource[boolean_parameter]).to eq(false)
       end
       it 'should reject non-boolean values' do
         expect{ described_class.new(
-         :server_hostname => 'foo', boolean_parameter => 'bad date')}.to raise_error(
+         :hostname => 'foo', boolean_parameter => 'bad date')}.to raise_error(
           Puppet::ResourceError, /.*/)
       end
     end
   }
 
-  context "for rhsm_basueurl" do
-    it "should have an rhsm_baseurl parameter" do
-      expect(described_class.attrtype(:rhsm_baseurl)).to eq(:param)
-    end
-     it 'should accept url path values' do
-       @resource = described_class.new(
-        :server_hostname => 'foo', :rhsm_baseurl => 'http://foo:123/')
-       expect(@resource[:rhsm_baseurl]).to eq('http://foo:123/')
-       @resource = described_class.new(
-        :server_hostname => 'bar', :rhsm_baseurl => 'https://a.b.c')
-       expect(@resource[:rhsm_baseurl]).to eq('https://a.b.c')
-     end
-     it 'should reject path values' do
-         expect{ described_class.new(
-          :server_hostname => 'foo', :rhsm_baseurl => '$%,,_,..!#^@(((,,,...')}.to raise_error(
-           Puppet::ResourceError, /.*/)
-     end
-  end
-
   it 'should support enabled' do
     @resource = described_class.new(
-      :server_hostname => 'foo', :ensure => :absent)
+      :hostname => 'foo', :ensure => :absent)
     expect(@resource[:ensure]).to eq(:absent)
   end
 end

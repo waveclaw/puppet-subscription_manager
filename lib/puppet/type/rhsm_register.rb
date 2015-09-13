@@ -1,3 +1,12 @@
+#!/usr/bin/ruby
+#
+#  Register or unreister a system to Katello or Satellite 6 servers using
+#  the RedHat Subscription Manager.
+#
+#   Copyright 2014-2015 Gaël Chamoulaud, James Laska
+#
+#   See LICENSE for licensing.
+#
 require 'puppet/parameter/boolean'
 require 'puppet/type'
 require 'uri'
@@ -26,7 +35,6 @@ EOD
     end
 
     def insync?(is)
-
       @should.each do |should|
         case should
         when :present
@@ -40,7 +48,7 @@ EOD
     defaultto :present
   end
 
-  newparam(:server_hostname, :namevar => true) do
+  newparam(:hostname, :namevar => true) do
     desc "The rhsm server hostname."
     validate do |value|
       fail("Require a valid hostname. Received #{value} instead") unless value =~ /^[.a-zA-Z\-\_1-9]+$/
@@ -53,14 +61,10 @@ EOD
     end
   end
 
-  newparam(:server_insecure, :boolean => true, :parent => Puppet::Parameter::Boolean) do
-    desc "Should an insecure https connection be used."
-    defaultto false
-#    munge do |value|
-#       @resource.munge_boolean(value)
-#     end
-  end
-
+  # Note the warning from upstream The Forman project on bug #10208
+  #  When Auto Attach is enabled, registering systems will be attached to all
+  #  associated __custom products__ and __only__ associated RedHat subscriptions
+  #  required to satisfy the system's installed products.
   newparam(:autosubscribe, :boolean => true, :parent => Puppet::Parameter::Boolean) do
     desc "Automatically attach this system to compatible subscriptions."
     defaultto false
@@ -79,21 +83,6 @@ EOD
 #     end
   end
 
-  newparam(:server_prefix) do
-    desc "The prefix used for registration queries sent to the rhsm server"
-  end
-
-  newparam(:rhsm_baseurl) do
-    desc "Specify a CDN baseurl to use"
-    validate do |value|
-      fail("Require a baseurl. Received #{value} instead") unless URI.parse(value)
-    end
-  end
-
-  newparam(:rhsm_cacert) do
-    desc "CA certificate for the repository and the issued client certs"
-  end
-
   newparam(:username) do
     desc "The username to use when registering the system"
   end
@@ -102,7 +91,7 @@ EOD
     desc "The password to use when registering the system"
   end
 
-  newparam(:activationkeys) do
+  newparam(:activationkey) do
     desc "The activation key to use when registering the system (cannot be used with username and password)"
   end
 
@@ -120,7 +109,6 @@ EOD
 
   newparam(:org) do
     desc "The organization the system should be assigned to."
-
     validate do |value|
       if value.empty?
         raise ArgumentError,

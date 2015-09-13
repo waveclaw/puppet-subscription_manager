@@ -25,13 +25,12 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
 
 public
 
-  def config
-    Puppet.debug("This server will be configured for rhsm")
-    cmd = build_config_parameters
-    subscription_manager(*cmd)
-  end
-
-  def attach
+  # Attach to a service level in Satellite.
+  #  To receive package update and access repositories, a host needs to be
+  #  subscribed to a product once registered.  This requires redhat products
+  #  or subscriptions in the system.  If there are only custom ones, e.g. on a
+  #  katello server there is no ability to define or use service levels.
+  def subscription_attach
     if @resource[:autosubscribe] and ! @resource[:servicelevel].nil?
       Puppet.debug("This server will be attached to a service level")
       begin
@@ -43,6 +42,7 @@ public
     end
   end
 
+  # Attempt to (re-)register with a Katello or RHN Satellite 6 system.
   def register
     if identity == nil or  @resource[:force] == true
       Puppet.debug("This server will be registered")
@@ -57,6 +57,7 @@ public
     end
   end
 
+  # Completely remove the registration locally and attempt to notify the server.
   def unregister
     Puppet.debug("This server will be unregistered")
     subscription_manager(['clean'])
@@ -64,164 +65,85 @@ public
     subscription_manager(['unregister'])
   end
 
+  def flush
+    if exists?
+      register
+      subscription_attach
+    else
+      unregister
+    end
+  end
+
+
   def create
-    config
-    register
-    attach
+    @property_hash[:ensure] = :present
   end
 
   def destroy
-    unregister
+    @property_hash[:ensure] = :absent
   end
 
   def exists?
-    Puppet.debug("Verifying if the server is already registered")
-    if certified? and identity
-      return true
-    else
-      return false
-    end
+    @property_hash[:ensure] == :present
   end
 
   # Override the name to pull from server_hostname
   # @return [String] the service hostname from server_hostname
-  # @see #server_hostname?
+  # @see #hostname?
   # @api public
   def name?
-    server_hostname?
+    hostname?
   end
 
   # Override the server_hostname field to pull from the on-disk certificates
   # @return [String] the service hostname to which the server is registered
   # @see #name?
   # @api public
-  def server_hostname?
+  def hostname?
     name = ca_hostname
     if name
       name
     else
-      @resource[:server_hostname]
+      @resource[:hostname]
     end
   end
 
-  # No self.instances?  Have to manually make all parameters
-  # self.instances, self.prefech -> replace all this with mk_resource_methods
-  def provider=(value)
-    @resource[:provider]  = value
+  def self.instances
+    new(get_registration)
   end
-  def provider?(value)
-    @resource[:provider]  = value
+
+  def self.prefetch(resources)
+    res = instances
+    res.keys.each do |name|
+      if provider = res.find{ |my| my.name == name }
+        res[name].provider = provider
+      end
+    end
   end
+
   def name=(value)
     @resource[:name] = value
-    @resource[:server_hostname] = value
+    @resource[:hostname] = value
   end
-  def server_insecure=(value)
-    @resource[:server_insecure] = value
-  end
-  def server_insecure?
-    @resource[:server_insecure]
-  end
-  def username=(value)
-    @resource[:username] = value
-  end
-  def username?
-    @resource[:username]
-  end
-  def password=(value)
-    @resource[:password] = value
-  end
-  def password?
-    @resource[:password]
-  end
-  def server_prefix=(value)
-    @resource[:server_prefix] = value
-  end
-  def server_prefix?
-    @resource[:server_prefix]
-  end
-  def rhsm_baseurl=(value)
-    @resource[:rhsm_baseurl] = value
-  end
-  def rhsm_baseurl?
-    @resource[:rhsm_baseurl]
-  end
-  def rhsm_cacert=(value)
-    @resource[:rhsm_cacert] = value
-  end
-  def rhsm_cacert?
-    @resource[:rhsm_cacert]
-  end
-  def username=(value)
-    @resource[:username] = value
-  end
-  def username?
-    @resource[:username]
-  end
-  def password=(value)
-    @resource[:password] = value
-  end
-  def password?
-    @resource[:password]
-  end
-  def activationkeys=(value)
-    @resource[:activationkeys] = value
-  end
-  def activationkeys?
-    @resource[:activationkeys]
-  end
-  def pool=(value)
-    @resource[:pool] = value
-  end
-  def pool?
-    @resource[:pool]
-  end
-  def servicelevel=(value)
-    @resource[:pool] = value
-  end
-  def servicelevel?
-    @resource[:pool]
-  end
-  def environment=(value)
-    @resource[:environment] = value
-  end
-  def environment?
-    @resource[:environment]
-  end
-  def autosubscribe=(value)
-    @resource[:autosubscribe] = value
-  end
-  def autosubscribe?
-    @resource[:autosubscribe]
-  end
-  def force=(value)
-    @resource[:force] = value
-  end
-  def force?
-    @resource[:force]
-  end
-  def org=(value)
-    @resource[:org] = value
-  end
-  def org?
-    @resource[:org]
-  end
+
+  mk_resource_methods
 
   private
 
-  # Build a config option string
-  # @return [Array(String)] the options for a config command
+  # Get the on disk config
+  # @return [hash] the settings of the configuration and the identity
   # @api private
-  def build_config_parameters
-    params = []
-    params << "config"
-    params << "--server.hostname" << @resource[:server_hostname] if ! @resource[:server_hostname].nil?
-    params << "--server.prefix" << @resource[:server_prefix] if ! @resource[:server_prefix].nil?
-    params << ["--server.insecure", "1"] if @resource[:server_insecure]
-    params << "--rhsm.repo_ca_cert" << @resource[:rhsm_cacert] if ! @resource[:rhsm_cacert].nil?
-    params << "--rhsm.baseurl" <<  @resource[:rhsm_baseurl] if ! @resource[:rhsm_baseurl].nil?
-
-    return params
+  def get_registration
+    reg = {}
+    if certified?
+      reg[:hostname] = config_hostname
+      if ! identity.nil?
+        reg[:ensure] = :present
+      else
+        reg[:ensure] = :absent
+      end
+    end
+    reg
   end
 
   # Build a registration option string
@@ -229,23 +151,24 @@ public
   # @api private
   def build_register_parameters
     params = []
-    if @resource[:username].nil? and @resource[:activationkeys].nil?
-        self.fail("Either an activation key or username/password is required to register")
+    if (@resource[:username].nil? and @resource[:activationkey].nil?) or (!@resource[:username].nil? and !@resource[:activationkey].nil?)
+        self.fail("Either an activation key or username+password is required to register")
     end
-
     if @resource[:org].nil?
         self.fail("The 'org' paramater is required to register the system")
     end
-
     params << "register"
-    params << "--username" << @resource[:username] if ! @resource[:username].nil?
-    params << "--password" << @resource[:password] if ! @resource[:password].nil?
-    params << "--activationkey" <<  @resource[:activationkeys] if ! @resource[:activationkeys].nil?
     params << "--force" if @resource[:force]
-    params << "--autosubscribe" if @resource[:autosubscribe] and @resource[:activationkeys].nil?
-    params << "--environment" << @resource[:environment] if ! @resource[:environment].nil?
+    if !@resource[:username].nil? and !@resource[:username].nil?
+      params << "--username" << @resource[:username]
+      params << "--password" << @resource[:password]
+      params << "--autosubscribe" if @resource[:autosubscribe]
+    else
+      params << "--activationkey" <<  @resource[:activationkey]
+      # no autosubscribe with keys, see attach step instead
+    end
+    params << "--environment" << @resource[:environment] unless @resource[:environment].nil?
     params << "--org" << @resource[:org]
-
     return params
   end
 
@@ -261,12 +184,29 @@ public
     end
   end
 
-  # What host have we registered to?
+  # What host are we configured to register to?
   # @return [String] the hostname of the Katello or Satellite service
+  # or a nil if nothing
+  # @api private
+  def config_hostname
+    host = nil
+    config = subscrption_manager(['config','--list'])
+    config.split("\n").each { |line|
+      if line =~ /hostname = ([a-z0-9.\-_]+)/
+        host = $1.chomp
+      end
+    }
+    if host.nil?
+      # fall back to the CA subject name
+      host = ca_hostname
+    end
+    host
+  end
+
+  # What host have we registered to?  (This is the candlepin certificate.)
+  # @return [String] the real hostname of the Katello or Satellite service
   # or an nil if we failed to parse
   # @api private
-  # @comment This function implies the possiblity that is provider could use
-  #  self.instances since name is actually a propety-like pseudo-parameter
   def ca_hostname
     cafile = '/etc/rhsm/ca/katello-server-ca.pem'
     ca = nil
@@ -284,7 +224,7 @@ public
     ca
   end
 
-  # What is our identity string?
+  # What is our identity string? (Don't use the cached fact!)
   # @return [String] the identity set by the Katello or Satellite service
   #  or an nil if we failed to parse
   # @api private
