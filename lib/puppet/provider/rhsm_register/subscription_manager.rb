@@ -44,7 +44,7 @@ public
 
   # Attempt to (re-)register with a Katello or RHN Satellite 6 system.
   def register
-    if identity == nil or  @resource[:force] == true
+    if self.identity == nil or  @resource[:force] == true
       Puppet.debug("This server will be registered")
       # Command will fail with various return codes on re-registration
       # RETCODE 1 for new registrations to new servers with an old registration
@@ -100,7 +100,7 @@ public
   # @see #name?
   # @api public
   def hostname?
-    name = ca_hostname
+    name = self.ca_hostname
     if name
       name
     else
@@ -133,7 +133,7 @@ public
   # Get the on disk config
   # @return [hash] the settings of the configuration and the identity
   # @api private
-  def get_registration
+  def self.get_registration
     reg = {}
     if certified?
       reg[:hostname] = config_hostname
@@ -175,7 +175,7 @@ public
   # Check for post-registration success certificates
   # @return [boolean] do we have certificates from a registration?
   # @api private
-  def certified?
+  def self.certified?
     if File.exists?('/etc/pki/consumer/cert.pem') or
       File.exists?('/etc/pki/consumer/key.pem')
         true
@@ -188,7 +188,7 @@ public
   # @return [String] the hostname of the Katello or Satellite service
   # or a nil if nothing
   # @api private
-  def config_hostname
+  def self.config_hostname
     host = nil
     config = subscrption_manager(['config','--list'])
     config.split("\n").each { |line|
@@ -207,7 +207,7 @@ public
   # @return [String] the real hostname of the Katello or Satellite service
   # or an nil if we failed to parse
   # @api private
-  def ca_hostname
+  def self.ca_hostname
     cafile = '/etc/rhsm/ca/katello-server-ca.pem'
     ca = nil
     if File.exists?(cafile)
@@ -228,7 +228,7 @@ public
   # @return [String] the identity set by the Katello or Satellite service
   #  or an nil if we failed to parse
   # @api private
-  def identity
+  def self.identity
     Facter::Util::Rhsm_identity.rhsm_identity
   end
 
