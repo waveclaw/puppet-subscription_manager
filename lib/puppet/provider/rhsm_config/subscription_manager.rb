@@ -56,13 +56,13 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   end
 
   def self.prefetch(resources)
-    config = instances
-    resources.keys.each { |name|
-      if provider = config.find{ |conf| conf.name == name }
-        resources[name].provider = provider
+    instances.each do |prov|
+      if resource = resources[prov.name]
+        resource.provider = prov
       end
-    }
+    end
   end
+
 
   mk_resource_methods
 
@@ -126,7 +126,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     def build_config_parameters(config)
       params = []
       params << "config"
-      #FIXME: the code duplication this sections in nausia incuding
+      #FIXME: the code duplication this sections in nausiating
       if config == :remove
         @resource.class.regular_options.keys.each { |key|
           opt = @resource.class.regular_options[key]

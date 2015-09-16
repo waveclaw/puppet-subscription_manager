@@ -109,14 +109,13 @@ public
   end
 
   def self.instances
-    new(get_registration)
+    [ new(get_registration) ]
   end
 
   def self.prefetch(resources)
-    res = instances
-    res.keys.each do |name|
-      if provider = res.find{ |my| my.name == name }
-        res[name].provider = provider
+    instances.each do |prov|
+      if resource = resources[prov.name]
+        resource.provider = prov
       end
     end
   end
