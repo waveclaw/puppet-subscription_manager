@@ -12,16 +12,13 @@ require 'puppet/type/rhsm_config'
 
 Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   @doc = <<-EOS
-    This provider registers a machine with cert-based RedHat Subscription
-    Manager.  If a machine is already registered it does nothing unless the
-    force parameter is set to true.
+    This provider manages a configuration for a clieant with cert-based
+    RedHat Subscription Manager subscription to a Katello or Satellite 6 server.
   EOS
 
   confine :osfamily => :redhat
 
   commands :subscription_manager => "subscription-manager"
-
-  $config = '/etc/rhsm/rhsm.conf'
 
   # (Re-)Write the configuration file for subscription-manager.
   #  This controls the target of registration and paths to features.
@@ -34,7 +31,11 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
       config = :remove
     end
     cmd = build_config_parameters(config)
-    subscription_manager(*cmd)
+    if cmd.nil?
+      Puppet.debug("rhsm.flush given nothing to configure")
+    else
+      subscription_manager(*cmd)
+    end
   end
 
   def create
@@ -49,13 +50,6 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     @property_hash[:ensure] == :present
   end
 
-  # Override the name to pull from server_hostname
-  # @return [String] the service hostname from server_hostname
-  # @see #server_hostname?
-  # @api public
-  def name?
-    server_hostname?
-  end
 
   def self.instances
     [ new(get_configuration) ]
@@ -70,21 +64,10 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     }
   end
 
-  def server_hostname=(value)
-    @resource[:name] = value
-    @resource[:server_hostname] = value
-  end
-
-  def name=(value)
-    @resource[:name] = value
-    @resource[:server_hostname] = value
-  end
-
   mk_resource_methods
 
-
   def self.config?
-     File.exists?($config)
+     File.exists?(@resource[:name])
   end
 
   # Get the on disk config
@@ -96,7 +79,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
       data = subscription_manager(['config','--list'])
       reg = ini_parse(data)
       if reg != {}
-        reg[:name] = reg[:server_hostname] if reg.respond_to? :server_hostname
+        reg[:name] = '/etc/rhsm/rhsm.conf' #Puppet::Type.type(:rhsm_config).$default_filename
         reg[:provider] = :subscription_manager
       end
     end
@@ -147,7 +130,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
       if config == :remove
         @resource.class.regular_options.keys.each { |key|
           opt = @resource.class.regular_options[key]
-          params << "--remove=#{opt}" unless @resource[key].nil? or key == :server_hostname
+          params << "--remove=#{opt}" unless @resource[key].nil? or key == :name
         }
         @resource.class.binary_options.keys.each { |key|
           opt = @resource.class.binary_options[key]
@@ -168,6 +151,11 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
           params << ["--#{opt}", "#{value}"] unless @resource[key].nil?
         }
       end
-      return params
+      if params == ['config']
+        nil
+      else
+        params
+      end
     end
+
 end

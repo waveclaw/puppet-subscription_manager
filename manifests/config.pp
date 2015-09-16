@@ -22,7 +22,7 @@ class subscription_manager::config {
   } else {
     $_baseurl = $::subscription_manager::config_hash['rhsm_baseurl']
   }
-  $_conf_params = { "${::subscription_manager::server_hostname}" =>
+  $_conf_params = { '/etc/rhsm/rhsm.conf' =>
   $::subscription_manager::config_hash, }
   create_resources('rhsm_config', $_conf_params)
 }

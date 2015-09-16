@@ -62,6 +62,9 @@ ensurable do
   defaultto :present
 end
 
+  # This type simulates a file but access it through the OS command
+$default_filename = '/etc/rhsm/rhsm.conf'
+
 def self.regular_options
   {:server_proxy_hostname => 'server.proxy_hostname',
   :server_proxy_user => 'server.proxy_user',
@@ -91,7 +94,15 @@ def self.binary_options
   :rhsm_report_package_profile => 'rhsm.report_package_profile' }
 end
 
-  newparam(:server_hostname, :namevar => true) do
+  newparam(:name, :namevar => true) do
+    desc "The configuration file"
+    defaultto $default_filename
+    validate do |value|
+      fail("Require an absolute path for the filename.  Was given #{value} for name.") unless value == File.absolute_path(value, '/')
+    end
+  end
+
+  newproperty(:server_hostname) do
     desc "The rhsm server hostname."
     validate do |value|
       fail("Require a valid hostname. Received #{value} instead") unless value =~ /^[.a-zA-Z\-\_1-9]+$/

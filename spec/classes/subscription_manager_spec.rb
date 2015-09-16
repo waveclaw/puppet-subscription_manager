@@ -20,7 +20,7 @@ describe 'subscription_manager' do
         it_behaves_like 'a supported operating system'
         it { is_expected.to contain_package('katello-ca-consumer-subscription.rhn.redhat.com') }
         it { is_expected.to contain_rhsm_register('subscription.rhn.redhat.com') }
-        it { is_expected.to contain_rhsm_config('subscription.rhn.redhat.com') }
+        it { is_expected.to contain_rhsm_config('/etc/rhsm/rhsm.conf') }
       end
       describe "subscription_manager class with an activation key and server name on #{osfamily}" do
         let(:params) {{ :activationkey => 'foo-bar', :server_hostname => 'foo' }}
@@ -29,7 +29,7 @@ describe 'subscription_manager' do
         it_behaves_like 'a supported operating system'
         it { is_expected.to contain_package('katello-ca-consumer-foo') }
         it { is_expected.to contain_rhsm_register('foo') }
-        it { is_expected.to contain_rhsm_config('foo') }
+        it { is_expected.to contain_rhsm_config('/etc/rhsm/rhsm.conf') }
       end
 
     end

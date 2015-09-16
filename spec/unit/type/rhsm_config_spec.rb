@@ -36,12 +36,12 @@ describe described_class, 'type' do
     expect(described_class.attrtype(:ensure)).to eq(:property)
   end
 
-  [ :server_proxy_hostname, :server_proxy_user, :server_ssl_verify_depth,
-  :server_proxy_password, :server_proxy_port, :server_prefix, :server_port,
-  :rhsm_entitlementcertdir,:rhsm_pluginconfdir, :rhsm_baseurl, :rhsm_plugindir,
-  :rhsm_ca_cert_dir, :rhsm_productcertdir, :rhsm_consumercertdir,
-  :rhsm_repo_ca_cert, :rhsmcertd_certcheckinterval,
-  :rhsmcertd_autoattachinterval ].each { |params|
+  [ :server_hostname, :server_proxy_hostname, :server_proxy_user,
+    :server_ssl_verify_depth,  :server_proxy_password, :server_proxy_port,
+    :server_prefix, :server_port,  :rhsm_entitlementcertdir,:rhsm_pluginconfdir,
+    :rhsm_baseurl, :rhsm_plugindir,  :rhsm_ca_cert_dir, :rhsm_productcertdir,
+    :rhsm_consumercertdir,  :rhsm_repo_ca_cert, :rhsmcertd_certcheckinterval,
+    :rhsmcertd_autoattachinterval ].each { |params|
       context "for #{params}" do
         it "should be of type property" do
           expect(described_class.attrtype(params)).to eq(:property)
@@ -58,8 +58,8 @@ describe described_class, 'type' do
       }
 
 
-  context "for server_hostname" do
-    namevar = :server_hostname
+  context "for name" do
+    namevar = :name
     it "should be a parameter" do
       expect(described_class.attrtype(namevar)).to eq(:param)
     end
@@ -71,10 +71,10 @@ describe described_class, 'type' do
       expect(described_class.key_attributes).to eq([namevar])
     end
     it "should return a name equal to this parameter" do
-      @resource = described_class.new(
-        namevar => 'foo')
-      expect(@resource[namevar]).to eq('foo')
-      expect(@resource[:name]).to eq('foo')
+      testvalue =  '/foo/bar/y.conf'
+      @resource = described_class.new(namevar => testvalue)
+      expect(@resource[namevar]).to eq(testvalue)
+      expect(@resource[:name]).to eq(testvalue)
     end
     it 'should reject invalid values' do
       expect{ described_class.new(
@@ -99,15 +99,15 @@ describe described_class, 'type' do
       end
       it 'should accept boolean values' do
         @resource = described_class.new(
-         :server_hostname => 'foo', boolean_property => true)
+         :name => '/foo/x.conf', boolean_property => true)
         expect(@resource[boolean_property]).to eq(true)
         @resource = described_class.new(
-         :server_hostname => 'bar', boolean_property => false)
+         :name => '/foo/x.conf', boolean_property => false)
         expect(@resource[boolean_property]).to eq(false)
       end
       it 'should reject non-boolean values' do
         expect{ described_class.new(
-         :server_hostname => 'foo', boolean_property => 'bad date')}.to raise_error(
+         :name => '/foo/x.conf', boolean_property => 'bad date')}.to raise_error(
           Puppet::ResourceError, /.*/)
       end
     end
@@ -119,22 +119,22 @@ describe described_class, 'type' do
     end
      it 'should accept url path values' do
        @resource = described_class.new(
-        :server_hostname => 'foo', :rhsm_baseurl => 'http://foo:123/')
+        :name => '/foo/x.conf', :rhsm_baseurl => 'http://foo:123/')
        expect(@resource[:rhsm_baseurl]).to eq('http://foo:123/')
        @resource = described_class.new(
-        :server_hostname => 'bar', :rhsm_baseurl => 'https://a.b.c')
+        :name => '/foo/x.conf', :rhsm_baseurl => 'https://a.b.c')
        expect(@resource[:rhsm_baseurl]).to eq('https://a.b.c')
      end
      it 'should reject path values' do
          expect{ described_class.new(
-          :server_hostname => 'foo', :rhsm_baseurl => '$%,,_,..!#^@(((,,,...')}.to raise_error(
+          :name => '/foo/x.conf', :rhsm_baseurl => '$%,,_,..!#^@(((,,,...')}.to raise_error(
            Puppet::ResourceError, /.*/)
      end
   end
 
   it 'should support enabled' do
     @resource = described_class.new(
-      :server_hostname => 'foo', :ensure => :absent)
+      :name => '/foo/x.conf', :ensure => :absent)
     expect(@resource[:ensure]).to eq(:absent)
   end
 

@@ -7,10 +7,11 @@ require 'puppet/type/rhsm_register'
 provider_class = Puppet::Type.type(:rhsm_config).provider(:subscrption_manager)
 
 describe  provider_class, 'rhsm_config provider' do
-  title = 'katello.example.com'
+  title = '/etc/rhsm/rhsm.conf' # type.$default_filename
   properties = {
+  :name                        => title,
   :provider                    => :subscription_manager,
-  :server_hostname             => title,
+  :server_hostname             => 'katello.example.com',
   :server_insecure             => false,
   :server_port                 => 443,
   :server_prefix               => '/rhsm',
@@ -127,7 +128,7 @@ EOD
       @res = Puppet::Type.type(:rhsm_config).new(
         :name            => title,
         :ensure          => :present,
-        :server_hostname => title,
+        :server_hostname => 'foo',
         :server_insecure => false,
         :server_port     => 443,
         :provider        => provider)
@@ -138,7 +139,7 @@ EOD
       @res = Puppet::Type.type(:rhsm_config).new(
         :name            => title,
         :ensure          => :absent,
-        :server_hostname => title,
+        :server_hostname => 'foo',
         :server_insecure => false,
         :server_port     => 443,
         :provider        => provider)
@@ -149,7 +150,7 @@ EOD
       @res = Puppet::Type.type(:rhsm_config).new(
         :name            => title,
         :ensure          => :present,
-        :server_hostname => title,
+        :server_hostname => 'foo',
         :server_insecure => false,
         :server_port     => 443,
         :provider        => provider)
@@ -162,7 +163,6 @@ EOD
       @res = Puppet::Type.type(:rhsm_config).new(
       :name            => title,
       :ensure          => :absent,
-      :server_hostname => title,
       :server_insecure => false,
       :server_port     => 443,
       :provider        => provider)
@@ -199,12 +199,12 @@ EOD
     describe 'build_config_parameters' do
       it 'returns nothing for missing parameters' do
         @resource = Puppet::Type.type(:rhsm_config).new({ :provider => provider, :name => title })
-        expect(@resource.provider.build_config_parameters(:apply)).to eq(['config', "--server.hostname", "katello.example.com"])
+        expect(@resource.provider.build_config_parameters(:apply)).to be(nil)
       end
         properties.keys.each { |key|
-          if key == :provider or key == :server_hostname
+          if key == :provider or key == :name
             # provider is irrelevant to the operating system command
-            # server_hostname is always passed in as name of the type
+            # name is always passed in as name of the type
             next
           end
           it "returns the correct options for #{key}" do
@@ -213,16 +213,14 @@ EOD
             opt = @resource.class.binary_options[key]
             value = (properties[key] == true ) ? 1 : 0
             expect(@resource.provider.build_config_parameters(:apply)).to eq([
-              'config', "--server.hostname", "katello.example.com",
-              ["--#{opt}", "#{value}"]
+              'config', ["--#{opt}", "#{value}"]
               ])
             expect(@resource.provider.build_config_parameters(:remove)).to eq([
                 'config', "--remove=#{opt}" ])
           else
             opt = @resource.class.regular_options[key]
             expect(@resource.provider.build_config_parameters(:apply)).to eq([
-              'config', "--server.hostname", "katello.example.com",
-              "--#{opt}", properties[key]
+              'config', "--#{opt}", properties[key]
               ])
             expect(@resource.provider.build_config_parameters(:remove)).to eq([
               'config', "--remove=#{opt}" ])
@@ -238,7 +236,7 @@ EOD
             :rhsm_ca_cert_dir => '/etc/rhsm/ca/'
               })
           expect(@resource.provider.build_config_parameters(:apply)).to eq([
-            'config', "--server.hostname", "katello.example.com",
+            'config',
             "--server.port", 443, "--rhsm.ca_cert_dir", "/etc/rhsm/ca/", ["--server.insecure", "0"]
             ])
           expect(@resource.provider.build_config_parameters(:remove)).to eq([
