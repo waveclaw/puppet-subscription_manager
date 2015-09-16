@@ -60,9 +60,9 @@ public
   # Completely remove the registration locally and attempt to notify the server.
   def unregister
     Puppet.debug("This server will be unregistered")
-    subscription_manager(['clean'])
     subscription_manager(['unsubscribe','--all'])
     subscription_manager(['unregister'])
+    subscription_manager(['clean'])
   end
 
   def flush
