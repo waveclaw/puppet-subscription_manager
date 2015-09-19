@@ -215,10 +215,6 @@ end
 
   newproperty(:rhsm_report_package_profile, :boolean => true, :parent => Puppet::Parameter::Boolean) do
     desc "Should the package profile be reported?"
-    newvalues(true, false)
-    munge do |value|
-      (value == 1 or value == true ) ? true : false
-    end
   end
 
   newproperty(:server_insecure, :boolean => true, :parent => Puppet::Parameter::Boolean) do
