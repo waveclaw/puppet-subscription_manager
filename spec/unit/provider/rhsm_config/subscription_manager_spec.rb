@@ -165,11 +165,11 @@ EOD
     end
     it "destroy should try to remove the config when it shouldn't exist" do
       @res = Puppet::Type.type(:rhsm_config).new(
-      :name            => title,
-      :ensure          => :absent,
-      :server_insecure => false,
-      :server_port     => 443,
-      :provider        => provider)
+      :name => title)
+      @res.provider.set(:ensure => :absent)
+      @res.provider.set(:server_insecure => false)
+      @res.provider.set(:server_port     => 443)
+      @res.provider.set(:provider        => provider)
       expect(@res.provider.class).to receive(:subscription_manager).with(
         "config", "--remove=server.port", "--remove=server.insecure"
       )
@@ -212,7 +212,9 @@ EOD
             next
           end
           it "returns the correct options for #{key}" do
-          @resource = Puppet::Type.type(:rhsm_config).new({ :provider => provider, :name => title, key => properties[key] })
+          @resource = Puppet::Type.type(:rhsm_config).new(
+            { :provider => provider, :name => title })
+          @resource.provider.set(key => properties[key])
           if @resource.class.binary_options.include?(key)
             opt = @resource.class.binary_options[key]
             value = (properties[key] == true ) ? 1 : 0
@@ -232,13 +234,11 @@ EOD
         end
         }
         it "correctly combines several options into a command" do
-          @resource = Puppet::Type.type(:rhsm_config).new({
-            :provider         => provider,
-            :name             => title,
-            :server_insecure  => false,
-            :server_port      => 443,
-            :rhsm_ca_cert_dir => '/etc/rhsm/ca/'
-              })
+          @resource = Puppet::Type.type(:rhsm_config).new(
+            {:provider => provider, :name => title })
+          @resource.provider.set(:server_insecure  => false)
+          @resource.provider.set(:server_port      => 443)
+          @resource.provider.set(:rhsm_ca_cert_dir => '/etc/rhsm/ca/')
           expect(@resource.provider.build_config_parameters(:apply)).to eq([
             'config',
             "--server.port", 443, "--rhsm.ca_cert_dir", "/etc/rhsm/ca/", ["--server.insecure", "0"]
