@@ -35,7 +35,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
         subscription_manager(['attach',
           "--servicelevel=#{@resource[:servicelevel]}", '--auto'])
       rescue Puppet::ExecutionFailure => e
-        Puppet.debug("Auto-attach did not succeed: #{e}")
+        Puppet.debug("Auto-attach returned: #{e}")
       end
     end
   end
@@ -48,9 +48,11 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
       # Command will fail with various return codes on re-registration
       # RETCODE 1 for new registrations to new servers with an old registration
       # RETCODE 2 for re-registrations to the same server after unregister
-      cmd = [self.class.command(:subscription_manager),
-        build_register_parameters.join(' ')]
-      execute(cmd, { :failonfail => false, :combine => true})
+      begin
+        subscription_manager(build_register_parameters)
+      rescue Puppet::ExecutionFailure => e
+        Puppet.debug("Registration returned: #{e}")
+      end
   end
 
   # Completely remove the registration locally and attempt to notify the server.

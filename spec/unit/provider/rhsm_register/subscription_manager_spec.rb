@@ -180,9 +180,8 @@ describe  provider_class, 'rhsm_register provider' do
       expect(provider).to receive(:execute).with(
       ['subscription-manager',['unregister']],
       {:failonfail=>false, :combine=>true}) { true }
-      expect(provider).to receive(:execute).with(["subscription-manager",
-        "register --force --activationkey #{fake_key} --org foo"],
-        {:failonfail=>false, :combine=>true})
+      expect(provider).to receive(:subscription_manager).with(
+        ["register","--force","--activationkey","#{fake_key}","--org","foo"])
       expect(provider).to receive(:subscription_manager).with(
       ['attach', '--servicelevel=STANDARD', '--auto'])
       @res = Puppet::Type.type(:rhsm_register).new(
