@@ -103,7 +103,12 @@ public
   end
 
   def self.instances
-    [ new(get_registration) ]
+    registration = new(get_registration)
+    if registration
+      [ registration ]
+    else
+      [  ]
+    end
   end
 
   def self.prefetch(resources)
