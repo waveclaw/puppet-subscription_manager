@@ -78,7 +78,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     Puppet.debug("Will parse the configuration")
     conf = {}
     data = subscription_manager(['config','--list'])
-    Puppet.debug("Recieved #{data.size} lines of configuration data.")
+    Puppet.debug("Recieved #{data.size} characters of configuration data.")
     unless data.nil?
       conf = ini_parse(data)
       unless conf.nil? or conf == {}
@@ -125,6 +125,8 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
         next
       end
     }
+    output[:provider] = :subscription_manager unless output.nil? or output == {}
+    Puppet.debug("Parsed out #{output.keys.size} lines of data")
     output
   end
 
