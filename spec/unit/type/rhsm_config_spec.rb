@@ -91,7 +91,7 @@ describe described_class, 'type' do
       end
       it "should have boolean class" do
         expect(described_class.attrclass(boolean_property).ancestors).
-          to include(Puppet::Parameter::Boolean)
+          to include(Puppet::Property::Boolean)
       end
       it "should have documentation" do
         expect(described_class.attrclass(boolean_property).doc.strip).
