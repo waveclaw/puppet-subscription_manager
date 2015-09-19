@@ -223,26 +223,14 @@ end
 
   newproperty(:server_insecure, :boolean => true, :parent => Puppet::Parameter::Boolean) do
     desc "Either use HTTP or do not verify the SSL ceriticate for HTTPS"
-    newvalues(true, false)
-    munge do |value|
-      (value == 1 or value == true) ? true : false
-    end
  end
 
   newproperty(:rhsm_manage_repos, :boolean => true, :parent => Puppet::Parameter::Boolean) do
     desc "Create and use a redhat.repo yum file?"
-    newvalues(true, false)
-    munge do |value|
-      (value == 1 or value == true) ? true : false
-    end
   end
 
   newproperty(:rhsm_full_refresh_on_yum, :boolean => true, :parent => Puppet::Parameter::Boolean) do
     desc "Force a Full refresh when yum is run?"
-    newvalues(true, false)
-    munge do |value|
-      (value == 1 or value == true ) ? true : false
-    end
   end
 
   newproperty(:rhsm_repo_ca_cert) do
