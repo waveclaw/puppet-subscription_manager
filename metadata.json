@@ -7,5 +7,10 @@
   "source": "https://github.com/waveclaw/puppet-subscription_manager",
   "project_page": "https://github.com/waveclaw/puppet-subscription_manager",
   "issues_url": "https://github.com/waveclaw/puppet-subscription_manager/issues",
-  "dependencies": [ ]
+  "dependencies": [
+    {
+      "name": "adrien/boolean",
+      "version_requirement": ">= 0.5.0"
+    }
+  ]
 }

@@ -1,6 +1,6 @@
 fixtures:
   repositories:
 #    stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
-#     boolean: https://github.com/adrienthebo/puppet-boolean.git
+     boolean: https://github.com/adrienthebo/puppet-boolean.git
   symlinks:
     subscription_manager: "#{source_dir}"
