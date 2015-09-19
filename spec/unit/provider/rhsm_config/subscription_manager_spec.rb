@@ -108,6 +108,16 @@ EOD
         end
       }
     end
+    it "returns nothing for no config" do
+      expect(provider.class).to receive(:config?) { false }
+      expect(provider.class.instances).to eq([])
+    end
+    it "returns nothing for no data" do
+      expect(provider.class).to receive(:config?) { true }
+      expect(provider.class).to receive(:subscription_manager).with(['config','--list']) { '' }
+      expect(provider.class.instances).to eq([])
+    end
+
   end
 
   describe 'self.prefetch' do

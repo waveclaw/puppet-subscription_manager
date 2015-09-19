@@ -53,10 +53,10 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
 
   def self.instances
     config = get_configuration
-    if config
-      [ new(config) ]
-    else
+    if config.nil? or config == {}
       [ ]
+    else
+      [ new(config) ]
     end
   end
 
