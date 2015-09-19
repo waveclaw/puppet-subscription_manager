@@ -52,7 +52,12 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
 
 
   def self.instances
-    [ new(get_configuration) ]
+    config = get_configuration
+    if config
+      [ new(config) ]
+    else
+      [ ]
+    end
   end
 
   def self.prefetch(resources)
