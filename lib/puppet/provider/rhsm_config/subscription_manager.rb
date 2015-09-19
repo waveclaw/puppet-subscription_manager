@@ -75,15 +75,16 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   # @return [hash] the settings of the configuration and the identity
   # @api private
   def self.get_configuration
-    Puppet.debug("Will parse the configuration")
+    #Puppet.debug("Will parse the configuration")
     conf = {}
     data = subscription_manager(['config','--list'])
-    Puppet.debug("Recieved #{data.size} characters of configuration data.")
+    #Puppet.debug("Recieved #{data.size} characters of configuration data.")
     unless data.nil?
       conf = ini_parse(data)
       unless conf.nil? or conf == {}
         conf[:name] = '/etc/rhsm/rhsm.conf' #Puppet::Type.type(:rhsm_config).$default_filename
         conf[:provider] = :subscription_manager
+        conf[:ensure] = :present
       end
     end
     conf
@@ -128,8 +129,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
         next
       end
     }
-    output[:provider] = :subscription_manager unless output.nil? or output == {}
-    Puppet.debug("Parsed out #{output.size} lines of data")
+    #Puppet.debug("Parsed out #{output.size} lines of data")
     output
   end
 
