@@ -213,24 +213,68 @@ end
     end
   end
 
-  newproperty(:server_insecure, :boolean => true, :parent => Puppet::Property::Boolean) do
+  newproperty(:server_insecure,  :boolean => true) do
     desc "Either use HTTP or do not verify the SSL ceriticate for HTTPS"
     defaultto false
+    newvalues(true, false)
+    munge do |value|
+      case value
+      when /yes/i, /true/i, '1', 1, true, :true, :yes
+        true
+      when /no/i, /false/i, '0', 0, false, :false, :no
+        false
+      else
+        nil
+      end
+    end
  end
 
-  newproperty(:rhsm_manage_repos, :boolean => true, :parent => Puppet::Property::Boolean) do
+  newproperty(:rhsm_manage_repos,  :boolean => true) do
     desc "Create and use a redhat.repo yum file?"
     defaultto true
+    newvalues(true, false)
+    munge do |value|
+      case value
+      when /yes/i, /true/i, '1', 1, true, :true, :yes
+        true
+      when /no/i, /false/i, '0', 0, false, :false, :no
+        false
+      else
+        nil
+      end
+    end
   end
 
-  newproperty(:rhsm_full_refresh_on_yum, :boolean => true, :parent => Puppet::Property::Boolean) do
+  newproperty(:rhsm_full_refresh_on_yum, :boolean => true) do
     desc "Force a Full refresh when yum is run?"
     defaultto false
+    newvalues(true, false)
+    munge do |value|
+      case value
+      when /yes/i, /true/i, '1', 1, true, :true, :yes
+        true
+      when /no/i, /false/i, '0', 0, false, :false, :no
+        false
+      else
+        nil
+      end
+    end
   end
 
-  newproperty(:rhsm_report_package_profile, :boolean => true, :parent => Puppet::Property::Boolean) do
+  newproperty(:rhsm_report_package_profile,  :boolean => true) do
     desc "Should the package profile be reported?"
     defaultto true
+    newvalues(true, false)
+    munge do |value|
+      case value
+      when /yes/i, /true/i, '1', 1, true, :true, :yes
+        true
+      when /no/i, /false/i, '0', 0, false, :false, :no
+        false
+      else
+        nil
+      end
+    end
   end
 
   newproperty(:rhsm_repo_ca_cert) do

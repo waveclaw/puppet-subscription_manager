@@ -88,11 +88,13 @@ describe described_class, 'type' do
     context "for #{boolean_property}" do
       it "should be a property" do
         expect(described_class.attrtype(boolean_property)).to eq(:property)
-      end
-      it "should have boolean class" do
         expect(described_class.attrclass(boolean_property).ancestors).
-          to include(Puppet::Property::Boolean)
+          to include(Puppet::Property)
       end
+#      it "should have boolean class" do
+#        expect(described_class.attrclass(boolean_property).ancestors).
+#          to include(Puppet::Property::Boolean)
+#      end
       it "should have documentation" do
         expect(described_class.attrclass(boolean_property).doc.strip).
           not_to be_empty
