@@ -107,13 +107,11 @@ public
   end
 
   def self.prefetch(resources)
-    res = instances
-    return if resources.nil? or res.nil?
-    res.each do |prov|
+    instances.each { |prov|
       if resource = resources[prov.name]
         resource.provider = prov
       end
-    end
+    }
   end
 
   mk_resource_methods
@@ -124,6 +122,7 @@ public
   # @return [hash] the settings of the configuration and the identity
   # @api private
   def self.get_registration
+    Puppet.debug("Getting the registration settings as known to the system")
     reg = {}
     reg[:name] = config_hostname
     reg[:name] = ca_name if reg[:name].nil? and certified?

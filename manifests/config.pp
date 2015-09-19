@@ -17,12 +17,11 @@ class subscription_manager::config {
   $_reg_params = { "${::subscription_manager::server_hostname}" => $_settings, }
   create_resources('rhsm_register', $_reg_params)
 
-  if $::subscription_manager::config_hash['rhsm_baseurl'] == undef {
-    $_baseurl = "https://${::subscription_manager::server_hostname}/pulp/repos"
-  } else {
-    $_baseurl = $::subscription_manager::config_hash['rhsm_baseurl']
-  }
   $_conf_params = { '/etc/rhsm/rhsm.conf' =>
-  $::subscription_manager::config_hash, }
+    $::subscription_manager::config_hash, }
+#  if $::subscription_manager::config_hash['rhsm_baseurl'] == undef {
+#    $_conf_params['/etc/rhsm/rhsm.conf']['rhsm_baseurl'] =
+#      "https://${::subscription_manager::server_hostname}/pulp/repos"
+#  }
   create_resources('rhsm_config', $_conf_params)
 }
