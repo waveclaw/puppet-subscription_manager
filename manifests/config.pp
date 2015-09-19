@@ -4,7 +4,7 @@
 #
 class subscription_manager::config {
   $_settings = {
-    'activationkey'  => $::subscription_manager::activationkey,
+    'activationkey'   => $::subscription_manager::activationkey,
     'username'        => $::subscription_manager::username,
     'password'        => $::subscription_manager::password,
     'pool'            => $::subscription_manager::pool,
