@@ -23,8 +23,6 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
 
   commands :subscription_manager => "subscription-manager"
 
-public
-
   # Attach to a service level in Satellite.
   #  To receive package update and access repositories, a host needs to be
   #  subscribed to a product once registered.  This requires redhat products
@@ -58,9 +56,12 @@ public
   # Completely remove the registration locally and attempt to notify the server.
   def unregister
     Puppet.debug("This server will be unregistered")
-    subscription_manager(['unsubscribe','--all'])
-    subscription_manager(['unregister'])
-    subscription_manager(['clean'])
+    unsub = [self.class.command(:subscription_manager),['unsubscribe','--all']]
+    unreg = [self.class.command(:subscription_manager),['unregister']]
+    clean = [self.class.command(:subscription_manager),['clean']]
+    execute(unsub, { :failonfail => false, :combine => true})
+    execute(unreg, { :failonfail => false, :combine => true})
+    execute(clean, { :failonfail => false, :combine => true})
   end
 
   # trigger actions related to reistration on update of the properties

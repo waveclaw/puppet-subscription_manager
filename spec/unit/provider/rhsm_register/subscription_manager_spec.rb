@@ -189,10 +189,15 @@ describe  provider_class, 'rhsm_register provider' do
       provider.flush
     end
     it "destroy should unregister when resource shouldn't exist" do
-      expect(provider).to receive(:subscription_manager).with(['clean']) { true }
-      expect(provider).to receive(:subscription_manager).
-        with(['unsubscribe','--all']) { true }
-      expect(provider).to receive(:subscription_manager).with(['unregister']) { true }
+      expect(provider).to receive(:execute).with(
+      ['subscription-manager',['clean']],
+      {:failonfail=>false, :combine=>true}) { true }
+      expect(provider).to receive(:execute).with(
+      ['subscription-manager',['unsubscribe','--all']],
+      {:failonfail=>false, :combine=>true}) { true }
+      expect(provider).to receive(:execute).with(
+      ['subscription-manager',['unregister']],
+      {:failonfail=>false, :combine=>true}) { true }
       res = Puppet::Type.type(:rhsm_register).new(
         :name     => title,
         :ensure   => :absent,
