@@ -213,10 +213,6 @@ end
     end
   end
 
-  newproperty(:rhsm_report_package_profile, :boolean => true, :parent => Puppet::Parameter::Boolean) do
-    desc "Should the package profile be reported?"
-  end
-
   newproperty(:server_insecure, :boolean => true, :parent => Puppet::Parameter::Boolean) do
     desc "Either use HTTP or do not verify the SSL ceriticate for HTTPS"
  end
@@ -228,6 +224,10 @@ end
   newproperty(:rhsm_full_refresh_on_yum, :boolean => true, :parent => Puppet::Parameter::Boolean) do
     desc "Force a Full refresh when yum is run?"
   end
+
+    newproperty(:rhsm_report_package_profile, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+      desc "Should the package profile be reported?"
+    end
 
   newproperty(:rhsm_repo_ca_cert) do
     desc "Path to Repository CA certificates."

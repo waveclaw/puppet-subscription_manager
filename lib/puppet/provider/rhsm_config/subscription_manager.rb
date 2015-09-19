@@ -104,7 +104,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
         next
       end
       # lines can be 'thing = [], thing = value or thing = [value]'
-      if line =~ /\s+([a-z_]+) = (.*)/
+      if line =~ /\s*([a-z_]+) = (.*)/
           title = $1
           raw_value = $2.chomp
           case raw_value
