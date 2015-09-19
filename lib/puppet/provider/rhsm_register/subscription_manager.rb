@@ -103,11 +103,11 @@ public
   end
 
   def self.instances
-    registration = new(get_registration)
-    if registration
-      [ registration ]
-    else
+    registration = get_registration
+    if registration.nil? or registration == {}
       [  ]
+    else
+      [ new(registration) ]
     end
   end
 
@@ -128,17 +128,23 @@ public
   # @api private
   def self.get_registration
     Puppet.debug("Getting the registration settings as known to the system")
-    reg = {}
-    reg[:name] = config_hostname
-    reg[:name] = ca_name if reg[:name].nil? and certified?
-    reg[:name] = @resource.class.default_server if reg[:name].nil?
-    if ! identity.nil?
-      reg[:ensure] = :present
-      reg[:identity] = identity
-    else
-      reg[:ensure] = :absent
+    registration = {}
+    config = config_hostname
+    if config
+      registration[:name] = config
+    elsif certified?
+      registration[:name] = ca_name
     end
-    reg
+    id = identity
+    if id
+      # propertly registered
+      registration[:identity] = id
+      registration[:ensure] = :present
+    elsif ! registration[:name].nil?
+      # registration went bad
+      registration[:ensure] = :absent
+    end
+    registration
   end
 
   # Build a registration option string

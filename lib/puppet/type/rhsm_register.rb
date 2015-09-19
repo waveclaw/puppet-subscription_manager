@@ -24,33 +24,7 @@ Puppet::Type.newtype(:rhsm_register) do
   }
 
 EOD
-  ensurable do
-
-    newvalue(:present) do
-      provider.create
-    end
-
-    newvalue(:absent) do
-      provider.destroy
-    end
-
-    def insync?(is)
-      @should.each do |should|
-        case should
-        when :present
-          return true if is == :present
-        when :absent
-          return true if is == :absent
-        end
-      end
-      return false
-    end
-    defaultto :present
-  end
-
-  def self.default_server
-    'subscription.rhn.redhat.com'
-  end
+  ensurable
 
   newparam(:name, :namevar => true) do
     desc "The rhsm server hostname."
