@@ -121,12 +121,14 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
           else
             value = nil
           end
-          output["#{section}_#{title}".to_sym] = value unless raw_value.nil? or section.nil? or title.nil?
+          unless value.nil? or section.nil? or title.nil?
+            output["#{section}_#{title}".to_sym] = value
+          end
         next
       end
     }
     output[:provider] = :subscription_manager unless output.nil? or output == {}
-    Puppet.debug("Parsed out #{output.keys.size} lines of data")
+    Puppet.debug("Parsed out #{output.size} lines of data")
     output
   end
 
