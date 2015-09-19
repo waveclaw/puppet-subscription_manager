@@ -71,14 +71,14 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
       # no valid registration
         register
         subscription_attach
-      elsif @property_hash[:name]
+      elsif @property_hash[:name] and @property_hash[:name] != @resource[:name]
         # changing servers
         unregister
         register
         subscription_attach
       else
         # trying to re-register
-        if @resource[:force].nil? or @resource[:force] == false
+        if @property_hash[:force].nil? or @property_hash[:force] == false
               self.fail("Require force => true to register already registered server")
         end
         register

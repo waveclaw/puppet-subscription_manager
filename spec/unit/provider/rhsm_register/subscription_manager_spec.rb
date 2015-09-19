@@ -169,14 +169,23 @@ describe  provider_class, 'rhsm_register provider' do
       allow(provider).to receive(:exists?) { true }
       expect{ provider.flush }.to raise_error(Puppet::Error, /.*force.*/)
     end
-    it "should re-register when resource already exists" do
+    it "should re-register when changing servers" do
       expect(provider).to receive(:identity) { fake_id }
+      expect(provider).to receive(:execute).with(
+      ['subscription-manager',['clean']],
+      {:failonfail=>false, :combine=>true}) { true }
+      expect(provider).to receive(:execute).with(
+      ['subscription-manager',['unsubscribe','--all']],
+      {:failonfail=>false, :combine=>true}) { true }
+      expect(provider).to receive(:execute).with(
+      ['subscription-manager',['unregister']],
+      {:failonfail=>false, :combine=>true}) { true }
       expect(provider).to receive(:execute).with(["subscription-manager",
         "register --force --activationkey #{fake_key} --org foo"],
         {:failonfail=>false, :combine=>true})
       expect(provider).to receive(:subscription_manager).with(
       ['attach', '--servicelevel=STANDARD', '--auto'])
-      res = Puppet::Type.type(:rhsm_register).new(
+      @res = Puppet::Type.type(:rhsm_register).new(
         :name => title,
         :ensure => :present,
         :activationkey => fake_key,
@@ -185,6 +194,7 @@ describe  provider_class, 'rhsm_register provider' do
         :servicelevel => 'STANDARD',
         :autosubscribe => true,
         :provider => provider)
+        @res.provider.set(:name => 'bar')
       allow(provider).to receive(:exists?) { true }
       provider.flush
     end
