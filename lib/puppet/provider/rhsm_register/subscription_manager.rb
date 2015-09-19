@@ -179,7 +179,7 @@ public
   # @api private
   def self.config_hostname
     host = nil
-    config = subscrption_manager(['config','--list'])
+    config = subscription_manager(['config','--list'])
     config.split("\n").each { |line|
       if line =~ /hostname = ([a-z0-9.\-_]+)/
         host = $1.chomp
