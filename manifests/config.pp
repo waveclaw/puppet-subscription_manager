@@ -12,7 +12,8 @@ class subscription_manager::config {
     'autosubscribe'   => $::subscription_manager::autosubscribe,
     'force'           => $::subscription_manager::force,
     'org'             => $::subscription_manager::org,
-    'servicelevel'   => $::subscription_manager::servicelevel,
+    'servicelevel'    => $::subscription_manager::servicelevel,
+    'ensure'          => 'present',
   }
   $_reg_params = { "${::subscription_manager::server_hostname}" => $_settings, }
   create_resources('rhsm_register', $_reg_params)
