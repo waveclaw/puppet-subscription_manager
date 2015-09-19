@@ -111,10 +111,15 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
           case raw_value
           when /\[\]/
             value = nil
-          when /\[(?<val>\d+)\]|(?<val>\d+)/
-            value = $~[:val].to_i
-          when /\[(?<val>.+)\]|(?<val>.+)/
-            value = $~[:val]
+          when /\[?(?<dval>\d+)\]?/
+            digit = $~[:dval]
+            if Puppet::Type.type(:rhsm_config).binary_options.has_key? "#{section}_#{title}".to_sym
+              value = (digit == '1') ? true : false
+            else
+              value = digit.to_i
+            end
+          when /\[(?<sval>.+)\]|(?<sval>.+)/
+            value = $~[:sval]
           else
             value = nil
           end

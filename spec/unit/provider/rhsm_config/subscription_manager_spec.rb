@@ -104,8 +104,6 @@ EOD
             expect(pool).to respond_to(key)
             # testing the raw parser output, not Puppetlab's munging support
             testvalue = resource[key]
-            testvalue = 1 if testvalue == true
-            testvalue = 0 if testvalue == false
             expect(pool.public_send(key)).to eq(testvalue)
         end
       }
