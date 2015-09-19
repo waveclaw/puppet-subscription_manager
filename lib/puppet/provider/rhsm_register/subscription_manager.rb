@@ -107,7 +107,9 @@ public
   end
 
   def self.prefetch(resources)
-    instances.each do |prov|
+    res = instances
+    return if resources.nil? or res.nil?
+    res.each do |prov|
       if resource = resources[prov.name]
         resource.provider = prov
       end
