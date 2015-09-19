@@ -77,7 +77,8 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   def self.get_configuration
     Puppet.debug("Will parse the configuration")
     conf = {}
-      data = subscription_manager(['config','--list'])
+    data = subscription_manager(['config','--list'])
+    Puppet.debug("Recieved #{data.size} lines of configuration data.")
     unless data.nil?
       conf = ini_parse(data)
       unless conf.nil? or conf == {}
