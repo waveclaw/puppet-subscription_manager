@@ -121,6 +121,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
           else
             value = nil
           end
+          Puppet.debug("in section #{section} in title #{title} with value #{value}")
           unless value.nil? or section.nil? or title.nil?
             output["#{section}_#{title}".to_sym] = value
           end
