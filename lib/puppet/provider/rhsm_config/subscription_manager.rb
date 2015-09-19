@@ -12,7 +12,7 @@ require 'puppet/type/rhsm_config'
 
 Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   @doc = <<-EOS
-    This provider manages a configuration for a clieant with cert-based
+    This provider manages a configuration for a client with cert-based
     RedHat Subscription Manager subscription to a Katello or Satellite 6 server.
   EOS
 
