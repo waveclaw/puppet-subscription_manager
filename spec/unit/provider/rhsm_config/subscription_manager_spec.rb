@@ -59,6 +59,8 @@ describe  provider_class, 'rhsm_config provider' do
 
  [rhsmcertd]
     autoattachinterval = 1440
+
+[] - Default value in use
 EOD
 
 
@@ -97,7 +99,6 @@ EOD
     context 'should parse the expected values for properties' do
       properties.keys.each { |key|
          it "such as the #{key} property" do
-            expect(provider.class).to receive(:config?) { true }
             expect(provider.class).to receive(:subscription_manager).with(['config','--list']) { raw_data }
             pools = provider.class.instances
             pool = pools[0]
@@ -108,12 +109,7 @@ EOD
         end
       }
     end
-    it "returns nothing for no config" do
-      expect(provider.class).to receive(:config?) { false }
-      expect(provider.class.instances).to eq([])
-    end
     it "returns nothing for no data" do
-      expect(provider.class).to receive(:config?) { true }
       expect(provider.class).to receive(:subscription_manager).with(['config','--list']) { '' }
       expect(provider.class.instances).to eq([])
     end
@@ -184,24 +180,24 @@ EOD
 
 
     describe 'get_configuration' do
-      it 'returns nothing for a missing file' do
-        expect(provider.class).to receive(:config?) { false }
-        expect(provider.class).to_not receive(:subscription_manager)
-        config = provider.class.get_configuration
-        expect(config.size).to eq(0)
-      end
       it 'returns nothing for an empty configuration' do
-        expect(provider.class).to receive(:config?) { true }
         expect(provider.class).to receive(:subscription_manager).with(['config','--list']) { '' }
         config = provider.class.get_configuration
         expect(config.size).to eq(0)
       end
       it 'returns nothing for an garbage' do
-        expect(provider.class).to receive(:config?) { true }
         expect(provider.class).to receive(:subscription_manager).with(['config','--list']) { 'asdlk;j12349567[[]]' }
         config = provider.class.get_configuration
         expect(config.size).to eq(0)
       end
+      it 'returns as expected for example values' do
+        expect(provider.class).to receive(:subscription_manager).with(['config','--list']) { raw_data }
+        config = provider.class.get_configuration
+        expect(config.size).to_not eq(0)
+        expect(config[:name]).to eq('/etc/rhsm/rhsm.conf')
+        expect(config[:provider]).to eq(:subscription_manager)
+      end
+
     end
 
     describe 'build_config_parameters' do

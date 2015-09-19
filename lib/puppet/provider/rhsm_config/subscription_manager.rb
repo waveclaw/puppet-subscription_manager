@@ -61,34 +61,31 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   end
 
   def self.prefetch(resources)
-    instances.each do |prov|
+    instances.each { |prov|
       if resource = resources[prov.name]
         resource.provider = prov
       end
-    end
+    }
   end
 
 
   mk_resource_methods
 
-  def self.config?
-     File.exists?(@resource[:name])
-  end
-
   # Get the on disk config
   # @return [hash] the settings of the configuration and the identity
   # @api private
   def self.get_configuration
-    reg = {}
-    if config?
+    Puppet.debug("Will parse the configuration")
+    conf = {}
       data = subscription_manager(['config','--list'])
-      reg = ini_parse(data)
-      if reg != {}
-        reg[:name] = '/etc/rhsm/rhsm.conf' #Puppet::Type.type(:rhsm_config).$default_filename
-        reg[:provider] = :subscription_manager
+    unless data.nil?
+      conf = ini_parse(data)
+      unless conf.nil? or conf == {}
+        conf[:name] = '/etc/rhsm/rhsm.conf' #Puppet::Type.type(:rhsm_config).$default_filename
+        conf[:provider] = :subscription_manager
       end
     end
-    reg
+    conf
   end
 
   # Primitive init parser for the strange output of subscription-manager
