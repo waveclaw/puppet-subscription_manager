@@ -213,19 +213,19 @@ end
     end
   end
 
-  newproperty(:server_insecure, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+  newproperty(:server_insecure, :boolean => true, :parent => Puppet::Property::Boolean) do
     desc "Either use HTTP or do not verify the SSL ceriticate for HTTPS"
  end
 
-  newproperty(:rhsm_manage_repos, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+  newproperty(:rhsm_manage_repos, :boolean => true, :parent => Puppet::Property::Boolean) do
     desc "Create and use a redhat.repo yum file?"
   end
 
-  newproperty(:rhsm_full_refresh_on_yum, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+  newproperty(:rhsm_full_refresh_on_yum, :boolean => true, :parent => Puppet::Property::Boolean) do
     desc "Force a Full refresh when yum is run?"
   end
 
-    newproperty(:rhsm_report_package_profile, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+    newproperty(:rhsm_report_package_profile, :boolean => true, :parent => Puppet::Property::Boolean) do
       desc "Should the package profile be reported?"
     end
 
