@@ -96,17 +96,18 @@ EOD
 
   describe 'self.instances' do
     it { expect(provider.class).to respond_to(:instances) }
-    context 'should parse the expected values for properties' do
+    context 'for expected values of properties' do
       properties.keys.each { |key|
-         it "such as the #{key} property" do
-            expect(provider.class).to receive(:subscription_manager).with(['config','--list']) { raw_data }
-            pools = provider.class.instances
-            pool = pools[0]
-            expect(pool).to respond_to(key)
-            # testing the raw parser output, not Puppetlab's munging support
-            testvalue = resource[key]
-            expect(pool.public_send(key)).to eq(testvalue)
-        end
+        it "should be able to set the #{key} property" do
+          expect(provider.class).to receive(:get_configuration) {
+              {:name => title, :provider => provider, :ensure => :present} }
+           configs = provider.class.instances
+           config = configs[0]
+           expect(config).to respond_to(key)
+           # testing the raw parser output, not Puppetlab's munging support
+           config.set( key => resource[key] )
+           expect(config.public_send(key)).to eq(resource[key])
+       end
       }
     end
     it "returns nothing for no data" do
@@ -119,9 +120,8 @@ EOD
   describe 'self.prefetch' do
     it { expect(provider.class).to respond_to(:prefetch) }
     it 'can be called on the provider' do
-      props = properties.merge({ :name => title, })
-      expect(provider.class).to receive(:get_configuration) {  props  }
-      expect(provider.class.prefetch(props)).to be_truthy
+      expect(provider.class).to receive(:get_configuration) {  properties  }
+      expect(provider.class.prefetch(properties)).to be_truthy
     end
   end
 
@@ -130,46 +130,35 @@ EOD
     it { expect(provider).to respond_to(:exists?) }
     it 'exists? should return false when the resource is absent' do
       @res = Puppet::Type.type(:rhsm_config).new(
-        :name            => title,
-        :ensure          => :present,
-        :server_hostname => 'foo',
-        :server_insecure => false,
-        :server_port     => 443,
-        :provider        => provider)
+      :name => title, :provider => provider, :ensure => :present)
+      @res.provider.set(:server_insecure => false)
+      @res.provider.set(:server_port     => 443)
       @res.provider.destroy
       expect(@res.provider.exists?).to eq(false)
     end
     it 'exists? should return true when the resource is present' do
-      @res = Puppet::Type.type(:rhsm_config).new(
-        :name            => title,
-        :ensure          => :absent,
-        :server_hostname => 'foo',
-        :server_insecure => false,
-        :server_port     => 443,
-        :provider        => provider)
+      @res = Puppet::Type.type(:rhsm_config).new(:name => title, :provider => provider)
+      @res.provider.set(:ensure          => :absent)
+      @res.provider.set(:server_insecure => false)
+      @res.provider.set(:server_port     => 443)
       @res.provider.set(:ensure => :present) # ensure is funny this way
       expect(@res.provider.exists?).to eq(true)
     end
     it 'create should configure options that should exist' do
-      @res = Puppet::Type.type(:rhsm_config).new(
-        :name            => title,
-        :ensure          => :present,
-        :server_hostname => 'foo',
-        :server_insecure => false,
-        :server_port     => 443,
-        :provider        => provider)
+      @res = Puppet::Type.type(:rhsm_config).new(:name => title, :provider => provider)
+      @res.provider.set(:ensure          => :present)
+      @res.provider.set(:server_insecure => false)
+      @res.provider.set(:server_port     => 443)
       expect(@res.provider).to receive(:build_config_parameters) { ['foo'] }
       expect(@res.provider).to receive(:subscription_manager).with('foo')
       allow(@res.provider).to receive(:exists?) { true }
       @res.provider.flush
     end
     it "destroy should try to remove the config when it shouldn't exist" do
-      @res = Puppet::Type.type(:rhsm_config).new(
-      :name => title)
+      @res = Puppet::Type.type(:rhsm_config).new(:name => title, :provider => provider)
       @res.provider.set(:ensure => :absent)
       @res.provider.set(:server_insecure => false)
       @res.provider.set(:server_port     => 443)
-      @res.provider.set(:provider        => provider)
       expect(@res.provider.class).to receive(:subscription_manager).with(
         "config", "--remove=server.port", "--remove=server.insecure"
       )
@@ -197,7 +186,14 @@ EOD
         expect(config[:name]).to eq('/etc/rhsm/rhsm.conf')
         expect(config[:provider]).to eq(:subscription_manager)
       end
-
+      properties.keys.each { |key|
+         it "should parse the #{key} property" do
+            expect(provider.class).to receive(:subscription_manager).with(['config','--list']) { raw_data }
+            configs = provider.class.instances
+            config = configs[0]
+            expect(config.public_send(key)).to eq(resource[key])
+        end
+      }
     end
 
     describe 'build_config_parameters' do
