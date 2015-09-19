@@ -8,9 +8,9 @@
 #   See LICENSE for licensing.
 #
 require 'puppet'
-require 'openssl'
+require 'facter'
 require 'puppet/type/rhsm_register'
-require 'facter/rhsm_identity'
+
 
 Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   @doc = <<-EOS
@@ -43,8 +43,9 @@ public
   end
 
   # Attempt to (re-)register with a Katello or RHN Satellite 6 system.
+  # This builds the command using a helper method and attempts to
+  # deal with expected non-zero return codes from subscription-manager.
   def register
-    if self.identity == nil or  @resource[:force] == true
       Puppet.debug("This server will be registered")
       # Command will fail with various return codes on re-registration
       # RETCODE 1 for new registrations to new servers with an old registration
@@ -52,9 +53,6 @@ public
       cmd = [self.class.command(:subscription_manager),
         build_register_parameters.join(' ')]
       execute(cmd, { :failonfail => false, :combine => true})
-    else
-      self.fail("Require force => true to register already registered server")
-    end
   end
 
   # Completely remove the registration locally and attempt to notify the server.
@@ -65,11 +63,28 @@ public
     subscription_manager(['clean'])
   end
 
+  # trigger actions related to reistration on update of the properties
   def flush
     if exists?
-      register
-      subscription_attach
+      if self.identity.nil?
+      # no valid registration
+        register
+        subscription_attach
+      elsif @property_hash[:name]
+        # changing servers
+        unregister
+        register
+        subscription_attach
+      else
+        # trying to re-register
+        if @resource[:force].nil? or @resource[:force] == false
+              self.fail("Require force => true to register already registered server")
+        end
+        register
+        subscription_attach
+      end
     else
+      # should unregister
       unregister
     end
   end
@@ -87,27 +102,6 @@ public
     @property_hash[:ensure] == :present
   end
 
-  # Override the name to pull from server_hostname
-  # @return [String] the service hostname from server_hostname
-  # @see #hostname?
-  # @api public
-  def name?
-    hostname?
-  end
-
-  # Override the server_hostname field to pull from the on-disk certificates
-  # @return [String] the service hostname to which the server is registered
-  # @see #name?
-  # @api public
-  def hostname?
-    name = self.ca_hostname
-    if name
-      name
-    else
-      @resource[:hostname]
-    end
-  end
-
   def self.instances
     [ new(get_registration) ]
   end
@@ -120,11 +114,6 @@ public
     end
   end
 
-  def name=(value)
-    @resource[:name] = value
-    @resource[:hostname] = value
-  end
-
   mk_resource_methods
 
   private
@@ -134,13 +123,14 @@ public
   # @api private
   def self.get_registration
     reg = {}
-    if certified?
-      reg[:hostname] = config_hostname
-      if ! identity.nil?
-        reg[:ensure] = :present
-      else
-        reg[:ensure] = :absent
-      end
+    reg[:name] = config_hostname
+    reg[:name] = ca_name if reg[:name].nil? and certified?
+    reg[:name] = @resource.class.default_server if reg[:name].nil?
+    if ! identity.nil?
+      reg[:ensure] = :present
+      reg[:identity] = identity
+    else
+      reg[:ensure] = :absent
     end
     reg
   end
@@ -195,10 +185,6 @@ public
         host = $1.chomp
       end
     }
-    if host.nil?
-      # fall back to the CA subject name
-      host = ca_hostname
-    end
     host
   end
 
@@ -206,29 +192,18 @@ public
   # @return [String] the real hostname of the Katello or Satellite service
   # or an nil if we failed to parse
   # @api private
-  def self.ca_hostname
-    cafile = '/etc/rhsm/ca/katello-server-ca.pem'
-    ca = nil
-    if File.exists?(cafile)
-      begin
-        cert = OpenSSL::X509::Certificate.new(File.open(cafile).read)
-        if cert.subject.to_s =~ /.+CN=(.+)/
-          ca = $1
-        end
-      rescue Exception => e
-        Puppet.debug("Unable to guess server name with available certs: #{e}")
-        ca
-      end
-    end
-    ca
+  def self.ca_name
+    Facter.value(:rhsm_ca_name)
+    #Facter::Util::Rhsm_ca_name.ca_name
   end
 
-  # What is our identity string? (Don't use the cached fact!)
+  # What is our identity string? (Use the cached fact)
   # @return [String] the identity set by the Katello or Satellite service
   #  or an nil if we failed to parse
   # @api private
   def self.identity
-    Facter::Util::Rhsm_identity.rhsm_identity
+    Facter.value(:rhsm_identity)
+    #Facter::Util::Rhsm_identity.rhsm_identity
   end
 
 end

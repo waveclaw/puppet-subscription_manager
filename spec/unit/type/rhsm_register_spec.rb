@@ -37,8 +37,8 @@ describe described_class, 'type' do
       }
 
 
-  context "for hostname" do
-    namevar = :hostname
+  context "for name" do
+    namevar = :name
     it "should be a parameter" do
       expect(described_class.attrtype(namevar)).to eq(:param)
     end
@@ -77,15 +77,15 @@ describe described_class, 'type' do
       end
       it 'should accept boolean values' do
         @resource = described_class.new(
-         :hostname => 'foo', boolean_parameter => true)
+         :name => 'foo', boolean_parameter => true)
         expect(@resource[boolean_parameter]).to eq(true)
         @resource = described_class.new(
-         :hostname => 'bar', boolean_parameter => false)
+         :name => 'bar', boolean_parameter => false)
         expect(@resource[boolean_parameter]).to eq(false)
       end
       it 'should reject non-boolean values' do
         expect{ described_class.new(
-         :hostname => 'foo', boolean_parameter => 'bad date')}.to raise_error(
+         :name => 'foo', boolean_parameter => 'bad date')}.to raise_error(
           Puppet::ResourceError, /.*/)
       end
     end
@@ -93,7 +93,7 @@ describe described_class, 'type' do
 
   it 'should support enabled' do
     @resource = described_class.new(
-      :hostname => 'foo', :ensure => :absent)
+      :name => 'foo', :ensure => :absent)
     expect(@resource[:ensure]).to eq(:absent)
   end
 end

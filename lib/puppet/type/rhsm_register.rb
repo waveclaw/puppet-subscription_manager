@@ -48,7 +48,11 @@ EOD
     defaultto :present
   end
 
-  newparam(:hostname, :namevar => true) do
+  def self.default_server
+    'subscription.rhn.redhat.com'
+  end
+
+  newparam(:name, :namevar => true) do
     desc "The rhsm server hostname."
     validate do |value|
       fail("Require a valid hostname. Received #{value} instead") unless value =~ /^[.a-zA-Z\-\_1-9]+$/
@@ -59,6 +63,10 @@ EOD
     def insync?(is)
       is.downcase == should.downcase
     end
+  end
+
+  newproperty(:identity) do
+    desc "The identity from the sever"
   end
 
   # Note the warning from upstream The Forman project on bug #10208

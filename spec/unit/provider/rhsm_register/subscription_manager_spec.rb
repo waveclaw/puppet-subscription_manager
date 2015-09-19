@@ -13,7 +13,6 @@ describe  provider_class, 'rhsm_register provider' do
   parameters = {
     :provider      => :subscription_manager,
     :name          => 'example.com',
-    :hostname      => 'example.com',
     :username      => 'registered_user',
     :password      => 'password123',
     :activationkey => '1-my-activation-key',

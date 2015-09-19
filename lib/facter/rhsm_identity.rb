@@ -1,4 +1,12 @@
 #!/usr/bin/ruby
+#
+#  Report the name of the client ID.
+#  This will be null if the reigstration is bad.
+#
+#   Copyright 2014-2015 Gaël Chamoulaud, James Laska
+#
+#   See LICENSE for licensing.
+#
 
 module Facter::Util::Rhsm_identity
   @doc=<<EOF
