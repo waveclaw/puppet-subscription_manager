@@ -238,7 +238,7 @@ end
   end
 
   newproperty(:rhsmcertd_certcheckinterval) do
-    desc "Mintes for rhsmcertd to wait between checking the certificates."
+    desc "Minutes for rhsmcertd to wait between checking the certificates."
     validate do |value|
       fail("Require a small positive number. Was given #{value}.") unless value.to_i and (value.to_i >= 0)
     end
