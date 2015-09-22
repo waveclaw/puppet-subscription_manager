@@ -33,7 +33,7 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
 
   def self.instances
     channels = read_channels
-    if channels.nil? or channels == {}
+    if channels.nil? or channels == []
       [ ]
     else
       channels.collect { |channel| new(channel) }
