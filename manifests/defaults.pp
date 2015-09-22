@@ -35,7 +35,7 @@ class subscription_manager::defaults {
       $activationkey = undef
       $pool = undef
       $servicelevel = undef
-      $environment = 'production'
+      $environment = undef # cannot use with an activateion key!
       $autosubscribe = false
       $force = false
       $org = 'Default_Organization'
