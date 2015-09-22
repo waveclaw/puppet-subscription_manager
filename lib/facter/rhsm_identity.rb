@@ -20,7 +20,7 @@ EOF
         sm = Facter::Util::Resolution.exec('/usr/bin/which subscription-manager')
         output = Facter::Util::Resolution.exec("#{sm} identity")
         output.split("\n").each { |line|
-          if line =~ /.* identity(?: is)?: (\h{8}\-\h{4}\-\h{4}\-\h{4}\-\h{12}).*/
+          if line =~ /.* identity(?: is)?: (\S{8}\-\S{4}\-\S{4}\-\S{4}\-\S{12}).*/
             value = $1
           end
         }
