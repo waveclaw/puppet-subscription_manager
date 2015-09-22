@@ -98,7 +98,12 @@ end
     desc "The configuration file"
     defaultto $default_filename
     validate do |value|
-      fail("Require an absolute path for the filename.  Was given #{value} for name.") unless value == File.absolute_path(value, '/')
+      unless value == File.expand_path(value) and
+             value =~ /^\/.*/ and
+             value.length > 1 and
+             !File.directory?(value)
+        fail("Require an absolute path ending in a filename.  Was given #{value} for name.")
+      end
     end
   end
 
