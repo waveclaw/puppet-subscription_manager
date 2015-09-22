@@ -86,7 +86,7 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
     repos = subscription_manager('repos')
     repos.split("\n\n").each { |repo|
       repo_instances.push(parse_channel_repo(repo))
-    }
+    } unless repos.nil? or repos == "\n\n"
     repo_instances
   end
 
