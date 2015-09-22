@@ -32,14 +32,18 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
   end
 
   def self.instances
-    read_channels.collect { |channel| new(channel) }
+    channels = read_channels
+    if channels.nil? or channels == {}
+      [ ]
+    else
+      channels.collect { |channel| new(channel) }
+    end
   end
 
   def self.prefetch(resources)
-    repos = instances
-    resources.keys.each { |name|
-      if provider = repos.find{ |repo| repo.name == name }
-        resources[name].provider = provider
+    instances.each { |prov|
+      if resource = resources[prov.name]
+        resource.provider = prov
       end
     }
   end
