@@ -17,6 +17,14 @@ class subscription_manager::install {
       Package[ $::subscription_manager::package_names ]
   }
 
+  if $::rhsm_ca_name {
+    if $::rhsm_ca_name != $::subscription_manager::server_hostname {
+      package { "katello-ca-consumer-${::rhsm_ca_name}": ensure => 'absent', }
+      Package["katello-ca-consumer-${::rhsm_ca_name}"] ->
+      Package["katello-ca-consumer-${::subscription_manager::server_hostname}"]
+    }
+  }
+
   package { "katello-ca-consumer-${::subscription_manager::server_hostname}":
     ensure   => 'installed',
     provider => 'rpm',

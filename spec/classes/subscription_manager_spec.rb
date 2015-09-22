@@ -83,5 +83,18 @@ describe 'subscription_manager' do
     }}
     it { is_expected.to contain_service('goferd').with_ensure('disabled') }
   end
-
+  context 'when the rhsm_ca_name is different' do
+    let(:facts) {{
+      :osfamily        => 'RedHat',
+      :operatingsystem => 'RedHat',
+      :rhsm_ca_name    => 'foo',
+    }}
+    let(:params) {{
+      :server_hostname => 'bar',
+    }}
+    it { is_expected.to contain_package('katello-ca-consumer-foo').with_ensure('absent') }
+    it { is_expected.to contain_package('katello-ca-consumer-bar').with_ensure('installed') }
+    it { is_expected.to contain_rhsm_register('bar') }
+  end
+  
 end
