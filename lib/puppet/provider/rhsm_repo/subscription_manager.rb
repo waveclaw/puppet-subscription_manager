@@ -31,21 +31,20 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
     @resource[:ensure] = :absent
   end
 
+
   def self.instances
-    channels = read_channels
-    if channels.nil? or channels == []
-      [ ]
-    else
-      channels.collect { |channel| new(channel) }
+    read_repos.collect do |repo|
+      new(repo)
     end
   end
 
   def self.prefetch(resources)
-    instances.each { |prov|
-      if resource = resources[prov.name]
-        resource.provider = prov
+    repos = instances
+    resources.keys.each do |name|
+      if provider = repos.find{ |repo| repo.name == name }
+        resources[name].provider = provider
       end
-    }
+    end
   end
 
   def exists?
@@ -54,7 +53,7 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
 
   private
 
-  def self.parse_channel_repo(repo)
+  def self.parse_repos(repo)
     new_repo = {}
     repo.split("\n").each { |line|
       if line =~ /Repo ID:\s+(\S.*)/
@@ -81,11 +80,11 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
     new_repo
   end
 
-  def self.read_channels
+  def self.read_repos
     repo_instances = []
     repos = subscription_manager('repos')
     repos.split("\n\n").each { |repo|
-      repo_instances.push(parse_channel_repo(repo))
+      repo_instances.push(parse_repos(repo))
     } unless repos.nil? or repos == "\n\n"
     repo_instances
   end

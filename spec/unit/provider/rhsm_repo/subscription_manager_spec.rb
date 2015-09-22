@@ -87,29 +87,40 @@ EOT
         end
       }
     end
+    it 'should return just one repo for a single input' do
+      expect(provider.class).to receive(:subscription_manager).with('repos') { one_data }
+      repos = provider.class.instances
+      expect(repos.size).to eq(1)
+    end
+    it 'should return nothing for an empty list' do
+      expect(provider.class).to receive(:subscription_manager).with('repos') { '' }
+      repos = provider.class.instances
+      expect(repos.size).to eq(0)
+    end
   end
 
   describe 'self.prefetch' do
     it { expect(provider.class).to respond_to(:prefetch) }
     it 'can be called on the provider' do
-      expect(provider.class).to receive(:read_channels) { [ properties ] }
+      expect(provider.class).to receive(:read_repos) { [ properties ] }
       provider.class.prefetch(properties)
     end
   end
-  describe "read_channels" do
+
+  describe "read_repos" do
     it 'should return just two repos for a double input' do
       expect(provider.class).to receive(:subscription_manager).with('repos') { two_data }
-      repos = provider.class.read_channels
+      repos = provider.class.read_repos
       expect(repos.size).to eq(2)
     end
     it 'should return just one repo for a single input' do
       expect(provider.class).to receive(:subscription_manager).with('repos') { one_data }
-      repos = provider.class.read_channels
+      repos = provider.class.read_repos
       expect(repos.size).to eq(1)
     end
     it 'should return nothing for an empty list' do
       expect(provider.class).to receive(:subscription_manager).with('repos') { '' }
-      repos = provider.class.read_channels
+      repos = provider.class.read_repos
       expect(repos.size).to eq(0)
     end
   end
