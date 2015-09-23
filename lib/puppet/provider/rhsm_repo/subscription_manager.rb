@@ -33,8 +33,13 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
 
 
   def self.instances
-    read_repos.collect do |repo|
-      new(repo)
+    repos = read_repos
+    if repos.nil? or repos == []
+      []
+    else
+      repos.collect do |repo|
+        new(repo)
+      end
     end
   end
 

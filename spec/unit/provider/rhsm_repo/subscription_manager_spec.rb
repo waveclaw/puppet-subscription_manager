@@ -97,6 +97,12 @@ EOT
       repos = provider.class.instances
       expect(repos.size).to eq(0)
     end
+    it 'should return nothing for a blank list' do
+      expect(provider.class).to receive(:subscription_manager).with('repos') { "\n\n" }
+      repos = provider.class.instances
+      expect(repos.size).to eq(0)
+    end
+
   end
 
   describe 'self.prefetch' do
