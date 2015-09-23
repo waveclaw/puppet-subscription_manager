@@ -1,12 +1,24 @@
 {
   "name": "waveclaw-subscription_manager",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "author": "JD Powell <waveclaw@hotmail.com>",
   "summary": "This module provides Custom Providers for RedHat Network Registering.",
   "license": "Apache License, Version 2.0",
   "source": "https://github.com/waveclaw/puppet-subscription_manager",
   "project_page": "https://github.com/waveclaw/puppet-subscription_manager",
   "issues_url": "https://github.com/waveclaw/puppet-subscription_manager/issues",
+  "tags": [ "redhat", "katello", "satellite", "subscription-manager", "rhsm" ],
+  "operatingsystem_support": [
+  {
+  "operatingsystem":"RedHat",
+  "operatingsystemrelease":[ "5.0", "6.0", "7.0" ]
+  },
+  {
+  "operatingsystem":"CentOS",
+  "operatingsystemrelease":[ "5.0", "6.0", "7.0" ]
+  }
+
+  ],
   "dependencies": [
     {
       "name": "adrien/boolean",
