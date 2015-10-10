@@ -59,10 +59,14 @@ class subscription_manager::install {
   #  - reinstall (this requires a pupetlabs-transition)
   if $::rhsm_identity == '' or $::rhsm_identity == undef and
     $::rhsm_ca_name == $::subscription_manager::server_hostname {
-    $_attrs = { ensure => 'absent', }
+    $_attributes = {
+      'ensure'          => 'absent',
+      'provider'        => 'rpm',
+      'install_options' => [ '--force', '--nodeps' ],
+    }
     transition {'purge-bad-rhsm_ca-package':
       resource   => Package[$_pkg],
-      attributes => $_attrs,
+      attributes => $_attributes,
       prior_to   => Package[$_pkg],
     }
   }
