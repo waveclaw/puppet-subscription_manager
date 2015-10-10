@@ -88,13 +88,29 @@ describe 'subscription_manager' do
       :osfamily        => 'RedHat',
       :operatingsystem => 'RedHat',
       :rhsm_ca_name    => 'foo',
+      :rhsm_identity   => 'baz',
     }}
     let(:params) {{
       :server_hostname => 'bar',
     }}
     it { is_expected.to contain_package('katello-ca-consumer-foo').with_ensure('absent') }
     it { is_expected.to contain_package('katello-ca-consumer-bar').with_ensure('installed') }
+    it { is_expected.to_not contain_transition('purge-bad-rhsm_ca-package') }
     it { is_expected.to contain_rhsm_register('bar') }
   end
-  
+
+  context "when CA is bad" do
+    let(:facts) {{
+      :osfamily        => 'RedHat',
+      :operatingsystem => 'RedHat',
+      :rhsm_ca_name    => 'foo',
+      :rhsm_identity   => '',
+    }}
+    let(:params) {{
+      :server_hostname => 'foo',
+    }}
+    it { is_expected.to contain_package('katello-ca-consumer-foo').with_ensure('installed') }
+    it { is_expected.to contain_transition('purge-bad-rhsm_ca-package') }
+    it { is_expected.to contain_rhsm_register('foo') }
+  end
 end

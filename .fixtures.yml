@@ -2,5 +2,7 @@ fixtures:
   repositories:
 #    stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
      boolean: https://github.com/adrienthebo/puppet-boolean.git
+  forge_modules:
+    transition: "puppetlabs/transition"
   symlinks:
     subscription_manager: "#{source_dir}"

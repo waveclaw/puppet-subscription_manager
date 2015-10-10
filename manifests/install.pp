@@ -4,10 +4,14 @@
 #
 class subscription_manager::install {
 
+  # any generic passed into the model
   package { $::subscription_manager::package_names:
     ensure => present,
   }
-  if $::subscription_manager::repo {
+
+  # support a custom repository if procided
+  if $::subscription_manager::repo != '' and
+    $::subscription_manager::repo != undef {
     if versioncmp($::puppetversion, '3.4.1') > 0 {
       contain $::subscription_manager::repo
     } else {
@@ -17,18 +21,50 @@ class subscription_manager::install {
       Package[ $::subscription_manager::package_names ]
   }
 
-  if $::rhsm_ca_name {
-    if $::rhsm_ca_name != $::subscription_manager::server_hostname {
-      package { "katello-ca-consumer-${::rhsm_ca_name}": ensure => 'absent', }
-      Package["katello-ca-consumer-${::rhsm_ca_name}"] ->
-      Package["katello-ca-consumer-${::subscription_manager::server_hostname}"]
-    }
-  }
-
-  package { "katello-ca-consumer-${::subscription_manager::server_hostname}":
+  $_pkg = "katello-ca-consumer-${::subscription_manager::server_hostname}"
+  # four scenarios
+  # I.  never registered
+  #  - no ca_name
+  #  - no identity
+  #  - just install normally
+  package { $_pkg:
     ensure   => 'installed',
     provider => 'rpm',
     source   =>
   "http://${::subscription_manager::server_hostname}/pub/katello-ca-consumer-latest.noarch.rpm",
   }
+
+  # II. registered to correct server
+  #  - ca_name == server_hostname
+  #  - identity is set
+  #  - do nothing new, let puppet idempotency handle it
+
+  # III. registered to different server
+  #  - ca_name != server_hostname
+  #  - identity may or may not be set
+  #  - remove old, install new
+  if $::rhsm_ca_name != '' and $::rhsm_ca_name != undef {
+    # an SSL Certificate Authority is detected
+    if $::rhsm_ca_name != $::subscription_manager::server_hostname {
+      # but CA is changing
+      # remove the old package
+      package { "katello-ca-consumer-${::rhsm_ca_name}": ensure => 'absent', }
+      Package["katello-ca-consumer-${::rhsm_ca_name}"] -> Package[$_pkg]
+    }
+  }
+
+  # IV. registered to same server but CA is bad
+  #  - ca_name == server_hostname
+  #  - identity is not set
+  #  - reinstall (this requires a pupetlabs-transition)
+  if $::rhsm_identity == '' or $::rhsm_identity == undef and
+    $::rhsm_ca_name == $::subscription_manager::server_hostname {
+    $_attrs = { ensure => 'absent', }
+    transition {'purge-bad-rhsm_ca-package':
+      resource   => Package[$_pkg],
+      attributes => $_attrs,
+      prior_to   => Package[$_pkg],
+    }
+  }
+
 }
