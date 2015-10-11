@@ -96,6 +96,75 @@ describe  provider_class, 'rhsm_register provider' do
     end
   }
 
+  describe 'build_register_parameters' do
+    it 'should respond to build_parameters' do
+        expect(provider).to respond_to('build_register_parameters')
+    end
+    it 'should build a command with an activationkey' do
+      res = Puppet::Type.type(:rhsm_register).new(
+        :name => title,
+        :ensure => :present,
+        :activationkey => fake_key,
+        :org => 'foo',
+        :servicelevel => 'STANDARD',
+        :autosubscribe => true,
+        :provider => :subscription_manager,)
+      expect(res.provider.build_register_parameters).to eq(
+      ["register", "--activationkey", "1-my-activation-key", "--org", "foo"])
+    end
+    it 'should exclude envrionment with an activation key' do
+      res = Puppet::Type.type(:rhsm_register).new(
+        :name => title,
+        :ensure => :present,
+        :activationkey => fake_key,
+        :org => 'foo',
+        :environment => 'pants',
+        :servicelevel => 'STANDARD',
+        :autosubscribe => true,
+        :provider => :subscription_manager,)
+      expect(res.provider.build_register_parameters).to eq(
+      ["register", "--activationkey", "1-my-activation-key", "--org", "foo"])
+    end
+    it 'should fail when an org is missing with an activation key' do
+      res = Puppet::Type.type(:rhsm_register).new(
+        :name => title,
+        :ensure => :present,
+        :activationkey => fake_key,
+        #:org => 'foo',
+        :servicelevel => 'STANDARD',
+        :autosubscribe => true,
+        :provider => :subscription_manager,)
+      expect{ res.provider.build_register_parameters }.to raise_error(
+        Puppet::Error, /.*org.*/)
+    end
+    it 'should fail with an activation key and username + password' do
+      res = Puppet::Type.type(:rhsm_register).new(
+        :name => title,
+        :ensure => :present,
+        :activationkey => fake_key,
+        :username => 'foo',
+        :password => 'bar',
+        :provider => :subscription_manager,)
+      expect{ res.provider.build_register_parameters }.to raise_error(
+        Puppet::Error, /.*activation key or username\+password.*/)
+    end
+    it 'should build a command with a username and password' do
+      res = Puppet::Type.type(:rhsm_register).new(
+        :name => title,
+        :ensure => :present,
+        :org => 'foo',
+        :username => 'foo',
+        :password => 'bar',
+        :servicelevel => 'STANDARD',
+        :autosubscribe => true,
+        :force => true,
+        :provider => :subscription_manager,)
+      expect(res.provider.build_register_parameters).to eq(
+      ["register", "--force", "--username", "foo", "--password", "bar",
+        "--autosubscribe", "--org", "foo"])
+    end
+  end
+
   describe 'self.instances' do
     it { expect(provider.class).to respond_to(:instances) }
     it "returns the name and identity properties" do

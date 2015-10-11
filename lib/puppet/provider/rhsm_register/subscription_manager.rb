@@ -125,8 +125,6 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
 
   mk_resource_methods
 
-  private
-
   # Get the on disk config
   # @return [hash] the settings of the configuration and the identity
   # @api private
@@ -157,7 +155,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   def build_register_parameters
     params = []
     if (@resource[:username].nil? and @resource[:activationkey].nil?) or (!@resource[:username].nil? and !@resource[:activationkey].nil?)
-        self.fail("Either an activation key or username+password is required to register")
+        self.fail("Either an activation key or username+password is required to register, not both.")
     end
     if @resource[:org].nil?
         self.fail("The 'org' paramater is required to register the system")
@@ -172,7 +170,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
       params << "--activationkey" <<  @resource[:activationkey]
       # no autosubscribe with keys, see attach step instead
     end
-    params << "--environment" << @resource[:environment] unless @resource[:environment].nil?
+    params << "--environment" << @resource[:environment] unless (@resource[:environment].nil? or !@resource[:activationkey].nil?)
     params << "--org" << @resource[:org]
     return params
   end
