@@ -1,3 +1,6 @@
+2015-10-11 Release 1.8.1
+- throw error if environment is given with an activation key
+
 2015-10-10 Release 1.8.0
 - handle bad certificates by using a transition to reinstall the CA package
 
