@@ -204,8 +204,6 @@ If absolutely necessary the individual yum repositories can be filtered.
 
 #### rhsm_repo Examples
 
-Example of a repository from an override
-
 Example of a repository from the Server
 
 ```puppet
@@ -239,8 +237,8 @@ rhsm_repo { 'rhel-server6-epel':
 ### rhsm_pool
 
 Subscriptions to use RHN are sold as either individual entitlements or a pools of
-entitlements.  A given server registered to a Satellite 6 or katello system will
-consume at least 1 entitlement from a Pool just.
+entitlements.  A given server registered to a Satellite 6 or Katello system will
+consume at least 1 entitlement from a Pool.
 
 This subscription to the Pool is what enables the set of repositories to be made
 available on the server for further subscription.
@@ -252,7 +250,7 @@ it can also be used to force switch registrations for selected clients.
 - **name**: Unique Textual description of the Pool
 - **ensure**: Is this pool absent or present?
 - **provides**: Textual information about the Pool, usually same as the name.
-- **sku**: Stockkeeping Unit, usually for inventory tracking
+- **sku**: Stock Keeping Unit, usually for inventory tracking
 - **account**: Account number for this Pool of Subscriptions
 - **contract**: Contract details, if known
 - **serial**: Any serial number that is associated with the pool
@@ -294,7 +292,16 @@ rhsm_pool { '1a2b3c4d5e6f1234567890abcdef12345':
 
 ## Installing
 
+### Release Version
+
 For released version the module can be installed with the Puppet module tool from the Puppet Forge.
+
+```
+  puppet module install waveclaw-subscription_manager
+```
+This will install *adrian-boolean* and *puppetlabs-transaction* as dependencies.
+
+### Development Version
 
 For pre-release code the GitHub repository can be cloned.
 
