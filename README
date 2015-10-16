@@ -1,5 +1,7 @@
 # Puppet-Subscription_manager
 
+[![Build Status](https://travis-ci.org/waveclaw/puppet-subscription_manager.svg?branch=master)](https://travis-ci.org/waveclaw/puppet-subscription_manager)
+
 This module provides Custom Puppet Provider to handle registration and
 consumption of RedHat subscriptions using subscription-manager.
 
