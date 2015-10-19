@@ -1,5 +1,8 @@
+2015-10-19 1.8.2
+- working travis builds (excluding Ruby 2.2)
+
 2015-10-16 1.8.1
-- glitter integration
+- gitter integration
 
 2015-10-11 Release 1.8.1
 - throw error if environment is given with an activation key
