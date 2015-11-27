@@ -1,3 +1,6 @@
+2015-11-26 1.8.3
+- support hostnames that contain zeros
+
 2015-10-19 1.8.2
 - working travis builds (excluding Ruby 2.2)
 
