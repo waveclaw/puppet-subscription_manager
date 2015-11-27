@@ -55,6 +55,12 @@ describe described_class, 'type' do
       expect(@resource[namevar]).to eq('foo')
       expect(@resource[:name]).to eq('foo')
     end
+    it "should accept names containing 0s" do
+      @resource = described_class.new(
+        namevar => 'f00')
+      expect(@resource[namevar]).to eq('f00')
+      expect(@resource[:name]).to eq('f00')
+    end
     it 'should reject invalid values' do
       expect{ described_class.new(
        namevar => '@#$%foooooo^!)')}.to raise_error(
