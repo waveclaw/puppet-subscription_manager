@@ -110,7 +110,7 @@ end
   newproperty(:server_hostname) do
     desc "The rhsm server hostname."
     validate do |value|
-      fail("Require a valid hostname. Received #{value} instead") unless value =~ /^[.a-zA-Z\-\_1-9]+$/
+      fail("Require a valid hostname. Received #{value} instead") unless value =~ /^[.a-zA-Z\-\_0-9]+$/
     end
     munge do |value|
       value.downcase
@@ -123,7 +123,7 @@ end
    newproperty(:server_proxy_hostname) do
     desc "The name of the proxy to connect through to reach the server."
     validate do |value|
-      fail("Require a valid hostname. Received #{value} instead") unless value.nil? or value == '' or  value =~ /^[.a-zA-Z\-\_1-9]+$/
+      fail("Require a valid hostname. Received #{value} instead") unless value.nil? or value == '' or  value =~ /^[.a-zA-Z\-\_0-9]+$/
     end
     munge do |value|
       value.downcase

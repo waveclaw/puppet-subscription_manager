@@ -29,7 +29,7 @@ EOD
   newparam(:name, :namevar => true) do
     desc "The rhsm server hostname."
     validate do |value|
-      fail("Require a valid hostname. Received #{value} instead") unless value =~ /^[.a-zA-Z\-\_1-9]+$/
+      fail("Require a valid hostname. Received #{value} instead") unless value =~ /^[.a-zA-Z\-\_0-9]+$/
     end
     munge do |value|
       value.downcase
