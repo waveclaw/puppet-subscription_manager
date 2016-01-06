@@ -218,7 +218,7 @@ EOD
         expect(config[:provider]).to eq(:subscription_manager)
       end
       it 'accepts hostnames with numbers in them' do
-        expect(provider.class).to receive(:subscription_manager).with(['config','--list']) { raw_hostname_data }
+        expect(provider.class).to receive(:subscription_manager).with(['config','--list']) { raw_hostname01_data }
         config = provider.class.get_configuration
         expect(config.size).to_not eq(0)
         expect(config[:name]).to eq('/etc/rhsm/rhsm.conf')
