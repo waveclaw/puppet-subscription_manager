@@ -63,6 +63,37 @@ describe  provider_class, 'rhsm_config provider' do
 [] - Default value in use
 EOD
 
+raw_hostname01_data =<<-EOD
+ [server]
+    hostname = katello01.example.com
+    insecure = [0]
+    port = [443]
+    prefix = /rhsm
+    proxy_hostname = []
+    proxy_password = []
+    proxy_port = []
+    proxy_user = []
+    ssl_verify_depth = [3]
+
+ [rhsm]
+    baseurl = https://katello01.example.com/pulp/repos
+    ca_cert_dir = [/etc/rhsm/ca/]
+    consumercertdir = [/etc/pki/consumer]
+    entitlementcertdir = [/etc/pki/entitlement]
+    full_refresh_on_yum = 1
+    manage_repos = [1]
+    pluginconfdir = [/etc/rhsm/pluginconf.d]
+    plugindir = [/usr/share/rhsm-plugins]
+    productcertdir = [/etc/pki/product]
+    repo_ca_cert = /etc/rhsm/ca/
+    report_package_profile = [1]
+
+ [rhsmcertd]
+    autoattachinterval = 1440
+
+[] - Default value in use
+EOD
+
 
   let(:resource) do
     Puppet::Type.type(:rhsm_config).new(properties)
@@ -185,6 +216,15 @@ EOD
         expect(config.size).to_not eq(0)
         expect(config[:name]).to eq('/etc/rhsm/rhsm.conf')
         expect(config[:provider]).to eq(:subscription_manager)
+      end
+      it 'accepts hostnames with numbers in them' do
+        expect(provider.class).to receive(:subscription_manager).with(['config','--list']) { raw_hostname01_data }
+        config = provider.class.get_configuration
+        expect(config.size).to_not eq(0)
+        expect(config[:name]).to eq('/etc/rhsm/rhsm.conf')
+        expect(config[:provider]).to eq(:subscription_manager)
+        expect(config[:server_hostname]).to eq('katello01.example.com')
+        expect(config[:rhsm_baseurl]).to eq('https://katello01.example.com/pulp/repos')
       end
       properties.keys.each { |key|
          it "should parse the #{key} property" do

@@ -110,7 +110,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
           case raw_value
           when /\[\]/
             value = nil
-          when /\[(\d+)\]/, /(\d+)/
+          when /\[(\d+)\]/, /^(\d+)$/
             digit = $1
             if Puppet::Type.type(:rhsm_config).binary_options.has_key? "#{section}_#{title}".to_sym
               value = (digit == '1') ? true : false
