@@ -1,3 +1,6 @@
+2016-01-28 1.8.4
+- support server names that contain zeros
+
 2015-11-26 1.8.3
 - support hostnames that contain zeros
 
