@@ -44,8 +44,8 @@ Setup to and register one CentOS 6 client to a Katello server using a public
 repositry to obtain the agent.
 
 ```puppet
-# Place this code in a .pp file some where on your Puppet's modulepath such
-# as a file named subscription_manager.pp in a module named repo.  
+# (Optionally) Place this code in a .pp file some where on your Puppet's modulepath 
+# such as a file named subscription_manager.pp in a module named repo.  
 # The autoloader will be triggered by the rhsm module to search for this class.
 class repo::subscription_manager {
   yumrepo { 'dgoodwin-subscription-manager':
@@ -62,14 +62,13 @@ class repo::subscription_manager {
 # Place this this in either a raw .pp manifest, a profile-like module or
 # classify the node to require subscription_manager with these parameters in
 # your ENC.
+# Notice the explict call for the optional package repository to include.
 class { 'subscription_manager':
     repo            => 'repo::subscription_manager',
     server_hostname => 'my_katello.example.com',
-    activationkeys  => '1-2-3-example.com-key',
+    activationkey   => '1-2-3-example.com-key',
     force           => true,
     org             => 'My_Example_Org',
-    server_prefix   => '/rhsm',
-    rhsm_baseurl    => 'https://my_katello.example.com/pulp/repos',
   }
 }
 ```
@@ -112,7 +111,7 @@ The module adds the following new types:
 On of either the activation key or a username and password combination is needed
 to register.  Both cannot be provided and will cause an error.
 
-- **activationkeys**: The activation key to use when registering the system (cannot be used with username and password)
+- **activationkey**: The activation key to use when registering the system (cannot be used with username and password)
 - **password**: The password to use when registering the system
 - **username**: The username to use when registering the system
 
@@ -131,7 +130,7 @@ Register clients to RedHat Subscription Management using an activation key:
 ```puppet
 rhsm_register { 'satelite.example.com':
   server_hostname => 'my-satelite.example.com',
-  activationkeys => '1-myactivationkey',
+  activationkey   => '1-myactivationkey',
 }
 ```
 
