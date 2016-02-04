@@ -16,7 +16,7 @@ class subscription_manager::config {
     'ensure'          => 'present',
   }
   $_reg_params = { "${::subscription_manager::server_hostname}" => $_settings, }
-  create_resources('rhsm_register', $_reg_params)
+  create_resources('rhsm_register', $_reg_params, {'require' => Rhsm_config['/etc/rhsm/rhsm.conf']})
 
   $_conf_params = { '/etc/rhsm/rhsm.conf' =>
     $::subscription_manager::config_hash, }
