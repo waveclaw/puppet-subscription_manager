@@ -16,6 +16,10 @@
   {
   "operatingsystem":"CentOS",
   "operatingsystemrelease":[ "5.0", "6.0", "7.0" ]
+  },
+  {
+  "operatingsystem":"Scientific",
+  "operatingsystemrelease":[ "5.0", "6.0", "7.0" ]
   }
 
   ],

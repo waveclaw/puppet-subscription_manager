@@ -3,10 +3,10 @@
 # This class is meant to be called from subscription_manager.
 # It sets variables according to platform.
 # These defaults are for registration with the RedHat Network.
-# For an exmaple with a katello server, see README.md
+# For an examaple with a katello server, see README.md
 class subscription_manager::defaults {
   case $::osfamily {
-    'RedHat', 'CentOS', 'Fedora': {
+    'RedHat', 'CentOS', 'Scientific', 'Fedora': {
       $server_hostname = 'subscription.rhn.redhat.com'
       $package_names = ['subscription-manager']
       $service_name = 'goferd'
