@@ -16,9 +16,9 @@ EOF
     def rhsm_disabled_repos
       value = []
       begin
-        sm = Facter::Util::Resolution.exec('/usr/bin/which subscription-manager')
         reponame = ''
-        output = Facter::Util::Resolution.exec("#{sm} repos")
+        output = Facter::Util::Resolution.exec(
+          '/usr/sbin/subscription-manager repos')
         output.split("\n").each { |line|
           if line =~ /.*Repo ID:\s(.*)/
             reponame = $1
@@ -38,6 +38,8 @@ EOF
 end
 
 Facter.add(:rhsm_disabled_repos) do
-    confine :kernel => "Linux"
-      setcode { Facter::Util::Rhsm_disabled_repos.rhsm_disabled_repos }
+  confine do
+    File.exists?('/usr/sbin/subscription-manager')
+  end
+  setcode { Facter::Util::Rhsm_disabled_repos.rhsm_disabled_repos }
 end

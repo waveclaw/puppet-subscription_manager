@@ -16,9 +16,8 @@ EOF
     def rhsm_identity
       value = nil
       begin
-        #awk = Facter::Util::Resolution.exec('/usr/bin/which awk')
-        sm = Facter::Util::Resolution.exec('/usr/bin/which subscription-manager')
-        output = Facter::Util::Resolution.exec("#{sm} identity")
+        output = Facter::Util::Resolution.exec(
+          '/usr/sbin/subscription-manager identity')
         output.split("\n").each { |line|
           if line =~ /.* identity(?: is)?: (\S{8}\-\S{4}\-\S{4}\-\S{4}\-\S{12}).*/
             value = $1
@@ -33,6 +32,8 @@ EOF
 end
 
 Facter.add(:rhsm_identity) do
-    confine :kernel => "Linux"
+    confine do
+      File.exist? '/usr/sbin/subscription-manager'
+    end
       setcode { Facter::Util::Rhsm_identity.rhsm_identity }
 end

@@ -16,8 +16,8 @@ EOF
     def rhsm_available_repos
       value = []
       begin
-        sm = Facter::Util::Resolution.exec('/usr/bin/which subscription-manager')
-        output = Facter::Util::Resolution.exec("#{sm} repos")
+        output = Facter::Util::Resolution.exec(
+          '/usr/sbin/subscription-manager repos')
         output.split("\n").each { |line|
           if line =~ /.*Repo ID:\s(.*)/
             value.push($1)
@@ -32,6 +32,8 @@ EOF
 end
 
 Facter.add(:rhsm_available_repos) do
-    confine :kernel => "Linux"
-      setcode { Facter::Util::Rhsm_available_repos.rhsm_available_repos }
+  confine do
+    File.exist?('/usr/sbin/subscription-manager')
+  end
+  setcode { Facter::Util::Rhsm_available_repos.rhsm_available_repos }
 end

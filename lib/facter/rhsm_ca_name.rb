@@ -33,6 +33,8 @@ EOF
 end
 
 Facter.add(:rhsm_ca_name) do
-    confine :kernel => "Linux"
-      setcode { Facter::Util::Rhsm_ca_name.rhsm_ca_name }
+  confine do
+    File.exist?('/etc/rhsm/ca/katello-server-ca.pem')
+  end
+  setcode { Facter::Util::Rhsm_ca_name.rhsm_ca_name }
 end
