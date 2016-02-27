@@ -19,8 +19,8 @@ EOF
         output = Facter::Util::Resolution.exec(
           '/usr/sbin/subscription-manager repos')
         output.split("\n").each { |line|
-          if line =~ /.*Repo ID:\s(.*)/
-            value.push($1)
+          if line =~ /Repo ID:\s+(\S+)/
+            value.push($1.chomp)
           end
         }
       rescue Exception => e
