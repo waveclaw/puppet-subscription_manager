@@ -8,7 +8,7 @@
 #
 require 'spec_helper'
 
-# example:
+# Example:
 #rhsm_config { 'katello.example.com':
 #   server_insecure               => false,
 #   server_port                   => 443,

@@ -1,4 +1,12 @@
 #!/usr/bin/ruby -S rspec
+#
+#  Test the rhsm_register type
+#
+#   Copyright 2016 WaveClaw <waveclaw@hotmail.com>
+#
+#   See LICENSE for licensing.
+#
+
 require 'spec_helper'
 
 #rhsm_register { 'example.com':

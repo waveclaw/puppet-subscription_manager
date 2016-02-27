@@ -1,6 +1,15 @@
 #!/usr/bin/ruby -S rspec
+#
+#  Test the rhsm_pool type
+#
+#   Copyright 2016 WaveClaw <waveclaw@hotmail.com>
+#
+#   See LICENSE for licensing.
+#
+
 require 'spec_helper'
 
+# Example:
 #  rhsm_pool { '1a2b3c4d5e6f1234567890abcdef12345':
 #    name              => 'Extra Packages for Enterprise Linux',
 #    ensure            => present,

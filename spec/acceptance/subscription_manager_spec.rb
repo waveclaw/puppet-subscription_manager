@@ -1,3 +1,11 @@
+#!/usr/bin/ruby -S rspec
+#
+#  Test the class structure of the module as used.
+#
+#   Copyright 2016 WaveClaw <waveclaw@hotmail.com>
+#
+#   See LICENSE for licensing.
+#
 require 'spec_helper_acceptance'
 
 describe 'subscription_manager class' do

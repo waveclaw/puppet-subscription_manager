@@ -1,4 +1,12 @@
 #!/usr/bin/ruby -S rspec
+#
+#  Test the subscrption_manager provider for rhsm_pool
+#
+#   Copyright 2016 WaveClaw <waveclaw@hotmail.com>
+#
+#   See LICENSE for licensing.
+#
+
 require 'puppet'
 require 'date'
 require 'spec_helper'

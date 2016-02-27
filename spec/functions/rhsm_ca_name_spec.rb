@@ -1,4 +1,11 @@
 #!/usr/bin/ruby -S rspec
+#
+#  Test the ca_name fact 
+#
+#   Copyright 2016 WaveClaw <waveclaw@hotmail.com>
+#
+#   See LICENSE for licensing.
+#
 
 require 'spec_helper'
 require 'facter/rhsm_ca_name'

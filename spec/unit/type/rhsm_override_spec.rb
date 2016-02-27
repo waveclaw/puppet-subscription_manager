@@ -1,6 +1,15 @@
 #!/usr/bin/ruby -S rspec
+#
+#  Test the rhsm_override type
+#
+#   Copyright 2016 WaveClaw <waveclaw@hotmail.com>
+#
+#   See LICENSE for licensing.
+#
+
 require 'spec_helper'
 
+# Example:
 #rhsm_override { 'rhel-server6-epel':
 #  ensure        => present,
 #  enabled       => false,
