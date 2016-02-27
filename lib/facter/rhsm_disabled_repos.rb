@@ -20,9 +20,9 @@ EOF
         output = Facter::Util::Resolution.exec(
           '/usr/sbin/subscription-manager repos')
         output.split("\n").each { |line|
-          if line =~ /.*Repo ID:\s(.*)/
-            reponame = $1
-          elsif line =~ /.*Enabled:\s1/
+          if line =~ /Repo ID:\s+(\S+)/
+            reponame = $1.chomp
+          elsif line =~ /.*Enabled:\s+0/
             if reponame != ''
               value.push(reponame)
               reponame = ''
