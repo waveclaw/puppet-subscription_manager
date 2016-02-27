@@ -21,7 +21,7 @@ EOF
         begin
           cert = OpenSSL::X509::Certificate.new(File.open(cafile).read)
           if cert.subject.to_s =~ /.+CN=(.+)/
-            ca = $1
+            ca = $1.chomp
           end
         rescue Exception => e
           Facter.debug("#{e.backtrace[0]}: #{$!}.")
