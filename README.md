@@ -44,7 +44,7 @@ Setup to and register one CentOS 6 client to a Katello server using a public
 repositry to obtain the agent.
 
 ```puppet
-# (Optionally) Place this code in a .pp file some where on your Puppet's modulepath 
+# (Optionally) Place this code in a .pp file some where on your Puppet's modulepath
 # such as a file named subscription_manager.pp in a module named repo.  
 # The autoloader will be triggered by the rhsm module to search for this class.
 class repo::subscription_manager {
@@ -318,4 +318,30 @@ loads them.
 
 ## Issues
 
-Please file any issues or suggestions on [on GitHub](https://github.com/jlaska/puppet-subscription_manager/issues)
+Please file any issues or suggestions on [on GitHub](https://github.com/waveclaw/puppet-subscription_manager/issues)
+
+### Guidelines
+
+Please follow the example42 development guidelines.
+
+Pull requests and bug reports via GitHub are welcomed.
+
+For Pull Requests please:
+
+* puppet-lint code
+* provide rSpec tests if possible
+* Follow the module style naming standards
+
+For a bug report please include or link:
+
+* Code that triggers the error
+* Output of ```facter -p``` from the system where the error occurs
+* _Relevant_ error logs
+* Any other information needed to understand the error
+- What did you do (terminal session logs, etc)?
+- What was expected?
+- What actually happened?
+- When did it start happening?
+- Is it _still_ happening or happening all the time?
+
+None of this guarantees a solution.  At the least it can warns others.
