@@ -72,6 +72,9 @@ class subscription_manager (
   $org             = $::subscription_manager::defaults::org,
   $repo            = $::subscription_manager::defaults::repo,
   $config_hash     = $::subscription_manager::defaults::config_hash,
+  $rhsm_only       = $::subscription_manager::defaults::rhsm_only,
+  $repodir         = $::subscription_manager::defaults::repodir,
+  $rhsm_repofile   = $::subscription_manager::defaults::rhsm_repofile,
 ) inherits ::subscription_manager::defaults {
 
   # TODO: validate parameters here

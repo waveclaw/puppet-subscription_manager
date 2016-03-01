@@ -40,6 +40,9 @@ class subscription_manager::defaults {
       $force = false
       $org = 'Default_Organization'
       $repo = undef
+      $rhsm_only = false
+      $repodir = '/etc/yum.repos.d'
+      $rhsm_repofile = 'redhat.repo'
     }
     default: {
       fail("${::operatingsystem} not supported")
