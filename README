@@ -123,6 +123,7 @@ to register.  Both cannot be provided and will cause an error.
 - **autosubscribe**: Enable automatic subscription to repositories based on default Pool settings. Must be false when using an activation key unless specifiying a service leve.
 - **servicelevel**: provide automatic attachement to a service level in Satellite. Not applicable to katello installations.
 - **force**: Should the registration be forced. Use this option with caution, setting it true will cause the system to be unregistered before running 'subscription-manager register'. Default value `false`.
+- **rhsm_only**: Should any repos not explicitly mentioned be removed?  When `true` this option will delete repo files not explicitly managed. Default value `false`.
 
 ### rhsm_register Examples
 

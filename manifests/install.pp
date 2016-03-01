@@ -4,6 +4,22 @@
 #
 class subscription_manager::install {
 
+  if $::subscription_manager::rhsm_only {
+    # If we want rhsm repos only,
+    #   remove any repo file not explicitly managed within puppet
+    #   this doesn't stop you from telling puppet another repo matters too
+    file {${::subscription_manager::repodir}:
+      ensure  => directory,
+      recurse => true,
+      purge   => true,
+      require => File["${::subscription_manager::repodir}/${::subscription_manager::rhsm_repofile}"],
+    }
+    file {"${::subscription_manager::repodir}/${::subscription_manager::rhsm_repofile}":
+      ensure => present,
+      before => Package[$::subscription_manager::package_names],
+    }
+  }
+
   # any generic passed into the model
   package { $::subscription_manager::package_names:
     ensure => present,
