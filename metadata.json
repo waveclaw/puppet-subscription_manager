@@ -1,6 +1,6 @@
 {
   "name": "waveclaw-subscription_manager",
-  "version": "1.9.2",
+  "version": "1.9.3",
   "author": "JD Powell <waveclaw@hotmail.com>",
   "summary": "This module provides Custom Providers for RedHat Network Registering.",
   "license": "Apache-2.0",
