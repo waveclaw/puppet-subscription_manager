@@ -74,8 +74,62 @@ class subscription_manager (
   $config_hash     = $::subscription_manager::defaults::config_hash,
 ) inherits ::subscription_manager::defaults {
 
-  # TODO: validate parameters here
-  # validate_x() requires puppetlabs-stdlib
+  validate_array($package_names)
+  validate_string($service_name)
+  validate_re($service_status, '^(stopped|running)$')
+  validate_string($server_hostname)
+  if $username {
+    validate_string($username)
+  }
+  if $password {
+    validate_string($password)
+  }
+  if $activationkey {
+    validate_string($activationkey)
+  }
+  if $pool {
+    validate_string($pool)
+  }
+  if $environment {
+    validate_string($environment)
+  }
+  validate_bool($autosubscribe)
+  if $servicelevel {
+    validate_string($servicelevel)
+  }
+  validate_bool($force)
+  if $org {
+    validate_string($org)
+  }
+  if $repo {
+    validate_string($repo)
+  }
+  validate_hash($config_hash)
+  validate_bool($config_hash['server_insecure'])
+  validate_string($config_hash['server_perfix'])
+  validate_numeric($config_hash['server_port'])
+  validate_numeric($config_hash['server_ssl_verify_depth'])
+  if $config_hash['server_proxy_hostname'] {
+    validate_string($config_hash['server_proxy_hostname'])
+  }
+  if $config_hash['server_proxy_hostname'] {
+    validate_numeric($config_hash['server_proxy_port'])
+  }
+  if $config_hash['server_proxy_user'] {
+    validate_string($config_hash['server_proxy_user'])
+  }
+  if $config_hash['server_proxy_password'] {
+    validate_string($config_hash['server_proxy_password'])
+  }
+  validate_string($config_hash['rhsm_baseurl'])
+  validate_absolute_path($config_hash['rhsm_ca_cert_dir'])
+  validate_string($config_hash['rhsm_repo_ca_cert'])
+  validate_absolute_path($config_hash['rhsm_productcertdir'])
+  validate_absolute_path($config_hash['rhsm_entitlementcertdir'])
+  validate_absolute_path($config_hash['rhsm_consumercertdir'])
+  validate_bool($config_hash['rhsm_manage_repos'])
+  validate_numeric($config_hash['rhsmcertd_certcheckinterval'])
+  validate_numeric($config_hash['rhsmcertd_autoattachinterval'])
 
   class { '::subscription_manager::install': } ->
   class { '::subscription_manager::config': } ~>
