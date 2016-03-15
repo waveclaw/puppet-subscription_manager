@@ -9,6 +9,7 @@ class subscription_manager::defaults {
     'RedHat', 'CentOS', 'Scientific', 'Fedora': {
       $server_hostname = 'subscription.rhn.redhat.com'
       $package_names = ['subscription-manager']
+      $service_packages = ['katello-agent']
       $service_name = 'goferd'
       $service_status = 'running'
       $config_hash = {
