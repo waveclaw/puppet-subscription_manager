@@ -9,6 +9,15 @@ class subscription_manager::install {
     ensure => present,
   }
 
+  if ($::subscription_manager::service_status in ['running', 'true']) {
+    # 'true' is another value for running per
+    #   https://docs.puppetlabs.com/puppet/latest/reference/type.html#service-attribute-ensure
+    package { $::subscription_manager::service_packages:
+      ensure  => present,
+      require => Package[ $::subscription_manager::package_names ]
+    }
+  }
+
   # support a custom repository if procided
   if $::subscription_manager::repo != '' and
     $::subscription_manager::repo != undef {

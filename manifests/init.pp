@@ -58,6 +58,7 @@
 #
 class subscription_manager (
   $package_names   = $::subscription_manager::defaults::package_names,
+  $service_packages= $::subscription_manager::defaults::service_packages,
   $service_name    = $::subscription_manager::defaults::service_name,
   $service_status  = $::subscription_manager::defaults::service_status,
   $server_hostname = $::subscription_manager::defaults::server_hostname,
