@@ -2,29 +2,46 @@
   "name": "waveclaw-subscription_manager",
   "version": "1.9.3",
   "author": "JD Powell <waveclaw@hotmail.com>",
-  "summary": "This module provides Custom Providers for RedHat Network Registering.",
+  "summary": "Manage Katello or Satellite registrations.",
+  "description": "Register CentOS or RHEL to Katello or Satellite 6.",
   "license": "Apache-2.0",
   "source": "https://github.com/waveclaw/puppet-subscription_manager",
   "project_page": "https://github.com/waveclaw/puppet-subscription_manager",
   "issues_url": "https://github.com/waveclaw/puppet-subscription_manager/issues",
-  "tags": [ "redhat", "katello", "satellite", "subscription-manager", "rhsm" ],
+  "tags": [ "redhat", "centos", "katello", "satellite", "subscription-manager", "rhsm", "rhn" ],
   "operatingsystem_support": [
   {
-  "operatingsystem":"RedHat",
-  "operatingsystemrelease":[ "5.0", "6.0", "7.0" ]
+    "operatingsystem":"RedHat",
+    "operatingsystemrelease":[
+      "5.0",
+      "6.0",
+      "7.0"
+    ]
   },
   {
-  "operatingsystem":"CentOS",
-  "operatingsystemrelease":[ "5.0", "6.0", "7.0" ]
+    "operatingsystem":"CentOS",
+    "operatingsystemrelease":[
+      "5.0",
+      "6.0",
+      "7.0"
+    ]
   },
   {
-  "operatingsystem":"Scientific",
-  "operatingsystemrelease":[ "5.0", "6.0", "7.0" ]
+    "operatingsystem":"Scientific",
+    "operatingsystemrelease":[
+      "5.0",
+      "6.0",
+      "7.0"
+    ]
   }
 
   ],
   "dependencies": [
-    { "name": "puppetlabs/transition", "version_requiement": ">= 0.1.0" },
-    { "name": "adrien/boolean", "version_requirement": ">= 0.5.0" }
+    { "name": "puppetlabs/transition",
+      "version_requiement": ">= 0.1.0"
+    },
+    { "name": "adrien/boolean",
+      "version_requirement": ">= 0.5.0"
+    }
   ]
 }
