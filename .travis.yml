@@ -1,6 +1,7 @@
-branches:
+branches: "master"
 script: "bundle exec rake spec SPEC_OPTS='--format documentation'"
-bundler_args: --without development
+bundler_args: "--without development"
+language: "ruby"
 
 rvm:
 - 1.9.3
