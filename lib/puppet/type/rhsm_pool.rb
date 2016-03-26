@@ -8,6 +8,7 @@
 #
 require 'puppet/property/boolean'
 require 'puppet/type'
+require 'date'
 
 Puppet::Type.newtype(:rhsm_pool) do
   @doc = <<EOD
@@ -142,15 +143,25 @@ end
 
   newproperty(:starts) do
     desc "When does this subscription to the pool start?"
-    validate do |value|
-     raise fail("Starts must be a date, was given #{value}") unless value.is_a? Date
+    munge do |value|
+      if ! value.is_a? Date
+        parseddate = Date.parse(value)
+      else
+        parseddate = value
+      end
+      parseddate
     end
   end
 
   newproperty(:ends) do
     desc "When does this subscription to the pool end?"
-    validate do |value|
-     raise fail("Ends must be a date, was given #{value}") unless value.is_a? Date
+    munge do |value|
+      if ! value.is_a? Date
+        parseddate = Date.parse(value)
+      else
+        parseddate = value
+      end
+      parseddate
     end
   end
 

@@ -1,3 +1,7 @@
+2016-03-29 1.10.0
+- lint metadata
+- switch from validation to munge of dates for start and end of pool dates.
+
 2016-03-03 1.9.3
 - clean the module
 

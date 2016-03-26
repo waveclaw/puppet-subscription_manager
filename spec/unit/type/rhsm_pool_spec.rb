@@ -88,19 +88,25 @@ describe described_class, 'type' do
         :id => '123abc', :ensure => :absent)
       expect(@resource[:ensure]).to eq(:absent)
     end
+
     [:starts, :ends].each { |dates|
     context "for #{dates}" do
       it "should have documentation for the property" do
         expect(described_class.attrclass(dates).doc.strip).not_to be_empty
       end
-      it 'should accept dates' do
-        testdate = Date.parse('2000/01/01')
+      it 'should accept date objects' do
+        testdate = Date.parse('01/01/2000')
         @resource = described_class.new(:id => '123abc', dates => testdate)
         expect(@resource[dates]).to eq(testdate)
       end
       it 'should reject non-dates' do
         expect{ described_class.new(:id => '123abc', dates => 'bad date')}.
           to raise_error(Puppet::ResourceError, /.*/)
+      end
+      it 'should covert date-like strings to date objects' do
+        testdate = '01/01/2000'
+        @resource = described_class.new(:id => '123abc', dates => testdate)
+        expect(@resource[dates]).to eq(Date.parse(testdate))
       end
     end
     }
