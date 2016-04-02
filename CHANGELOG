@@ -1,3 +1,6 @@
+2016-04-02 1.10.1
+- do not truncate centuries when parsing rhsm_pool start and end dates.
+
 2016-03-29 1.10.0
 - lint metadata
 - switch from validation to munge of dates for start and end of pool dates.

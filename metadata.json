@@ -1,6 +1,6 @@
 {
   "name": "waveclaw-subscription_manager",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "author": "JD Powell <waveclaw@hotmail.com>",
   "summary": "Manage Katello or Satellite registrations.",
   "description": "Register CentOS or RHEL to Katello or Satellite 6.",
@@ -40,7 +40,7 @@
       "version_requiement": ">= 0.1.0 < 1.0.0"
     },
     { "name": "adrien/boolean",
-      "version_requirement": ">= 0.5.0 < 1.0.0"
+      "version_requirement": ">= 1.0.0 < 2.0.0"
     }
   ]
 }

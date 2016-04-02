@@ -16,6 +16,9 @@ provider_class = Puppet::Type.type(:rhsm_pool).provider(:subscrption_manager)
 
 describe  provider_class, 'rhsm_pool provider' do
 
+  # notes:
+  #  - end year is purposefuly abbreviated and beyond the UNIX 32-bit epoch
+  #  - is an _expired_ service even though ends is most likely in your future
   raw_data =<<-EOD
   Subscription Name: Extra Packages for Enterprise Linux
   Provides:          Extra Packages for Enterprise Linux
@@ -31,7 +34,7 @@ describe  provider_class, 'rhsm_pool provider' do
   Status Details:    expired
   Subscription Type: permanent
   Starts:            06/01/2015
-  Ends:              05/24/2038
+  Ends:              05/24/38
   System Type:       Physical
 EOD
 
@@ -138,6 +141,18 @@ EOD
             expect(pool.public_send(key)).to      eq(resource[key])
         end
       }
+    end
+    context "should not truncate centuries" do
+      before :each do
+        allow(provider.class).to receive(:subscription_manager).with(
+          "list", "--consumed") { raw_data }
+      end
+      it "on the starts property" do
+        expect(provider.class.instances[0].starts.year).to eq(2015)
+      end
+      it "on the ends property" do
+        expect(provider.class.instances[0].ends.year).to eq(2038)
+      end
     end
   end
 

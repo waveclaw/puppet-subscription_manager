@@ -1,9 +1,9 @@
 #!/usr/bin/ruby
 #
-#  Provide a mechanism to subscribe to a katello or Satellite 6
-#  server.
+# Provider for the rhsm_pool Puppet native ruby type based
+# on the subscription_manager tool.
 #
-#   Copyright 2014-2015 Gaël Chamoulaud, James Laska
+#   Copyright 2014-2016 Gaël Chamoulaud, James Laska,
 #
 #   See LICENSE for licensing.
 #
@@ -23,14 +23,21 @@ Puppet::Type.type(:rhsm_pool).provide(:subscription_manager) do
 
 mk_resource_methods
 
+  # Attach to a pool based on the ID
+  #  This will enable the consumption of repositories licensed
+  #  through this pool.
   def create
     subscription_manager('attach','--pool',@resource[:id])
   end
 
+  # Detach from a pool
+  #  Given the serial number of our registration, remove the license
   def destroy
     subscription_manager('remove','--serial',@resource[:serial])
   end
 
+  #  List the pools
+  #    Given a valid registration exists, show all licensed pools
   def self.consumed_pools
     Puppet::debug("called subscription_manager with list --consumed")
     subscriptions = []
@@ -49,6 +56,14 @@ mk_resource_methods
       if line =~ /^\s*(Starts|Ends):\s*([0-9\/]+)$/
         key = $1.downcase.to_sym
         date = Date.strptime($2, "%m/%d/%Y") # TODO: test if sm uses Locale
+        # I hate date math, don't you?
+        if date.year < 100 # and (DateTime.now.year / 100 > 0)
+          # Congratulations, you've stripped out the century.
+          # Assume this is for _this_ century to fix it (or you have some
+          # really, really nice support contracts and a horrible Locale.)
+          centuries = ((Time.now.year / 100) * 100)
+          date = Date.new(date.year + centuries, date.month, date.day)
+        end
         subscription.store(key, date)
         next
       end
