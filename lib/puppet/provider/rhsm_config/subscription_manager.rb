@@ -139,7 +139,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     def build_config_parameters(config)
       params = []
       params << "config"
-      #FIXME: the code duplication this sections in nausiating
+      #FIXME: code duplication in this section
       if config == :remove
         @resource.class.regular_options.keys.each { |key|
           opt = @resource.class.regular_options[key]

@@ -74,8 +74,7 @@ class subscription_manager (
   $config_hash     = $::subscription_manager::defaults::config_hash,
 ) inherits ::subscription_manager::defaults {
 
-  # TODO: validate parameters here
-  # validate_x() requires puppetlabs-stdlib
+  # validate_x() requires puppetlabs-stdlib and annoys some of the users
 
   class { '::subscription_manager::install': } ->
   class { '::subscription_manager::config': } ~>

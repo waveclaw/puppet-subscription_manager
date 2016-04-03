@@ -21,8 +21,8 @@ class subscription_manager::defaults {
         'server_proxy_user'             => '',
         'server_proxy_password'         => '',
         'rhsm_baseurl'                  => 'https://cdn.redhat.com',
-        'rhsm_ca_cert_dir'              => '/etc/rhsm/ca/',
-        'rhsm_repo_ca_cert'             => '%(ca_cert_dir)sredhat-uep.pem',
+        'rhsm_ca_cert_dir'              => '/etc/rhsm/ca',
+        'rhsm_repo_ca_cert'             => '%(ca_cert_dir)/redhat-uep.pem',
         'rhsm_productcertdir'           => '/etc/pki/product',
         'rhsm_entitlementcertdir'       => '/etc/pki/entitlement',
         'rhsm_consumercertdir'          => '/etc/pki/consumer',
@@ -35,7 +35,7 @@ class subscription_manager::defaults {
       $activationkey = undef
       $pool = undef
       $servicelevel = undef
-      $environment = undef # cannot use with an activateion key!
+      $environment = undef # cannot use with an activation key!
       $autosubscribe = false
       $force = false
       $org = 'Default_Organization'
