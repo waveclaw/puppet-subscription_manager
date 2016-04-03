@@ -1,9 +1,11 @@
 2016-04-02 1.10.1
-- do not truncate centuries when parsing rhsm_pool start and end dates.
+- do not truncate centuries when parsing rhsm_pool start and end dates
+- document FIXME status and rhsm_pool functions
+- default configuration example changed to clarify the string interpolation
 
 2016-03-29 1.10.0
 - lint metadata
-- switch from validation to munge of dates for start and end of pool dates.
+- switch from validation to munge of dates for start and end of pool dates
 
 2016-03-03 1.9.3
 - clean the module
