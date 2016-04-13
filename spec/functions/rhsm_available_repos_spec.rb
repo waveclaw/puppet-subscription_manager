@@ -9,6 +9,7 @@
 
 require 'spec_helper'
 require 'facter/rhsm_available_repos'
+require 'facter/util/cacheable'
 
 cases = {
   :one   => {
@@ -101,6 +102,7 @@ describe Facter::Util::Rhsm_available_repos, :type => :puppet_function do
       end
     }
   end
+
   context 'on an unsupported platform' do
     before :each do
       allow(File).to receive(:exist?).with(
@@ -108,6 +110,31 @@ describe Facter::Util::Rhsm_available_repos, :type => :puppet_function do
     end
     it "should return nothing" do
       expect(Facter::Util::Rhsm_available_repos.rhsm_available_repos).to eq([])
+    end
+  end
+
+  context 'when caching' do
+    before :each do
+      allow(File).to receive(:exist?).with(
+      '/usr/sbin/subscription-manager') { true }
+      allow(Puppet.features).to receive(:external_facts?) { true }
+      Facter.clear
+    end
+    it 'should return and save a computed value with an empty cache' do
+      expect(Facter::Util::Cacheable).to receive(:cached?).with(
+      :rhsm_available_repos, 24 * 3600) { nil }
+      expect(Facter::Util::Resolution).to receive(:exec).with(
+      '/usr/sbin/subscription-manager repos') { 'Repo ID: foo' }
+      expect(Facter::Util::Cacheable).to receive(:cache).with(
+        :rhsm_available_repos, ['foo']) { nil }
+      expect(Facter.value(:rhsm_available_repos)).to eq(['foo'])
+    end
+    it 'should return a cached value with a full cache' do
+      expect(Facter::Util::Cacheable).to receive(:cached?).with(
+      :rhsm_available_repos, 24 * 3600) { 'bar' }
+      expect(Facter::Util::Rhsm_available_repos).to_not receive(
+        :rhsm_available_repos)
+      expect(Facter.value(:rhsm_available_repos)).to eq(['bar'])
     end
   end
 end

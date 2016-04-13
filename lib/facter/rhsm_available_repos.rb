@@ -7,6 +7,7 @@
 #
 #   See LICENSE for licensing.
 #
+require 'facter/util/cacheable'
 
 module Facter::Util::Rhsm_available_repos
   @doc=<<EOF
@@ -33,7 +34,22 @@ end
 
 Facter.add(:rhsm_available_repos) do
   confine do
-    File.exist?('/usr/sbin/subscription-manager')
+    File.exist? '/usr/sbin/subscription-manager'
   end
-  setcode { Facter::Util::Rhsm_available_repos.rhsm_available_repos }
+  setcode do
+    # TODO: use another fact to set the TTL in userspace
+    # right now this can be done by removing the cache files
+    cache = Facter::Util::Cacheable.cached?(:rhsm_available_repos, 24 * 3600)
+    if ! cache
+      repos = Facter::Util::Rhsm_available_repos.rhsm_available_repos
+      Facter::Util::Cacheable.cache(:rhsm_available_repos, repos)
+      repos
+    else
+      if cache.is_a? Array
+        cache
+      else
+        [cache]
+      end
+    end
+  end
 end

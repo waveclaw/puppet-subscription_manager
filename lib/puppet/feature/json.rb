@@ -10,4 +10,6 @@
 #
 # Copyright 2015 Gaël Chamoulaud <gchamoul@redhat.com>
 #
+require 'puppet/util/feature'
+
 Puppet.features.add(:json, :libs => ["json"])
