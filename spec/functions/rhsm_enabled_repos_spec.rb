@@ -130,7 +130,7 @@ describe Facter::Util::Rhsm_enabled_repos, :type => :puppet_function do
     end
     it 'should return a cached value with a full cache' do
       expect(Facter::Util::Cacheable).to receive(:cached?).with(
-      :rhsm_enabled_repos, 24 * 3600) { 'bar' }
+      :rhsm_enabled_repos, 24 * 3600) { {"rhsm_enabled_repos"=>['bar']} }
       expect(Facter::Util::Rhsm_enabled_repos).to_not receive(
         :rhsm_enabled_repos)
       expect(Facter.value(:rhsm_enabled_repos)).to eq(['bar'])

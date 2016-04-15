@@ -44,7 +44,7 @@ Facter.add(:rhsm_enabled_repos) do
   end
   setcode do
     # TODO: use another fact to set the TTL in userspace
-    # right now this can be done by removing the cache files    
+    # right now this can be done by removing the cache files
     cache = Facter::Util::Cacheable.cached?(:rhsm_enabled_repos, 24 * 3600)
     if ! cache
       repos = Facter::Util::Rhsm_enabled_repos.rhsm_enabled_repos
@@ -54,7 +54,7 @@ Facter.add(:rhsm_enabled_repos) do
       if cache.is_a? Array
         cache
       else
-        [cache]
+        cache["rhsm_enabled_repos"]
       end
     end
   end

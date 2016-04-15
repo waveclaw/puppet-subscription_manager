@@ -2,9 +2,12 @@
 #
 #  Provide a caching API for facter facts.
 #
-#   Copyright 2016 Jeremiah Powell <waveclaw@hotmail.com>
+#  Uses YAML storage in a single key hash based on
+#  the name of the fact.
 #
 #  Based on https://puppet.com/blog/facter-part-3-caching-and-ttl
+#
+#   Copyright 2016 Jeremiah Powell <waveclaw@hotmail.com>
 #
 #   See LICENSE for licensing.
 #
@@ -12,6 +15,7 @@
 require 'facter'
 require 'time'
 require 'yaml'
+require 'pathname'
 
 module Facter::Util::Cacheable
   @doc=<<EOF
@@ -33,6 +37,9 @@ EOF
       if File::exist?(cache_file) then
          begin
            cache = YAML.load_file(cache_file)
+           # returns [{}] structures if valid for Cached Facts
+           cache = cache[0] if cache.is_a? Array
+           cache = nil unless cache.is_a? Hash
            cache_time = File.mtime(cache_file)
          rescue Exception => e
              Facter.debug("#{e.backtrace[0]}: #{$!}.")
@@ -53,15 +60,22 @@ EOF
      # @return [object] Cached value (hash, string, array, number, etc)
      # @api public
      def cache(key, value, source = nil)
+       if key && value
          cache_file = get_cache(key, source)
+         cache_dir = Pathname.new(cache_file)
          begin
-           File.open(cache_file, 'w') do |out|
-             YAML.dump({key => value}, out)
+           if !File::exist?(cache_dir)
+                Dir.mkdir(cache_dir)
            end
+           # don't use the Rubyist standard pattern so we can test with rspec
+           out = File.open(cache_file, 'w')
+           YAML.dump({key => value}, out)
+           out.close()
          rescue Exception => e
            Facter.debug("#{e.backtrace[0]}: #{$!}.")
            cache = nil
          end
+       end
      end
 
      # find a source
@@ -80,12 +94,6 @@ EOF
          cache_dir = nil
          cache_file = source
      end
-     # side effects are bad, m'kay
-     #if cache_dir
-     #   if !File::exists?(cache_dir)
-     #     Dir.mkdir(cache_dir)
-     #   end
-     #end
      cache_file
    end
   end

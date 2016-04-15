@@ -48,7 +48,7 @@ Facter.add(:rhsm_available_repos) do
       if cache.is_a? Array
         cache
       else
-        [cache]
+        cache["rhsm_available_repos"]
       end
     end
   end
