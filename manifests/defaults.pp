@@ -8,7 +8,7 @@ class subscription_manager::defaults {
   case $::osfamily {
     'RedHat', 'CentOS', 'Scientific', 'Fedora': {
       $server_hostname = 'subscription.rhn.redhat.com'
-      $package_names = ['subscription-manager', 'gofer' ] # katello-agent?
+      $package_names = ['subscription-manager' ]
       $service_name = 'goferd'
       $service_status = 'running'
       $config_hash = {

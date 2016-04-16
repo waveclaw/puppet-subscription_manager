@@ -18,7 +18,6 @@ describe 'subscription_manager' do
     it { is_expected.to contain_class('subscription_manager::service').that_subscribes_to('subscription_manager::config') }
     it { is_expected.to contain_service('goferd').with_ensure('running') }
     it { is_expected.to contain_package('subscription-manager').with_ensure('present') }
-        it { is_expected.to contain_package('gofer').with_ensure('present') }
   end
 
   context 'supported operating systems' do
