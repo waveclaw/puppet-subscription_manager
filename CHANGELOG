@@ -1,5 +1,6 @@
-2016-04-02 1.11.0
+2016-04-15 1.11.1
 - add caching to repos facts consistent with Katello Agent defaults
+- document the new facts
 
 2016-04-02 1.10.1
 - do not truncate centuries when parsing rhsm_pool start and end dates

@@ -7,16 +7,20 @@ consumption of RedHat subscriptions using subscription-manager.
 
 This module is a fork of the [puppet-subscription_manager](https://github.com/jlaska/puppet-subscription_manager)
 module by James Laska that was in turn derived from [puppet-rhnreg_ks module](https://github.com/strider/puppet-rhnreg_ks)
- by Gaël Chamoulaud.  This fork provides an incompatible dedicated rhsm_config resource and separates
- repository management from control of the Yum overrides.
+ by Gaël Chamoulaud.  This fork provides an incompatible dedicated rhsm_config
+ resource and separates repository management from control of the Yum overrides.
+
+## Notice
 
 Due to various terminology differences between RHN Satellite, the upstream
 Katello project and the further upstream component projects of Candlepin, The
-Foreman, Puppet and Dogtag that the names of properties and resources may be
-confusing.  Katello Pools and Satellite Subscriptions are different things
-presented through the same underlying system resources.  Also Satellite will
-require attachment to such subscriptions whenever paid-for RedHat Network Channels
-are made available through a repository view.
+Foreman, Puppet and Dogtag the names of properties and resources may be
+confusing.  
+* Katello Pools and Satellite Subscriptions are different things presented
+  through the same underlying system resources.  This module calls both 'pools.'
+* Satellite, unlike Katello, will require attachment to such subscriptions
+  whenever paid-for RedHat Network Channels are made available through a
+  repository view.
 
 ## License
 
@@ -34,14 +38,43 @@ See CONTRIBUTORS for others that have code consumed by this fork.
 
 ## Classes and Defines
 
-This module provides the standard install-configure-service pattern. It also wraps
+This module provides the standard install-config-service pattern. It also wraps
 the provided native resources with a convenience class to enable simple or complex
-deployment.  A simple facter fact about the registered identity is provided.
+deployment.  
+
+It is expected that any users not making use of default top-level import of the
+module will be interested in the native types for customization.
+
+#### Facts
+
+Some custom facts are provided.
+
+A family of facts, similar to the rhsm_repo type, summarize the subscription
+state. These can return lists of data under facter 2.0.
+* rhsm_available_repos
+* rhsm_disabled_repos
+* rhsm_enabled_repos
+
+The repo facts make use of a simple caching mechanism using the facts.d
+directory to limit connections to the Katello or Satellite server.  Like the
+katello-agent these only pull data once a day. This is currently a hard-coded
+value.
+
+However the cache can be invalidated by finding and removing the cache
+files. These files should appear as normal YAML format external fact files.
+These facts may actually linger on after removing the rhsm module itself.
+
+The certificate authority is part of the rhsm_config type but is very useful for
+operations in involving subscription management.
+* rhsm_ca_name
+
+Of course, a fact exists about the identity of the client as known locally.
+* rhsm_identity
 
 ## Examples
 
 Setup to and register one CentOS 6 client to a Katello server using a public
-repositry to obtain the agent.
+repository to obtain the agent.
 
 ```puppet
 # (Optionally) Place this code in a .pp file some where on your Puppet's modulepath
