@@ -105,7 +105,6 @@ data.keys.each { |testcase|
   it "should store a #{testcase.to_s} value in YAML" do
     expect(Puppet.features).to receive(:external_facts?) { true }
     expect(Facter).to receive(:search_external_path) { ['/tmp'] }
-    expect(Pathname).to receive(:new).with(cache) { '/tmp' }
     expect(File).to receive(:exist?).with('/tmp') { true }
     # cannot do this test with a lambda like the File.open block passed in
     expect(File).to receive(:open).with(cache, 'w') { result }
@@ -123,7 +122,6 @@ data.keys.each { |testcase|
       cache = "/tmp/.yaml"
       expect(Puppet.features).to_not receive(:external_facts?) { true }
       expect(Facter).to_not receive(:search_external_path) { ['/tmp'] }
-      expect(Pathname).to_not receive(:new).with(cache) { '/tmp' }
       expect(File).to_not receive(:exist?).with('/tmp') { true }
       expect(File).to_not receive(:open).with(cache, 'w') { result }
       Facter::Util::Cacheable.cache(nil, nil)

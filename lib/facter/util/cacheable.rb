@@ -15,7 +15,6 @@
 require 'facter'
 require 'time'
 require 'yaml'
-require 'pathname'
 
 module Facter::Util::Cacheable
   @doc=<<EOF
@@ -32,7 +31,8 @@ EOF
     def cached?(key, ttl = 3600, source = nil)
       cache = nil
       # which cache?
-      cache_file = get_cache(key, source)
+      gotten_cache = get_cache(key, source)
+      cache_file = gotten_cache[0]
       # check cache
       if File::exist?(cache_file) then
          begin
@@ -61,8 +61,9 @@ EOF
      # @api public
      def cache(key, value, source = nil)
        if key && value
-         cache_file = get_cache(key, source)
-         cache_dir = Pathname.new(cache_file)
+         gotten_cache = get_cache(key, source)
+         cache_file = gotten_cache[0]
+         cache_dir = gotten_cache[1]
          begin
            if !File::exist?(cache_dir)
                 Dir.mkdir(cache_dir)
@@ -80,7 +81,7 @@ EOF
 
      # find a source
      # @param key [symbol] The identifier to use
-     # @return file [string] The cachefile location
+     # @return file [string, string] The cachefile location
      # @api private
      def get_cache(key, source)
      if ! source
@@ -94,7 +95,7 @@ EOF
          cache_dir = nil
          cache_file = source
      end
-     cache_file
+     [cache_file, cache_dir]
    end
   end
 end
