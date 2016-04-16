@@ -9,7 +9,7 @@ class subscription_manager::install {
     ensure => present,
   }
 
-  # support a custom repository if procided
+  # support a custom repository if provided
   if $::subscription_manager::repo != '' and
     $::subscription_manager::repo != undef {
     if versioncmp($::puppetversion, '3.4.1') > 0 {
