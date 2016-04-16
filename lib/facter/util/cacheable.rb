@@ -70,7 +70,7 @@ EOF
            end
            # don't use the Rubyist standard pattern so we can test with rspec
            out = File.open(cache_file, 'w')
-           YAML.dump({key => value}, out)
+           YAML.dump({(key.to_s) => value}, out)
            out.close()
          rescue Exception => e
            Facter.debug("#{e.backtrace[0]}: #{$!}.")
@@ -85,12 +85,16 @@ EOF
      # @api private
      def get_cache(key, source)
      if ! source
+       cache_dir = '/etc/facter/facts.d'
        if Puppet.features.external_facts?
-         cache_dir = Facter.search_external_path[0]
-       else
-         cache_dir = '/etc/facter/facts.d'
+         for dir in Facter.search_external_path
+           if File.exist?(dir)
+             cache_dir = dir
+             break
+           end
+         end
        end
-         cache_file = "#{cache_dir}/#{key.to_s}.yaml"
+       cache_file = "#{cache_dir}/#{key.to_s}.yaml"
      else
          cache_dir = nil
          cache_file = source

@@ -37,6 +37,7 @@ data.keys.each { |testcase|
     it "for #{testcase.to_s} values should return the cached value" do
       expect(Puppet.features).to receive(:external_facts?) { true }
       expect(Facter).to receive(:search_external_path) { ['/tmp'] }
+      expect(File).to receive(:exist?).with('/tmp') { true } # get_cache
       expect(File).to receive(:exist?).with(cache) { true }
       expect(YAML).to receive(:load_file).with(cache) {
         YAML.load_stream(rawdata)
@@ -55,6 +56,7 @@ data.keys.each { |testcase|
         it "for #{testcase.to_s} values should return nothing" do
           expect(Puppet.features).to receive(:external_facts?) { true }
           expect(Facter).to receive(:search_external_path) { ['/tmp'] }
+          expect(File).to receive(:exist?).with('/tmp') { true } # get_cache
           expect(File).to receive(:exist?).with(cache) { true }
           expect(YAML).to receive(:load_file).with(cache) {
             YAML.load_stream(rawdata)
@@ -72,6 +74,7 @@ data.keys.each { |testcase|
         it "for #{testcase.to_s} values should return nothing" do
           expect(Puppet.features).to receive(:external_facts?) { true }
           expect(Facter).to receive(:search_external_path) { ['/tmp'] }
+          expect(File).to receive(:exist?).with('/tmp') { true } # get_cache
           expect(File).to receive(:exist?).with(cache) { false }
           expect(YAML).to_not receive(:load_file).with(cache)
           expect(File).to_not receive(:mtime).with(cache)
@@ -86,6 +89,7 @@ data.keys.each { |testcase|
     it "should return nothing" do
       expect(Puppet.features).to receive(:external_facts?) { true }
       expect(Facter).to receive(:search_external_path) { ['/tmp'] }
+      expect(File).to receive(:exist?).with('/tmp') { true } # get_cache
       expect(File).to receive(:exist?).with(cache) { true }
       expect(YAML).to receive(:load_file).with(cache) {
           YAML.load_stream(rawdata)
@@ -105,7 +109,8 @@ data.keys.each { |testcase|
   it "should store a #{testcase.to_s} value in YAML" do
     expect(Puppet.features).to receive(:external_facts?) { true }
     expect(Facter).to receive(:search_external_path) { ['/tmp'] }
-    expect(File).to receive(:exist?).with('/tmp') { true }
+    expect(File).to receive(:exist?).with('/tmp') { true } # get_cache
+    expect(File).to receive(:exist?).with('/tmp') { true } # mk missing dir
     # cannot do this test with a lambda like the File.open block passed in
     expect(File).to receive(:open).with(cache, 'w') { result }
     # WTF? called 785 times?
