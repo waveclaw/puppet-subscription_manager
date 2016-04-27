@@ -92,6 +92,7 @@ describe 'subscription_manager' do
     }}
     it { is_expected.to contain_service('goferd').with_ensure('disabled') }
   end
+
   context 'when the rhsm_ca_name is different' do
     let(:facts) {{
       :osfamily        => 'RedHat',
@@ -103,12 +104,43 @@ describe 'subscription_manager' do
       :server_hostname => 'bar',
     }}
     it { is_expected.to contain_package('katello-ca-consumer-foo').with_ensure('absent') }
-    it { is_expected.to contain_package('katello-ca-consumer-bar').with_ensure('installed') }
+    it { is_expected.to contain_package('katello-ca-consumer-bar').with_ensure('latest') }
     it { is_expected.to_not contain_transition('purge-bad-rhsm_ca-package') }
     it { is_expected.to contain_rhsm_register('bar') }
   end
 
-  context "when CA is bad" do
+  context "when registration is good but force is false (the default)" do
+    let(:facts) {{
+      :osfamily        => 'RedHat',
+      :operatingsystem => 'RedHat',
+      :rhsm_ca_name    => 'foo',
+      :rhsm_identity   => 'x',
+    }}
+    let(:params) {{
+      :server_hostname => 'foo',
+    }}
+    it { is_expected.to contain_package('katello-ca-consumer-foo').with_ensure('latest') }
+    it { is_expected.to_not contain_transition('purge-bad-rhsm_ca-package') }
+    it { is_expected.to_not contain_rhsm_register('foo') }
+  end
+
+  context "when registration is good but force is true" do
+    let(:facts) {{
+      :osfamily        => 'RedHat',
+      :operatingsystem => 'RedHat',
+      :rhsm_ca_name    => 'foo',
+      :rhsm_identity   => 'x',
+    }}
+    let(:params) {{
+      :server_hostname => 'foo',
+            :force           => true,
+    }}
+    it { is_expected.to contain_package('katello-ca-consumer-foo').with_ensure('latest') }
+    it { is_expected.to contain_transition('purge-bad-rhsm_ca-package') }
+    it { is_expected.to contain_rhsm_register('foo') }
+  end
+
+  context "when registration is bad but force is true" do
     let(:facts) {{
       :osfamily        => 'RedHat',
       :operatingsystem => 'RedHat',
@@ -117,8 +149,9 @@ describe 'subscription_manager' do
     }}
     let(:params) {{
       :server_hostname => 'foo',
+      :force           => true,
     }}
-    it { is_expected.to contain_package('katello-ca-consumer-foo').with_ensure('installed') }
+    it { is_expected.to contain_package('katello-ca-consumer-foo').with_ensure('latest') }
     it { is_expected.to contain_transition('purge-bad-rhsm_ca-package') }
     it { is_expected.to contain_rhsm_register('foo') }
   end

@@ -28,7 +28,7 @@ class subscription_manager::install {
   #  - no identity
   #  - just install normally
   package { $_pkg:
-    ensure   => 'installed',
+    ensure   => 'latest',
     provider => 'rpm',
     source   =>
   "http://${::subscription_manager::server_hostname}/pub/katello-ca-consumer-latest.noarch.rpm",
@@ -57,8 +57,11 @@ class subscription_manager::install {
   #  - ca_name == server_hostname
   #  - identity is not set
   #  - reinstall (this requires a pupetlabs-transition)
-  if $::rhsm_identity == '' or $::rhsm_identity == undef and
-    $::rhsm_ca_name == $::subscription_manager::server_hostname {
+  # This case is meant to prevent extra regitrations on pre-6.2 Satellite
+  if ((($::rhsm_identity == '' or $::rhsm_identity == undef) and
+    $::rhsm_ca_name == $::subscription_manager::server_hostname) or
+    ($::rhsm_ca_name == $::subscription_manager::server_hostname and
+    $::subscription_manager::force == true )) {
     $_attributes = {
       'ensure'          => 'absent',
       'provider'        => 'rpm',
