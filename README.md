@@ -61,9 +61,12 @@ directory to limit connections to the Katello or Satellite server.  Like the
 katello-agent these only pull data once a day.
 
 The once-per day schedule is currently a hard-coded value. However the cache can
-be invalidated by finding and removing the cache files. These files should
-appear as normal YAML format external fact files. These facts may actually
-linger on after removing the rhsm module itself.
+be invalidated by finding and removing the cache files.
+
+The cache files should appear as normal YAML format external fact files. These
+facts may actually linger on after removing the rhsm module itself.  Beware that
+the location of external fact files is different between Puppet and facter for
+older versions of Puppet like 2 or 3 and facter 1.x.
 
 The certificate authority is part of the rhsm_config type but is very useful for
 operations in involving subscription management.

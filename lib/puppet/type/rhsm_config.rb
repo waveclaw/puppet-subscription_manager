@@ -94,6 +94,28 @@ def self.binary_options
   :rhsm_report_package_profile => 'rhsm.report_package_profile' }
 end
 
+# Handle special cases for default values provided by subscription Manager
+# @option [string] is - the current appearance of the property on system
+# @option [string] should - the property from the puppet catalog
+# @private
+def self.check_sync(is, should)
+  if is == :absent or is == :undef or is.nil? or is == '' or is == '[]' or is == []
+    if should == :absent or should == :undef or should.nil? or should == '' or
+      should == '[]' or should == []
+        true
+      else
+        false
+      end
+    else
+      if should == :absent or should == :undef or should.nil? or should == '' or
+        should == '[]' or should == []
+        false
+      else
+        is.downcase == should.downcase
+      end
+    end
+end
+
   newparam(:name, :namevar => true) do
     desc "The configuration file"
     defaultto $default_filename
@@ -116,20 +138,7 @@ end
       value.downcase unless value == :undef
     end
     def insync?(is)
-      # this is complicated because you cannot downcase a symbol
-      if is != :undef and is != :absent and !is.nil?
-        if should != :undef and should != absent and !should.nil?
-          is.downcase == should.downcase
-        else
-          false # undefine the setting
-        end
-      else
-        if should != :undef and should != :absent and !should.nil?
-          false # force setting to-be over undefined setting
-        else
-          true # both setting to-be and setting as-is are undefined
-        end
-      end
+      self.check_sync(is, should)
     end
   end
 
@@ -142,20 +151,7 @@ end
       value.downcase unless (value == :absent or value == :undef or value.nil?)
     end
     def insync?(is)
-      # this is complicated because you cannot downcase a symbol
-      if is != :undef and is != :absent and !is.nil?
-        if should != :undef and should != absent and !should.nil?
-          is.downcase == should.downcase
-        else
-          false # undefine the setting
-        end
-      else
-        if should != :undef and should != :absent and !should.nil?
-          false # force setting to-be over undefined setting
-        else
-          true # both setting to-be and setting as-is are undefined
-        end
-      end
+      self.check_sync(is, should)
     end
   end
 
