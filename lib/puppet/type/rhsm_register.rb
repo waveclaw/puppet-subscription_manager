@@ -32,10 +32,25 @@ EOD
       fail("Require a valid hostname. Received #{value} instead") unless value =~ /^[.a-zA-Z\-\_0-9]+$/
     end
     munge do |value|
-      value.downcase
+      value.downcase unless value == :undef
     end
     def insync?(is)
-      is.downcase == should.downcase
+      # this is complicated because you cannot downcase the :undef symbol
+      if is != :undef
+        # is has been set to 'something'
+        if should != :undef
+          is.downcase == should.downcase
+        else
+          false # wipeout the setting
+        end
+      else
+        # is has not been set to anything
+        if should != :undef
+          false # force setting to-be over undefined setting
+        else
+          true # both setting to-be and setting as-is are undefined
+        end
+      end
     end
   end
 

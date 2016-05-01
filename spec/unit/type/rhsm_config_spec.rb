@@ -126,6 +126,9 @@ describe described_class, 'type' do
        @resource = described_class.new(
         :name => '/foo/x.conf', :rhsm_baseurl => 'https://a.b.c')
        expect(@resource[:rhsm_baseurl]).to eq('https://a.b.c')
+       @resource = described_class.new(
+        :name => '/foo/x.conf', :rhsm_baseurl => 'file://a.b.c')
+       expect(@resource[:rhsm_baseurl]).to eq('file://a.b.c')       
      end
      it 'should reject path values' do
          expect{ described_class.new(
