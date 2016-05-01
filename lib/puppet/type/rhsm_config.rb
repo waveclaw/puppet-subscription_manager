@@ -112,10 +112,17 @@ end
   newproperty(:server_hostname) do
     desc "The rhsm server hostname."
     validate do |value|
-      fail("Require a valid hostname. Received #{value} instead") unless value =~ /^\[?[.a-zA-Z\-\_0-9]*\]?$/
+      fail("Require a valid hostname. Received #{value} instead") unless value =~ /^[.a-zA-Z\-\_0-9]+$/
     end
     munge do |value|
-      value.downcase unless (value == :absent or value == :undef or value.nil?)
+      value.downcase unless (value == :absent or value == :undef)
+    end
+    def insync?(is)
+      if (is.is_a String and should.is_a String)
+        is.downcase == should.downcase
+      else
+        is == should
+      end
     end
   end
 
