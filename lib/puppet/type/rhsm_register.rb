@@ -35,23 +35,20 @@ EOD
       value.downcase unless value == :undef
     end
     def insync?(is)
-      # this is complicated because you cannot downcase the :undef symbol
-      if is != :undef
-        # is has been set to 'something'
-        if should != :undef
+      # this is complicated because you cannot downcase a symbol
+      if is != :undef and is != :absent and !is.nil?
+        if should != :undef and should != absent and !should.nil?
           is.downcase == should.downcase
         else
-          false # wipeout the setting
+          false # undefine the setting
         end
       else
-        # is has not been set to anything
-        if should != :undef
+        if should != :undef and should != :absent and !should.nil?
           false # force setting to-be over undefined setting
         else
           true # both setting to-be and setting as-is are undefined
         end
       end
-    end
   end
 
   newproperty(:identity) do

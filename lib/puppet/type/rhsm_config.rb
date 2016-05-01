@@ -116,20 +116,21 @@ end
       value.downcase unless value == :undef
     end
     def insync?(is)
-      # this is complicated because you cannot downcase the :undef symbol
-      if is != :undef
-        if should != :undef
-          is.downcase == should.downcase
+      def insync?(is)
+        # this is complicated because you cannot downcase a symbol
+        if is != :undef and is != :absent and !is.nil?
+          if should != :undef and should != absent and !should.nil?
+            is.downcase == should.downcase
+          else
+            false # undefine the setting
+          end
         else
-          false # undefine the setting
+          if should != :undef and should != :absent and !should.nil?
+            false # force setting to-be over undefined setting
+          else
+            true # both setting to-be and setting as-is are undefined
+          end
         end
-      else
-        if should != :undef
-          false # force setting to-be over undefined setting
-        else
-          true # both setting to-be and setting as-is are undefined
-        end
-      end
     end
   end
 
@@ -139,18 +140,18 @@ end
       fail("Require a valid hostname. Received #{value} instead") unless value.nil? or value == '' or  value =~ /^[.a-zA-Z\-\_0-9]+$/
     end
     munge do |value|
-      value.downcase unless value == :undef
+      value.downcase unless (value == :absent or value == :undef or value.nil?)
     end
     def insync?(is)
-      # this is complicated because you cannot downcase the :undef symbol
-      if is != :undef
-        if should != :undef
+      # this is complicated because you cannot downcase a symbol
+      if is != :undef and is != :absent and !is.nil?
+        if should != :undef and should != absent and !should.nil?
           is.downcase == should.downcase
         else
           false # undefine the setting
         end
       else
-        if should != :undef
+        if should != :undef and should != :absent and !should.nil?
           false # force setting to-be over undefined setting
         else
           true # both setting to-be and setting as-is are undefined
