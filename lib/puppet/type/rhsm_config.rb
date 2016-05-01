@@ -33,7 +33,7 @@ Puppet::Type.newtype(:rhsm_config) do
      pluginconfdir          => '/etc/rhsm/pluginconf_d',
      plugindir              => '/usr/share/rhsm-plugins',
      productcertdir         => '/etc/pki/product',
-     repo_ca_cert           => '/etc/rhsm/ca/,'
+     repo_ca_cert           => '/etc/rhsm/ca/ca.pem,'
      report_package_profile => 1,
   }
 

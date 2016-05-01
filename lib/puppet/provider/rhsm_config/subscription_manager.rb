@@ -96,6 +96,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
             value = $1.strip
           end
       }
+      config.close()
       if value
         conf[:repo_ca_cert] = value
       end
