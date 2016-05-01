@@ -85,23 +85,23 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
         conf[:name] = '/etc/rhsm/rhsm.conf' #Puppet::Type.type(:rhsm_config).$default_filename
         conf[:provider] = :subscription_manager
         conf[:ensure] = :present
-      end
-    end
-    # bypass the config --list command for this since it typically has a variable expansion
-    begin
-      value = nil
-      config = File.open(conf[:name])
-      config.each { |line|
-          if line =~ /^repo_ca_cert = (.+)/
-            value = $1.strip
+        # bypass the config --list command for this since it typically has a variable expansion
+        begin
+          value = nil
+          config = File.open(conf[:name])
+          config.each { |line|
+              if line =~ /^repo_ca_cert = (.+)/
+                value = $1.strip
+              end
+          }
+          config.close()
+          if value
+            conf[:repo_ca_cert] = value
           end
-      }
-      config.close()
-      if value
-        conf[:repo_ca_cert] = value
+        rescue Exception => e
+            Puppet.debug("get_configuration failed to bypass for repo_ca_cert: #{e.to_s}")
+        end        
       end
-    rescue Exception => e
-        Puppet.debug("get_configuration failed to bypass for repo_ca_cert: #{e.to_s}")
     end
     conf
   end
