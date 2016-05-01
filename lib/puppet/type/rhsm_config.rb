@@ -313,7 +313,7 @@ end
       parsed = false
       begin
         File.open('/etc/rhsm/rhsm.conf').each do |line|
-          if line =~ /repo_ca_cert = (%\(ca_cert_dir\)s\/.*)/
+          if line =~ /repo_ca_cert = (..ca_cert_dir.s.+)/
             parsed = $1.strip
           end
         end
