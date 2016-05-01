@@ -118,7 +118,7 @@ end
       value.downcase unless (value == :absent or value == :undef)
     end
     def insync?(is)
-      if (is.is_a String and should.is_a String)
+      if (is.is_a? String and should.is_a? String)
         is.downcase == should.downcase
       else
         is == should
