@@ -294,9 +294,9 @@ end
         parsed = false
       end
       if parsed
-        parsed.downcase == should.downcase unless should.is_a Symbol
+        parsed == should
       else
-        is.downcase == should.downcase unless (is.is_a Symbol or should.is_a Symbol)
+        is == should
       end
     end
   end
