@@ -12,6 +12,28 @@ require 'puppet/parameter/boolean'
 require 'puppet/type'
 require 'uri'
 
+# Handle special cases for default values provided by subscription Manager
+# @option [string] is - the current appearance of the property on system
+# @option [string] should - the property from the puppet catalog
+# @return [boolean] if the is matches the should
+def check_sync(is, should)
+  if is == :absent or is == :undef or is.nil? or is == '' or is == '[]' or is == []
+    if should == :absent or should == :undef or should.nil? or should == '' or
+      should == '[]' or should == []
+        true
+      else
+        false
+      end
+    else
+      if should == :absent or should == :undef or should.nil? or should == '' or
+        should == '[]' or should == []
+        false
+      else
+        is.downcase == should.downcase
+      end
+    end
+end
+
 Puppet::Type.newtype(:rhsm_config) do
   @doc = <<-EOD
  Configure a system to user a Satellite or Spacewalk server.
@@ -94,27 +116,6 @@ def self.binary_options
   :rhsm_report_package_profile => 'rhsm.report_package_profile' }
 end
 
-# Handle special cases for default values provided by subscription Manager
-# @option [string] is - the current appearance of the property on system
-# @option [string] should - the property from the puppet catalog
-# @private
-def check_sync(is, should)
-  if is == :absent or is == :undef or is.nil? or is == '' or is == '[]' or is == []
-    if should == :absent or should == :undef or should.nil? or should == '' or
-      should == '[]' or should == []
-        true
-      else
-        false
-      end
-    else
-      if should == :absent or should == :undef or should.nil? or should == '' or
-        should == '[]' or should == []
-        false
-      else
-        is.downcase == should.downcase
-      end
-    end
-end
 
   newparam(:name, :namevar => true) do
     desc "The configuration file"
@@ -306,6 +307,25 @@ end
 
   newproperty(:rhsm_repo_ca_cert) do
     desc "Path to Repository CA certificates."
+    def insync(is)
+      # get the rhsm_ca_cert_dir, if this is %(ca_cert_dir)s then compare
+      # expand 'is' with that.
+      parsed = false
+      begin
+        File.open('/etc/rhsm/rhsm.conf').each do |line|
+          if line =~ /repo_ca_cert = (%\(ca_cert_dir\)s\/.*)/
+            parsed = $1.strip
+          end
+        end
+      rescue Exception => e
+        parsed = false
+      end
+      if parsed
+        check_sync(parsed)
+      else
+        check_sync(is)
+      end
+    end
   end
 
   newproperty(:rhsmcertd_certcheckinterval) do

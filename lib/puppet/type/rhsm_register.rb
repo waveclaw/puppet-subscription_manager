@@ -11,6 +11,28 @@ require 'puppet/parameter/boolean'
 require 'puppet/type'
 require 'uri'
 
+# Handle special cases for default values provided by subscription Manager
+# @option [string] is - the current appearance of the property on system
+# @option [string] should - the property from the puppet catalog
+# @return [boolean] if the is matches the should
+def check_sync(is, should)
+  if is == :absent or is == :undef or is.nil? or is == '' or is == '[]' or is == []
+    if should == :absent or should == :undef or should.nil? or should == '' or
+      should == '[]' or should == []
+        true
+      else
+        false
+      end
+    else
+      if should == :absent or should == :undef or should.nil? or should == '' or
+        should == '[]' or should == []
+        false
+      else
+        is.downcase == should.downcase
+      end
+    end
+end
+
 Puppet::Type.newtype(:rhsm_register) do
   @doc = <<-EOD
  Register a system to a Satellite or Spacewalk server.
@@ -25,28 +47,6 @@ Puppet::Type.newtype(:rhsm_register) do
 
 EOD
   ensurable
-
-  # Handle special cases for default values provided by subscription Manager
-  # @option [string] is - the current appearance of the property on system
-  # @option [string] should - the property from the puppet catalog
-  # @private
-  def check_sync(is, should)
-    if is == :absent or is == :undef or is.nil? or is == '' or is == '[]' or is == []
-      if should == :absent or should == :undef or should.nil? or should == '' or
-        should == '[]' or should == []
-          true
-        else
-          false
-        end
-      else
-        if should == :absent or should == :undef or should.nil? or should == '' or
-          should == '[]' or should == []
-          false
-        else
-          is.downcase == should.downcase
-        end
-      end
-  end
 
   newparam(:name, :namevar => true) do
     desc "The rhsm server hostname."
