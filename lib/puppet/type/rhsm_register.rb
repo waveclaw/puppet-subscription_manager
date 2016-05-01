@@ -49,6 +49,7 @@ EOD
           true # both setting to-be and setting as-is are undefined
         end
       end
+    end
   end
 
   newproperty(:identity) do
