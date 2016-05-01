@@ -116,21 +116,20 @@ end
       value.downcase unless value == :undef
     end
     def insync?(is)
-      def insync?(is)
-        # this is complicated because you cannot downcase a symbol
-        if is != :undef and is != :absent and !is.nil?
-          if should != :undef and should != absent and !should.nil?
-            is.downcase == should.downcase
-          else
-            false # undefine the setting
-          end
+      # this is complicated because you cannot downcase a symbol
+      if is != :undef and is != :absent and !is.nil?
+        if should != :undef and should != absent and !should.nil?
+          is.downcase == should.downcase
         else
-          if should != :undef and should != :absent and !should.nil?
-            false # force setting to-be over undefined setting
-          else
-            true # both setting to-be and setting as-is are undefined
-          end
+          false # undefine the setting
         end
+      else
+        if should != :undef and should != :absent and !should.nil?
+          false # force setting to-be over undefined setting
+        else
+          true # both setting to-be and setting as-is are undefined
+        end
+      end
     end
   end
 
