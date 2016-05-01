@@ -31,8 +31,8 @@ EOF
     def cached?(key, ttl = 3600, source = nil)
       cache = nil
       # which cache?
-      gotten_cache = get_cache(key, source)
-      cache_file = gotten_cache[0]
+      mycache = get_cache(key, source)
+      cache_file = mycache[:file]
       # check cache
       if File::exist?(cache_file) then
          begin
@@ -61,9 +61,9 @@ EOF
      # @api public
      def cache(key, value, source = nil)
        if key && value
-         gotten_cache = get_cache(key, source)
-         cache_file = gotten_cache[0]
-         cache_dir = gotten_cache[1]
+         mycache = get_cache(key, source)
+         cache_file = mycache[:file]
+         cache_dir = mycache[:dir]
          begin
            if !File::exist?(cache_dir)
                 Dir.mkdir(cache_dir)
@@ -88,7 +88,8 @@ EOF
        cache_dir = '/etc/facter/facts.d'
        if Puppet.features.external_facts?
          for dir in Facter.search_external_path
-           if File.exist?(dir)
+           # the plugin facts directory in /var/lib is cleaned each run
+           if File.exist?(dir) and dir != '/var/lib/puppet/facts.d'
              cache_dir = dir
              break
            end
@@ -99,7 +100,7 @@ EOF
          cache_dir = nil
          cache_file = source
      end
-     [cache_file, cache_dir]
+     {:file => cache_file, :dir => cache_dir }
    end
   end
 end
