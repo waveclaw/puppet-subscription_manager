@@ -281,24 +281,6 @@ end
 
   newproperty(:rhsm_repo_ca_cert) do
     desc "Path to Repository CA certificates."
-    def insync(is)
-      # bypass the provider, read the file directly due to variable expansion.
-      parsed = false
-      begin
-        File.open('/etc/rhsm/rhsm.conf').each do |line|
-          if line =~ /repo_ca_cert = (..ca_cert_dir.s.+)/
-            parsed = $1.strip
-          end
-        end
-      rescue Exception => e
-        parsed = false
-      end
-      if parsed
-        parsed == should
-      else
-        is == should
-      end
-    end
   end
 
   newproperty(:rhsmcertd_certcheckinterval) do
