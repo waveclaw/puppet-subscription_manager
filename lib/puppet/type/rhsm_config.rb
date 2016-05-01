@@ -282,8 +282,7 @@ end
   newproperty(:rhsm_repo_ca_cert) do
     desc "Path to Repository CA certificates."
     def insync(is)
-      # get the rhsm_ca_cert_dir, if this is %(ca_cert_dir)s then compare
-      # expand 'is' with that.
+      # bypass the provider, read the file directly due to variable expansion.
       parsed = false
       begin
         File.open('/etc/rhsm/rhsm.conf').each do |line|
@@ -295,9 +294,9 @@ end
         parsed = false
       end
       if parsed
-        check_sync(parsed)
+        parsed.downcase == should.downcase unless should.is_a Symbol
       else
-        check_sync(is)
+        is.downcase == should.downcase unless (is.is_a Symbol or should.is_a Symbol)
       end
     end
   end
