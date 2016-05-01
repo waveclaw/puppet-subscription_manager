@@ -30,7 +30,7 @@ EOD
   # @option [string] is - the current appearance of the property on system
   # @option [string] should - the property from the puppet catalog
   # @private
-  def self.check_sync(is, should)
+  def check_sync(is, should)
     if is == :absent or is == :undef or is.nil? or is == '' or is == '[]' or is == []
       if should == :absent or should == :undef or should.nil? or should == '' or
         should == '[]' or should == []
@@ -57,7 +57,7 @@ EOD
       value.downcase unless value == :undef
     end
     def insync?(is)
-      self.check_sync(is, should)
+      check_sync(is, should)
     end
   end
 
