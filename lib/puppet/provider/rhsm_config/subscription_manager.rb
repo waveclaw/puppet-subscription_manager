@@ -96,11 +96,11 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
           }
           config.close()
           if value
-            conf[:repo_ca_cert] = value
+            conf[:rhsm_repo_ca_cert] = value
           end
         rescue Exception => e
             Puppet.debug("get_configuration failed to bypass for repo_ca_cert: #{e.to_s}")
-        end        
+        end
       end
     end
     conf
