@@ -28,6 +28,7 @@ Apache License, Version 2.0. Read the LICENSE file for details of the licensing.
 
 ## Requirements
 * puppet-boolean [on GitHub](https://github.com/adrienthebo/puppet-boolean)
+* A good source for subscription-manager and its dependencies like [EPEL](http://repos.fedorapeople.org/repos/candlepin/subscription-manager/epel-subscription-manager.repo).
 
 ## Authors
 * Gaël Chamoulaud (gchamoul at redhat dot com)
@@ -57,12 +58,12 @@ state. These can return lists of data under facter 2.0.
 
 The repo facts make use of a simple caching mechanism using the facts.d
 directory to limit connections to the Katello or Satellite server.  Like the
-katello-agent these only pull data once a day. This is currently a hard-coded
-value.
+katello-agent these only pull data once a day.
 
-However the cache can be invalidated by finding and removing the cache
-files. These files should appear as normal YAML format external fact files.
-These facts may actually linger on after removing the rhsm module itself.
+The once-per day schedule is currently a hard-coded value. However the cache can
+be invalidated by finding and removing the cache files. These files should
+appear as normal YAML format external fact files. These facts may actually
+linger on after removing the rhsm module itself.
 
 The certificate authority is part of the rhsm_config type but is very useful for
 operations in involving subscription management.
@@ -153,7 +154,7 @@ to register.  Both cannot be provided and will cause an error.
 - **pool**: A specific license pool to attach the system to. Can include a default view using the formant pool-name/view-name.
 - **environment**: which environment to join at registration time
 - **autosubscribe**: Enable automatic subscription to repositories based on default Pool settings. Must be false when using an activation key unless specifiying a service leve.
-- **servicelevel**: provide automatic attachement to a service level in Satellite. Not applicable to katello installations.
+- **servicelevel**: provide automatic attachment to a service level in Satellite. Not applicable to katello installations.
 - **force**: Should the registration be forced. Use this option with caution, setting it true will cause the system to be unregistered before running 'subscription-manager register'. Default value `false`.
 
 ### rhsm_register Examples
@@ -340,9 +341,9 @@ This will install *adrian-boolean* and *puppetlabs-transaction* as dependencies.
 For pre-release code the GitHub repository can be cloned.
 
 In your puppet modules directory:
-
+```
     git clone https://github.com/jlaska/puppet-subscription_manager.git
-
+```
 Ensure the module is present in your puppetmaster's own environment (it doesn't
 have to use it) and that the master has pluginsync enabled.  Run the agent on
 the puppetmaster to cause the custom types to be synced to its local libdir
@@ -362,7 +363,7 @@ Pull requests and bug reports via GitHub are welcomed.
 For Pull Requests please:
 
 * puppet-lint code
-* provide rSpec tests if possible
+* provide rSpec tests if possible: code that sets tests on fire won't be merged
 * Follow the module style naming standards
 
 For a bug report please include or link:
@@ -377,4 +378,4 @@ For a bug report please include or link:
 - When did it start happening?
 - Is it _still_ happening or happening all the time?
 
-None of this guarantees a solution.  At the least it can warns others.
+None of this guarantees a solution but at the least it can warn others.
