@@ -69,7 +69,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   # trigger actions related to reistration on update of the properties
   def flush
     if exists?
-      if self.identity.nil?
+      if self.identity == :absent #self.identity.nil?
       # no valid registration
         register
         subscription_attach
