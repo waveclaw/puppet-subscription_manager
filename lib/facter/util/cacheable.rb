@@ -89,7 +89,9 @@ EOF
        if Puppet.features.external_facts?
          for dir in Facter.search_external_path
            # the plugin facts directory in /var/lib is cleaned each run
-           if File.exist?(dir) and dir != '/var/lib/puppet/facts.d'
+           if (File.exist?(dir) and
+             dir != '/var/lib/puppet/facts.d' and
+             dir != '/opt/puppetlabs/puppet/cache/facts.d/') # PE 2015 location
              cache_dir = dir
              break
            end

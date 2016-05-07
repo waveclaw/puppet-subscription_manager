@@ -69,7 +69,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   # trigger actions related to reistration on update of the properties
   def flush
     if exists?
-      if self.identity == :absent #self.identity.nil?
+      if self.identity.nil? or self.identity == :absent
       # no valid registration
         register
         subscription_attach
@@ -80,8 +80,10 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
         subscription_attach
       else
         # trying to re-register
-        if (@property_hash[:force].nil? or @property_hash[:force] == false) and
-           (@resource[:force].nil? or @resource[:force] == false)
+        if (@property_hash[:force].nil? or @property_hash[:force] == :absent or
+            @property_hash[:force] == false) and
+           (@resource[:force].nil? or @resource[:force] == :absent or
+            @resource[:force] == false)
               self.fail("Require force => true to register already registered server")
         end
         register
@@ -108,7 +110,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
 
   def self.instances
     registration = get_registration
-    if registration.nil? or registration == {}
+    if registration.nil? or registration == :absent or registration == {}
       [  ]
     else
       [ new(registration) ]
@@ -142,7 +144,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
       # propertly registered
       registration[:identity] = id
       registration[:ensure] = :present
-    elsif ! registration[:name].nil?
+    elsif ! (registration[:name].nil? or registration == :absent)
       # registration went bad
       registration[:ensure] = :absent
     end
@@ -154,15 +156,19 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   # @api private
   def build_register_parameters
     params = []
-    if (@resource[:username].nil? and @resource[:activationkey].nil?) or (!@resource[:username].nil? and !@resource[:activationkey].nil?)
+    if (@resource[:username].nil? and @resource[:activationkey].nil?) or
+       (@resource[:username] == :absent and @resource[:activationkey] == :absent) or
+       (!@resource[:username].nil? and !@resource[:activationkey].nil?) or
+       (@resource[:username] != :absent and @resource[:activationkey] != :absent)
         self.fail("Either an activation key or username+password is required to register, not both.")
     end
-    if @resource[:org].nil?
+    if (@resource[:org].nil? or @resource[:org] == :absent)
         self.fail("The 'org' paramater is required to register the system")
     end
     params << "register"
     params << "--force" if @resource[:force]
-    if !@resource[:username].nil? and !@resource[:username].nil?
+    if !@resource[:username].nil? and !@resource[:password].nil? and
+      @resource[:username] != :absent and @resource[:password] != :absent
       params << "--username" << @resource[:username]
       params << "--password" << @resource[:password]
       params << "--autosubscribe" if @resource[:autosubscribe]
@@ -170,7 +176,10 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
       params << "--activationkey" <<  @resource[:activationkey]
       # no autosubscribe with keys, see attach step instead
     end
-    params << "--environment" << @resource[:environment] unless (@resource[:environment].nil? or !@resource[:activationkey].nil?)
+    if !@resource[:environment].nil? and
+      (@resource[:activationkey].nil? or @resource[:activationkey] == :absent)
+     params << "--environment" << @resource[:environment]
+    end
     params << "--org" << @resource[:org]
     return params
   end
