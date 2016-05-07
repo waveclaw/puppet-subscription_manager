@@ -176,8 +176,8 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
       params << "--activationkey" <<  @resource[:activationkey]
       # no autosubscribe with keys, see attach step instead
     end
-    if !@resource[:environment].nil? and
-      (@resource[:activationkey].nil? or @resource[:activationkey] == :absent)
+    if ((!@resource[:environment].nil? and !@resource[:envrionemnt] == :absent) and
+      (@resource[:activationkey].nil? or @resource[:activationkey] == :absent))
      params << "--environment" << @resource[:environment]
     end
     params << "--org" << @resource[:org]
