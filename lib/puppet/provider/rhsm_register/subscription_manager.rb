@@ -151,32 +151,43 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     registration
   end
 
+  # Test that only one of two things and set and not both and not neighter
+  # @return [bool] if these are different and not unset
+  # @param [string] item 1
+  # @param [string] item 2
+  # @api private
+  def bothset(a, b)
+    !(a.nil? or a == :absent or a == '') and !(b.nil? or b == :absent or b == '')
+  end
+
   # Build a registration option string
   # @return [Array(String)] the options for a registration command
   # @api private
   def build_register_parameters
     params = []
-    if (@resource[:username].nil? and @resource[:activationkey].nil?) or
-       (@resource[:username] == :absent and @resource[:activationkey] == :absent) or
-       (!@resource[:username].nil? and !@resource[:activationkey].nil?) or
-       (@resource[:username] != :absent and @resource[:activationkey] != :absent)
-        self.fail("Either an activation key or username+password is required to register, not both.")
-    end
+    user = @resource[:username]
+    key = @resource[:activationkey]
+    if (user.nil? and key.nil?) or (user == :absent and key == :absent)
+         self.fail("Need an activation key or a username and password. Was given user '#{user}' and key '#{key}'")
+     end
+     if bothset(user, key)
+       self.fail("Only provide an activation key or username and password not both. Was given user '#{user}' and key '#{key}'")
+     end
     if (@resource[:org].nil? or @resource[:org] == :absent)
         self.fail("The 'org' paramater is required to register the system")
     end
     params << "register"
-    params << "--force" if @resource[:force]
-    if !@resource[:username].nil? and !@resource[:password].nil? and
-      @resource[:username] != :absent and @resource[:password] != :absent
-      params << "--username" << @resource[:username]
+    params << "--force" if @resource[:force] and @resource[:force] != :absent
+    if !user.nil? and !@resource[:password].nil? and
+      user != :absent and @resource[:password] != :absent
+      params << "--username" << user
       params << "--password" << @resource[:password]
       params << "--autosubscribe" if @resource[:autosubscribe]
     else
-      params << "--activationkey" <<  @resource[:activationkey]
+      params << "--activationkey" <<  key
       # no autosubscribe with keys, see attach step instead
     end
-    if ((!@resource[:environment].nil? and !@resource[:envrionemnt] == :absent) and
+    if ((!@resource[:environment].nil? and !@resource[:environment] == :absent) and
       (@resource[:activationkey].nil? or @resource[:activationkey] == :absent))
      params << "--environment" << @resource[:environment]
     end

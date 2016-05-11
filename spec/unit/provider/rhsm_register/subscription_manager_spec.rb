@@ -154,7 +154,7 @@ describe  provider_class, 'rhsm_register provider' do
         :password => 'bar',
         :provider => :subscription_manager,)
       expect{ res.provider.build_register_parameters }.to raise_error(
-        Puppet::Error, /.*activation key or username\+password.*/)
+        Puppet::Error, /.*activation key or username.+password.*/)
     end
     it 'should build a command with a username and password' do
       res = Puppet::Type.type(:rhsm_register).new(
@@ -244,6 +244,7 @@ describe  provider_class, 'rhsm_register provider' do
         :autosubscribe => true,
         :provider => provider)
       allow(provider).to receive(:exists?) { true }
+      expect(provider).to receive(:identity) { fake_id }
       expect{ provider.flush }.to raise_error(Puppet::Error, /.*force.*/)
     end
     it "should re-register when changing servers" do
@@ -272,6 +273,7 @@ describe  provider_class, 'rhsm_register provider' do
         :provider => provider)
         @res.provider.set(:name => 'bar')
       allow(provider).to receive(:exists?) { true }
+      expect(provider).to receive(:identity) { fake_id }      
       provider.flush
     end
     it "destroy should unregister when resource shouldn't exist" do
