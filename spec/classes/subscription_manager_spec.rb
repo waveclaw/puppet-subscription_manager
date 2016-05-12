@@ -44,6 +44,13 @@ describe 'subscription_manager' do
     end
   end
 
+  describe "subscription_manager class without any parameters on RedHat with nil puppetversion" do
+        let(:params) {{ }}
+        let(:facts) {{ :osfamily => 'RedHat', :puppetversion => nil }}
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_class('subscription_manager::install').that_comes_before('subscription_manager::config') }
+  end
+
   context 'unsupported operating system' do
     describe 'subscription_manager class without any parameters on Solaris/Nexenta' do
       let(:facts) {{

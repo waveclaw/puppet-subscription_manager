@@ -10,9 +10,13 @@ class subscription_manager::install {
   }
 
   # support a custom repository if provided
+  $_version = $::puppetversion ? {
+    undef   => '', # when was puppetversion added? (see PUP-4359)
+    default => $::puppetversion,
+  }
   if $::subscription_manager::repo != '' and
     $::subscription_manager::repo != undef {
-    if versioncmp($::puppetversion, '3.4.1') > 0 {
+    if versioncmp($_version, '3.4.1') > 0 {
       contain $::subscription_manager::repo
     } else {
       include $::subscription_manager::repo
