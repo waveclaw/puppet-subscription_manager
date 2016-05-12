@@ -8,7 +8,7 @@
 #   See LICENSE for licensing.
 #
 
-module Facter::Util::rhsm_disabled_pools
+module Facter::Util::Rhsm_disabled_pools
   @doc=<<EOF
   Disabled Subscription Pools for this client.
 EOF

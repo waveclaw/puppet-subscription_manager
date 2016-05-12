@@ -9,7 +9,7 @@
 #
 require 'facter/util/cacheable'
 
-module Facter::Util::rhsm_available_pools
+module Facter::Util::Rhsm_available_pools
   @doc=<<EOF
   Consumed available Subscription Pools for this client.
 EOF
