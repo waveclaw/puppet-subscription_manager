@@ -9,6 +9,7 @@
 
 require 'puppet'
 require 'date'
+require 'stringio'
 require 'spec_helper'
 require 'puppet/type/rhsm_register'
 
@@ -234,7 +235,8 @@ EOD
         expect(config[:server_hostname]).to eq('katello01.example.com')
         expect(config[:rhsm_baseurl]).to eq('https://katello01.example.com/pulp/repos')
       end
-      properties.keys.each { |key|
+      easytestable = properties.keys.select { |key| !(key.to_s.match(/rhsm_repo_ca_cert/)) }
+      easytestable.each { |key|
          it "should parse the #{key} property" do
             expect(provider.class).to receive(:subscription_manager).with(['config','--list']) { raw_data }
             configs = provider.class.instances
@@ -242,6 +244,13 @@ EOD
             expect(config.public_send(key)).to eq(resource[key])
         end
       }
+      it "should parse the rhsm_repo_ca_cert property" do
+         expect(File).to receive(:open).with('/etc/rhsm/rhsm.conf') { StringIO.new(raw_data) }
+         expect(provider.class).to receive(:subscription_manager).with(['config','--list']) { raw_data }
+         configs = provider.class.instances
+         config = configs[0]
+         expect(config.public_send(:rhsm_repo_ca_cert)).to eq(resource[:rhsm_repo_ca_cert])
+     end
     end
 
     describe 'build_config_parameters' do
