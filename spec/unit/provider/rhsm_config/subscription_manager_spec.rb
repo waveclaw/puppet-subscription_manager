@@ -235,8 +235,8 @@ EOD
         expect(config[:server_hostname]).to eq('katello01.example.com')
         expect(config[:rhsm_baseurl]).to eq('https://katello01.example.com/pulp/repos')
       end
-      easytestable = properties.keys.select { |key| !(key.to_s.match(/rhsm_repo_ca_cert/)) }
-      easytestable.each { |key|
+      properties.keys.each { |key|
+        next if key == :rhsm_repo_ca_cert
          it "should parse the #{key} property" do
             expect(provider.class).to receive(:subscription_manager).with(['config','--list']) { raw_data }
             configs = provider.class.instances
