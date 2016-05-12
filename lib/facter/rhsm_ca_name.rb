@@ -34,7 +34,7 @@ end
 
 Facter.add(:rhsm_ca_name) do
   confine do
-    File.exist?('/etc/rhsm/ca/katello-server-ca.pem')
+    File.exists?('/etc/rhsm/ca/katello-server-ca.pem')
   end
   setcode { Facter::Util::Rhsm_ca_name.rhsm_ca_name }
 end

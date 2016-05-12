@@ -22,7 +22,7 @@ end
 describe Facter::Util::Rhsm_ca_name, :type => :puppet_function do
   context 'on a supported platform' do
     before :each do
-      allow(File).to receive(:exist?).with(cafile) { true }
+      allow(File).to receive(:exists?).with(cafile) { true }
     end
     it "should return nothing when there is an error" do
       expect(File).to receive(:exists?).with(cafile) { true }
@@ -47,7 +47,7 @@ describe Facter::Util::Rhsm_ca_name, :type => :puppet_function do
   end
   context 'on an unsupported platform' do
     before :each do
-      allow(File).to receive(:exist?).with(
+      allow(File).to receive(:exists?).with(
       '/etc/rhsm/ca/katello-server-ca.pem') { false }
     end
     it "should return nothing" do
