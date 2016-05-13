@@ -126,7 +126,7 @@ end
     end
   end
 
-   newproperty(:server_proxy_hostname) do
+  newproperty(:server_proxy_hostname) do
     desc "The name of the proxy to connect through to reach the server."
     validate do |value|
       fail("Require a valid hostname. Received #{value} instead") unless value.nil? or value == '' or  value =~ /^\[?[.a-zA-Z\-\_0-9]*$\]?/
@@ -137,7 +137,7 @@ end
 
   end
 
-   newproperty(:server_proxy_user) do
+  newproperty(:server_proxy_user) do
     desc "Proxy username"
   end
 
@@ -236,7 +236,7 @@ end
         nil
       end
     end
- end
+  end
 
   newproperty(:rhsm_manage_repos,  :boolean => true) do
     desc "Create and use a redhat.repo yum file?"
