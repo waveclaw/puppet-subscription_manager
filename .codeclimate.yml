@@ -1,0 +1,21 @@
+---
+engines:
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - ruby
+      - puppet
+      - markdown
+  fixme:
+    enabled: true
+  rubocop:
+    enabled: true
+ratings:
+  paths:
+  - "**.pp"
+  - "**.rb"
+  - "**.md"
+exclude_paths:
+- spec/
+- tests/
