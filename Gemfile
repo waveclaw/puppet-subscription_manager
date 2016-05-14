@@ -13,6 +13,7 @@ gem 'hiera-puppet-helper', :git => 'https://github.com/bobtfish/hiera-puppet-hel
 gem "metadata-json-lint"
 gem 'puppet-syntax'
 gem 'puppet-lint'
+gem 'codeclimate-test-reporter', require: false
 end
 
 group :development do
@@ -21,4 +22,3 @@ gem "travis-lint"
 gem "puppet-blacksmith"
 gem "guard-rake"
 end
-

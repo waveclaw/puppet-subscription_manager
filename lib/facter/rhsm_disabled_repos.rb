@@ -7,6 +7,9 @@
 #
 #   See LICENSE for licensing.
 #
+if Puppet.features.facter_cacheable?
+  require 'facter/util/facter_cacheable'
+end
 
 module Facter::Util::Rhsm_disabled_repos
   @doc=<<EOF
@@ -40,14 +43,15 @@ end
 Facter.add(:rhsm_disabled_repos) do
   confine do
     File.exist? '/usr/sbin/subscription-manager'
+    Puppet.features.facter_cacheable?
   end
   setcode do
     # TODO: use another fact to set the TTL in userspace
     # right now this can be done by removing the cache files
-    cache = Facter::Util::Cacheable.cached?(:rhsm_disabled_repos, 24 * 3600)
+    cache = Facter::Util::Facter_cacheable.cached?(:rhsm_disabled_repos, 24 * 3600)
     if ! cache
       repos = Facter::Util::Rhsm_disabled_repos.rhsm_disabled_repos
-      Facter::Util::Cacheable.cache(:rhsm_disabled_repos, repos)
+      Facter::Util::Facter_cacheable.cache(:rhsm_disabled_repos, repos)
       repos
     else
       if cache.is_a? Array

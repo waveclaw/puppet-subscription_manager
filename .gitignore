@@ -11,3 +11,5 @@ vendor
 .idea
 bin
 Gemfile.lock
+coverage
+Modulefile

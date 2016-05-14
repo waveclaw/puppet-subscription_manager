@@ -41,6 +41,9 @@
     },
     { "name": "adrien/boolean",
       "version_requirement": ">= 1.0.0 < 2.0.0"
+    },
+    { "name": "waveclaw/facter_cacheable",
+      "version_requirement": ">= 0.1.0 < 1.0.0"
     }
   ]
 }

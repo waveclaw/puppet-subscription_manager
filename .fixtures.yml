@@ -4,5 +4,6 @@ fixtures:
      boolean: https://github.com/adrienthebo/puppet-boolean.git
   forge_modules:
     transition: "puppetlabs/transition"
+    facter_cacheable: "waveclaw/facter_cacheable"
   symlinks:
     subscription_manager: "#{source_dir}"
