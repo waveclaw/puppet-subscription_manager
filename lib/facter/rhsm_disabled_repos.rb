@@ -44,9 +44,8 @@ EOF
 end
 
 Facter.add(:rhsm_disabled_repos) do
-  confine do
-    File.exist? '/usr/sbin/subscription-manager'
-    Puppet.features.facter_cacheable?
+  confine { File.exist? '/usr/sbin/subscription-manager' }
+  confine { Puppet.features.facter_cacheable? }
   end
   setcode do
     # TODO: use another fact to set the TTL in userspace
