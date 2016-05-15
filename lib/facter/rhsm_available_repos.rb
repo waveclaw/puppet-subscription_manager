@@ -7,8 +7,10 @@
 #
 #   See LICENSE for licensing.
 #
-if Puppet.features.facter_cacheable?
-  require 'facter/util/facter_cacheable'
+begin
+    require 'facter/util/facter_cacheable'
+  rescue LoadError => e
+    Facter.debug("#{e.backtrace[0]}: #{$!}.")
 end
 
 module Facter::Util::Rhsm_available_repos

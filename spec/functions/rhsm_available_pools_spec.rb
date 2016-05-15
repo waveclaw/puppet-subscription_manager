@@ -8,14 +8,10 @@
 #
 
 require 'spec_helper'
-require 'repo_tests'
-require 'facter/rhsm_available_repos'
+require 'facter/rhsm_available_pools'
 
-describe Facter::Util::Rhsm_available_repos, :type => :puppet_function do
-
+describe Facter::Util::Rhsm_available_pools, :type => :puppet_function do
   context 'on a supported platform' do
-    it_behaves_like 'rhsm repo command',
-      Facter::Util::Rhsm_available_repos, 'rhsm_available_repos', :available
   end
 
   context 'on an unsupported platform' do
@@ -24,12 +20,10 @@ describe Facter::Util::Rhsm_available_repos, :type => :puppet_function do
       '/usr/sbin/subscription-manager') { false }
     end
     it "should return nothing" do
-      expect(Facter::Util::Rhsm_available_repos.rhsm_available_repos).to eq([])
+      expect(Facter::Util::Rhsm_available_pools.rhsm_available_pools).to eq([])
     end
   end
 
   context 'when caching' do
-    it_behaves_like 'cached rhsm repo command',
-      Facter::Util::Rhsm_available_repos, 'rhsm_available_repos', :rhsm_available_repos
   end
 end

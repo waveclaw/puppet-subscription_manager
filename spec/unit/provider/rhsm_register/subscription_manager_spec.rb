@@ -98,11 +98,53 @@ describe  provider_class, 'rhsm_register provider' do
     end
   }
 
+  describe "create" do
+    it "should update the property_hash" do
+     @res = Puppet::Type.type(:rhsm_register).new(parameters)
+     @res.provider.create()
+     expect(@res.provider.exists?).to eq(true)
+   end
+  end
+
+  describe 'self.flush' do
+    it "when the does not exist and should" do
+     @res = Puppet::Type.type(:rhsm_register).new(parameters)
+     expect(@res.provider).to receive(:exists?) { true }
+     expect(@res.provider).to receive(:register) { nil }
+     expect(@res.provider).to receive(:subscription_attach) { nil }
+     @res.provider.flush
+    end
+    it "when changing servers" do
+     @res = Puppet::Type.type(:rhsm_register).new(parameters.merge({:identity => fake_id}))
+     expect(@res.provider).to receive(:exists?) { true }
+     expect(@res.provider).to receive(:register) { nil }
+     expect(@res.provider).to receive(:subscription_attach) { nil }
+     @res.provider.set(:name => 'not-example')
+     @res.provider.flush
+    end
+    it "when removing-registinstration" do
+      @res = Puppet::Type.type(:rhsm_register).new(parameters)
+      expect(@res.provider).to receive(:exists?) { false }
+      expect(@res.provider).to receive(:unregister) { nil }
+      @res.provider.flush
+    end
+
+  end
+
   [  :instances, :prefetch ].each { |action|
     it "should respond to #{action}" do
       expect(provider.class).to respond_to(action)
     end
   }
+
+  describe 'self.prefetch' do
+    it { expect(provider.class).to respond_to(:prefetch) }
+    it 'can be called on the provider' do
+      expect(provider.class).to receive(:get_registration) { parameters }
+      provider.class.prefetch({ title => resource })
+      expect(resource.provider).to eq(provider)
+    end
+  end
 
   describe 'build_register_parameters' do
     it 'should respond to build_parameters' do
@@ -273,7 +315,7 @@ describe  provider_class, 'rhsm_register provider' do
         :provider => provider)
         @res.provider.set(:name => 'bar')
       allow(provider).to receive(:exists?) { true }
-      expect(provider).to receive(:identity) { fake_id }      
+      expect(provider).to receive(:identity) { fake_id }
       provider.flush
     end
     it "destroy should unregister when resource shouldn't exist" do

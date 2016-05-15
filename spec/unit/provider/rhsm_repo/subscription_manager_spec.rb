@@ -117,7 +117,8 @@ EOT
     it { expect(provider.class).to respond_to(:prefetch) }
     it 'can be called on the provider' do
       expect(provider.class).to receive(:read_repos) { [ properties ] }
-      provider.class.prefetch(properties)
+      provider.class.prefetch({ title1 => resource })
+      expect(resource.provider).to eq(provider)
     end
   end
 
