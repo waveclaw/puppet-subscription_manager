@@ -9,10 +9,9 @@
 #
 begin
     require 'facter/util/facter_cacheable'
-  rescue LoadError => e
+rescue LoadError => e
     Facter.debug("#{e.backtrace[0]}: #{$!}.")
 end
-
 
 module Facter::Util::Rhsm_disabled_repos
   @doc=<<EOF
@@ -46,7 +45,6 @@ end
 Facter.add(:rhsm_disabled_repos) do
   confine { File.exist? '/usr/sbin/subscription-manager' }
   confine { Puppet.features.facter_cacheable? }
-  end
   setcode do
     # TODO: use another fact to set the TTL in userspace
     # right now this can be done by removing the cache files

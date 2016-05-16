@@ -6,7 +6,6 @@
 #
 #   See LICENSE for licensing.
 #
-
 require 'spec_helper'
 require 'repo_tests'
 require 'facter/rhsm_disabled_repos'
