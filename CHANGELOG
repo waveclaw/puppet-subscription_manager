@@ -1,4 +1,4 @@
-2016-xx-xx 2.0.0
+2016-05-16 2.0.0
 - Puppet compatibility with 3.x and 4.x
 - Update readme for examples of hiera data for config type
 - Add facts about subscription pools for users without RHEL subscriptions
