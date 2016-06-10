@@ -14,6 +14,7 @@ gem "metadata-json-lint"
 gem 'puppet-syntax'
 gem 'puppet-lint'
 gem 'codeclimate-test-reporter', require: false
+gem 'beaker-rspec'
 end
 
 group :development do

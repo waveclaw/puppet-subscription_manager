@@ -13,3 +13,5 @@ bin
 Gemfile.lock
 coverage
 Modulefile
+log
+junuit
