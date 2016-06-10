@@ -25,7 +25,7 @@ rhsm_repo { 'rhel-6-server-java-rpms':
   content_label => 'rhel-6-java-rpms',
   id            => 'rhel-6-java-rpms',
   name          => 'RedHat Enterprise Linux 6 Server - Java (RPMs)',
-  repo_type     => channel,
+  repo_type     => 'channel',
 }
 
 EOD
@@ -35,7 +35,7 @@ EOD
   newparam(:id, :namevar => true) do
     desc "The rhsm channel subscribed to via the server."
     validate do |value|
-     fail("Updated should be a string.  Given #{value}") unless value.is_a? String
+     fail("ID should be a string.  Given #{value}") unless value.is_a? String
     end
   end
 
@@ -50,6 +50,20 @@ EOD
     desc "The yum repo url."
     validate do |value|
       fail("Must be a valid url") unless !!URI.parse(value)
+    end
+  end
+
+  newparam(:repo_type) do 
+    desc "What kind of repostiory is this"
+    validate do |value|
+     fail("Updated should be a string.  Given #{value}") unless value.is_a? String
+    end
+  end
+
+  newparam(:content_label) do
+    desc "Label, usually identital to ID"
+    validate do |value|
+     fail("Updated should be a string.  Given #{value}") unless value.is_a? String
     end
   end
 
