@@ -3,6 +3,10 @@ require 'puppet/vendor/semantic/lib/semantic'
 require 'puppet-lint/tasks/puppet-lint'
 require 'puppet-syntax/tasks/puppet-syntax'
 
+# Fixes conflicts with Puppet Labs vendored semantic gem and metadata-rake-lint
+require 'puppet/version'
+require 'puppet/vendor/semantic/lib/semantic' unless Puppet.version.to_f <3.6
+
 # These gems aren't always present, for instance
 # on Travis with --without development
 begin
