@@ -51,19 +51,18 @@ ensurable do
     provider.destroy
   end
 
-  def insync?(is)
-
-    @should.each do |should|
-      case should
-      when :present
-        return true if is == :present
-      when :absent
-        return true if is == :absent
-      end
-    end
-    return false
-  end
-  defaultto :present
+  #  def insync?(is)
+  #    @should.each { |should|
+  #      case should
+  #      when :present
+  #        return true if is == :present
+  #      when :absent
+  #        return true if is == :absent
+  #      end
+  #    }
+  #    return false
+  #  end
+  #  defaultto :present
 end
 
   newparam(:id, :namevar => true) do
