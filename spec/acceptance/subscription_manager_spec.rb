@@ -17,7 +17,9 @@ describe 'subscription_manager class' do
       class { 'subscription_manager': }
       EOS
 
-      it_behaves_like "a idempotent resource"
+      # check idempotency
+      expect(apply_manifest(pp).exit_code).to_not eq(1)
+      expect(apply_manifest(pp).exit_code).to eq(0)
     end
 
     describe package('subscription-manager') do
@@ -38,6 +40,7 @@ describe 'subscription_manager class' do
     # Using puppet_apply as a helper
     it 'should work with no errors' do
       pp = <<-EOS
+      class repo::subscription_manager {}
       class { 'subscription_manager':
           repo            => 'repo::subscription_manager',
           server_hostname => 'my_katello.example.com',
@@ -45,11 +48,11 @@ describe 'subscription_manager class' do
           force           => true,
           org             => 'My_Example_Org',
         }
-      }
       EOS
 
-      # Run it twice and test for idempotency
-       it_behaves_like "a idempotent resource"
+      # check idempotency
+      expect(apply_manifest(pp).exit_code).to_not eq(1)
+      expect(apply_manifest(pp).exit_code).to eq(0)
     end
 
     describe package('subscription-manager') do
