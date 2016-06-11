@@ -24,3 +24,8 @@ notifications:
     on_success: change  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
     on_start: never     # options: [always|never|change] default: always
+
+# code climate addons for Travis CI
+addons:
+  code_climate:
+    repo_token: 4831e72007d358c091ea2c9f565f66767cf7a2c56ce657095b53debbc6b7c29d
