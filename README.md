@@ -381,6 +381,14 @@ the puppetmaster to cause the custom types to be synced to its local libdir
 (`puppet master --configprint libdir`) and then restart the puppetmaster so it
 loads them.
 
+### Acceptance Tests
+
+The acceptantes tests require a working katello system, RedHat Satellite server or 
+just a repo of pre-built dependant packages. 
+
+Customization of the spec/spec_acceptance_helper.rb and specific tests is needed to
+point the full tests at working servers.  Otherwise some of the tests must fail.
+
 ## Issues
 
 Please file any issues or suggestions on [on GitHub](https://github.com/waveclaw/puppet-subscription_manager/issues)

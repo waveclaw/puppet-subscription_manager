@@ -1,6 +1,6 @@
 # Puppet-Subscription_manager
 
-| [![Build Status](https://travis-ci.org/waveclaw/puppet-subscription_manager.svg?branch=master)](https://travis-ci.org/waveclaw/puppet-subscription_manager) | [![Code Climate](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/badges/gpa.svg)](https://codeclimate.com/github/waveclaw/puppet-subscription_manager) | [![Test Coverage](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/badges/coverage.svg)](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/coverage) |
+ [![Build Status](https://travis-ci.org/waveclaw/puppet-subscription_manager.svg?branch=master)](https://travis-ci.org/waveclaw/puppet-subscription_manager) [![Code Climate](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/badges/gpa.svg)](https://codeclimate.com/github/waveclaw/puppet-subscription_manager)  [![Test Coverage](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/badges/coverage.svg)](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/coverage) |
 
 This module provides Custom Puppet Provider to handle registration and
 consumption of RedHat subscriptions using subscription-manager.
@@ -380,6 +380,14 @@ have to use it) and that the master has pluginsync enabled.  Run the agent on
 the puppetmaster to cause the custom types to be synced to its local libdir
 (`puppet master --configprint libdir`) and then restart the puppetmaster so it
 loads them.
+
+### Acceptance Tests
+
+The acceptantes tests require a working katello system, RedHat Satellite server or 
+just a repo of pre-built dependant packages. 
+
+Customization of the spec/spec_acceptance_helper.rb and specific tests is needed to
+point the full tests at working servers.  Otherwise some of the tests must fail.
 
 ## Issues
 
