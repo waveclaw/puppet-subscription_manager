@@ -18,7 +18,7 @@ gem 'beaker-rspec'
 gem 'serverspec',                    :require => false
 gem 'beaker-puppet_install_helper',  :require => false
 gem 'master_manipulator',            :require => false
-gem 'beaker-hostgenerator',          *location_for(ENV['BEAKER_HOSTGENERATOR_VERSION'])
+gem 'beaker-hostgenerator'
 end
 
 group :development do
