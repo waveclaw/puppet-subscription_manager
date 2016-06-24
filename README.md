@@ -15,7 +15,7 @@ module by James Laska that was in turn derived from [puppet-rhnreg_ks module](ht
 Due to various terminology differences between RHN Satellite, the upstream
 Katello project and the further upstream component projects of Candlepin, The
 Foreman, Puppet and Dogtag the names of properties and resources may be
-confusing.  
+confusing.
 * Katello Pools and Satellite Subscriptions are different things presented
   through the same underlying system resources.  This module calls both 'pools.'
 * Satellite, unlike Katello, will require attachment to such subscriptions
@@ -41,7 +41,7 @@ See CONTRIBUTORS for others that have code consumed by this fork.
 
 This module provides the standard install-config-service pattern. It also wraps
 the provided native resources with a convenience class to enable simple or complex
-deployment.  
+deployment.
 
 It is expected that any users not making use of default top-level import of the
 module will be interested in the native types for customization.
@@ -82,7 +82,7 @@ repository to obtain the agent.
 
 ```puppet
 # (Optionally) Place this code in a .pp file some where on your Puppet's modulepath
-# such as a file named subscription_manager.pp in a module named repo.  
+# such as a file named subscription_manager.pp in a module named repo.
 # The autoloader will be triggered by the rhsm module to search for this class.
 class repo::subscription_manager {
   yumrepo { 'dgoodwin-subscription-manager':
@@ -114,7 +114,7 @@ Register a RedHat Enterprise 7 or CentOS 7 node to the RedHat Network with
 Satellite 6.
 
 ```puppet
-Class { 'subscription_manager':
+class { 'subscription_manager':
    org           => 'My_Company_Org_in_RHN',
    username      => 'some_rhn_special_user',
    password      => 'password123',
@@ -257,7 +257,7 @@ subscription_manager::config_hash:
 
 Users should only need to provide the settings in hiera that differ from any of
 the defaults which are used in the module.  If you are using the resource you
-will have to provide everything you want to set.  
+will have to provide everything you want to set.
 
 ### rhsm\_repo
 
@@ -365,7 +365,7 @@ For released version the module can be installed with the Puppet module tool fro
 ```
   puppet module install waveclaw-subscription_manager
 ```
-This will install *adrian-boolean* and *puppetlabs-transaction* as dependencies.
+This will install *adrian-boolean* and *puppetlabs-transition* as dependencies.
 
 ### Development Version
 
@@ -383,8 +383,8 @@ loads them.
 
 ### Acceptance Tests
 
-The acceptantes tests require a working katello system, RedHat Satellite server or 
-just a repo of pre-built dependant packages. 
+Acceptance tests require a working katello system, RedHat Satellite server or
+just a repo of pre-built dependant packages.
 
 Customization of the spec/spec_acceptance_helper.rb and specific tests is needed to
 point the full tests at working servers.  Otherwise some of the tests must fail.
