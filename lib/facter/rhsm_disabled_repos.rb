@@ -42,23 +42,31 @@ EOF
   end
 end
 
-Facter.add(:rhsm_disabled_repos) do
-  confine { File.exist? '/usr/sbin/subscription-manager' }
-  confine { Puppet.features.facter_cacheable? }
-  setcode do
-    # TODO: use another fact to set the TTL in userspace
-    # right now this can be done by removing the cache files
-    cache = Facter::Util::Facter_cacheable.cached?(:rhsm_disabled_repos, 24 * 3600)
-    if ! cache
-      repos = Facter::Util::Rhsm_disabled_repos.rhsm_disabled_repos
-      Facter::Util::Facter_cacheable.cache(:rhsm_disabled_repos, repos)
-      repos
-    else
-      if cache.is_a? Array
-        cache
-      else
-        cache["rhsm_disabled_repos"]
+if File.exist? '/usr/sbin/subscription-manager'
+  if Puppet.features.facter_cacheable?
+    Facter.add(:rhsm_disabled_repos) do
+      confine { File.exist? '/usr/sbin/subscription-manager' }
+      confine { Puppet.features.facter_cacheable? }
+      setcode do
+        # TODO: use another fact to set the TTL in userspace
+        # right now this can be done by removing the cache files
+        cache = Facter::Util::Facter_cacheable.cached?(:rhsm_disabled_repos, 24 * 3600)
+        if ! cache
+          repos = Facter::Util::Rhsm_disabled_repos.rhsm_disabled_repos
+          Facter::Util::Facter_cacheable.cache(:rhsm_disabled_repos, repos)
+          repos
+        else
+          if cache.is_a? Array
+            cache
+          else
+            cache["rhsm_disabled_repos"]
+          end
+        end
       end
+    end
+  else
+    Facter.add(:rhsm_disabled_repos) do
+      setcode { Facter::Util::Rhsm_disabled_repos.rhsm_disabled_repos }
     end
   end
 end

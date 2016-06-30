@@ -14,6 +14,8 @@ require 'facter/rhsm_available_repos'
 describe Facter::Util::Rhsm_available_repos, :type => :puppet_function do
 
   context 'on a supported platform' do
+    before :each do
+   end
     it_behaves_like 'rhsm repo command',
       Facter::Util::Rhsm_available_repos, 'rhsm_available_repos', :available
   end

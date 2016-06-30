@@ -178,6 +178,7 @@ shared_examples_for 'consumed pools' do |mod, function, label|
   before :each do
     allow(File).to receive(:exist?).with(
     '/usr/sbin/subscription-manager') { true }
+    allow(Facter::Util::Facter_cacheable).to receive(:cached?) { false }    
   end
   it "should return nothing when there is an error" do
     expect(Facter::Util::Resolution).to receive(:exec).with(

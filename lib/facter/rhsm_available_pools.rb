@@ -42,23 +42,29 @@ EOF
   end
 end
 
-Facter.add(:rhsm_available_pools) do
-  confine { File.exist? '/usr/sbin/subscription-manager' }
-  confine { Puppet.features.facter_cacheable? }
-  setcode do
-    # TODO: use another fact to set the TTL in userspace
-    # right now this can be done by removing the cache files
-    cache = Facter::Util::Facter_cacheable.cached?(:rhsm_available_pools, 24 * 3600)
-    if ! cache
-      repos = Facter::Util::Rhsm_available_pools.rhsm_available_pools
-      Facter::Util::Facter_cacheable.cache(:rhsm_available_pools, repos)
-      repos
-    else
-      if cache.is_a? Array
-        cache
-      else
-        cache["rhsm_available_pools"]
+if File.exist? '/usr/sbin/subscription-manager'
+  if Puppet.features.facter_cacheable?
+    Facter.add(:rhsm_available_pools) do
+      setcode do
+        # TODO: use another fact to set the TTL in userspace
+        # right now this can be done by removing the cache files
+        cache = Facter::Util::Facter_cacheable.cached?(:rhsm_available_pools, 24 * 3600)
+        if ! cache
+          repos = Facter::Util::Rhsm_available_pools.rhsm_available_pools
+          Facter::Util::Facter_cacheable.cache(:rhsm_available_pools, repos)
+          repos
+        else
+          if cache.is_a? Array
+            cache
+          else
+            cache["rhsm_available_pools"]
+          end
+        end
       end
+    end
+  else
+    Facter.add(:rhsm_available_pools) do
+      setcode { Facter::Util::Rhsm_available_pools.rhsm_available_pools }
     end
   end
 end

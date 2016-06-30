@@ -6,6 +6,15 @@
 #
 #   See LICENSE for licensing.
 #
+
+# stub facter_cacheable
+module Facter::Util::Facter_cacheable
+  class <<self
+    def cached?
+    end
+  end
+end
+
 shared_examples_for 'rhsm repo command' do |mod, function, label|
   repo_cases = {
     :one   => {
@@ -98,6 +107,7 @@ shared_examples_for 'rhsm repo command' do |mod, function, label|
   before :each do
     allow(File).to receive(:exist?).with(
     '/usr/sbin/subscription-manager') { true }
+    allow(Facter::Util::Facter_cacheable).to receive(:cached?) { false }
   end
   it "should return nothing when there is an error" do
     expect(Facter::Util::Resolution).to receive(:exec).with(

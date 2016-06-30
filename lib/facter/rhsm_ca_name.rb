@@ -32,9 +32,8 @@ EOF
   end
 end
 
-Facter.add(:rhsm_ca_name) do
-  confine do
-    File.exists?('/etc/rhsm/ca/katello-server-ca.pem')
+if File.exists?('/etc/rhsm/ca/katello-server-ca.pem')
+  Facter.add(:rhsm_ca_name) do
+    setcode { Facter::Util::Rhsm_ca_name.rhsm_ca_name }
   end
-  setcode { Facter::Util::Rhsm_ca_name.rhsm_ca_name }
 end

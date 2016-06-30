@@ -11,6 +11,14 @@ require 'spec_helper'
 require 'pool_tests'
 require 'facter/rhsm_available_pools'
 
+# stub facter_cacheable
+module Facter::Util::Facter_cacheable
+  class <<self
+    def cached?
+    end
+  end
+end
+
 available_cases = {
   :one   => {
     :desc => 'a single active pool',
@@ -87,6 +95,34 @@ describe Facter::Util::Rhsm_available_pools, :type => :puppet_function do
       allow(File).to receive(:exist?).with(
       '/usr/sbin/subscription-manager') { true }
       allow(Puppet.features).to receive(:facter_cacheable?) { true }
+      allow(Facter::Util::Facter_cacheable).to receive(:cached?) { false }
+    end
+    it "should return nothing when there is an error" do
+      expect(Facter::Util::Resolution).to receive(:exec).with(
+        '/usr/sbin/subscription-manager list --available') { throw Error }
+      expect(Facter::Util::Rhsm_available_pools.rhsm_available_pools).to eq([])
+    end
+    available_cases.keys.each { |key|
+      desc = available_cases[key][:desc]
+      it "should process with get_input #{desc}" do
+        expect(Facter::Util::Rhsm_available_pools.get_output(available_cases[key][:data])).to  eq(
+          available_cases[key][:expected] )
+      end
+      it "should return results for #{desc}" do
+        expect(Facter::Util::Resolution).to receive(:exec).with(
+          '/usr/sbin/subscription-manager list --available') {
+            available_cases[key][:data]}
+          expect(Facter::Util::Rhsm_available_pools.rhsm_available_pools).to eq(
+            available_cases[key][:expected] )
+      end
+    }
+  end
+
+  context 'on a supported platform without caching' do
+    before :each do
+      allow(File).to receive(:exist?).with(
+      '/usr/sbin/subscription-manager') { true }
+      allow(Puppet.features).to receive(:facter_cacheable?) { false }
     end
     it "should return nothing when there is an error" do
       expect(Facter::Util::Resolution).to receive(:exec).with(

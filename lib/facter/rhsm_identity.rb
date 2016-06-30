@@ -31,9 +31,8 @@ EOF
   end
 end
 
-Facter.add(:rhsm_identity) do
-    confine do
-      File.exist? '/usr/sbin/subscription-manager'
-    end
+if File.exist? '/usr/sbin/subscription-manager'
+  Facter.add(:rhsm_identity) do
       setcode { Facter::Util::Rhsm_identity.rhsm_identity }
+  end
 end
