@@ -126,6 +126,28 @@ class { 'subscription_manager':
 Putting the explicit password in the code is a *bad* idea. Using hiera-gpg or
 hiera-eyaml back-ends is strongly encouraged for this example.
 
+
+Register a RHEL 7 node to Satellite 6 using an activation key.
+
+```puppet
+  $server_hostname = 'mysatellite.example.com'
+  $activationkey   = '1-2-3-example.com-key'
+  class { 'subscription_manager':
+     server_hostname => $server_hostname,
+     org             => 'My_Company_Org',
+     activationkey   => $activationkey,
+     autosubscribe   => true,
+     servicelevel    => 'STANDARD',
+     config_hash     => {
+       server_prefix          => '/rhsm',
+       rhsm_baseurl           => "https://${server_hostname}/pulp/repos",
+       rhsm_repo_ca_cert      => '%(ca_cert_dir)skatello-server-ca.pem',
+     },
+     service_name    =>'rhsmcertd',
+     force           => true,
+  }
+```
+
 ## Types and Providers
 
 The module adds the following new types:
