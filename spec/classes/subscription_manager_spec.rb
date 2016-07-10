@@ -9,19 +9,51 @@
 
 require 'spec_helper'
 
+shared_examples_for 'a supported operating system' do
+  it { is_expected.to contain_class('subscription_manager') }
+  it { is_expected.to contain_class('subscription_manager::defaults') }
+  it { is_expected.to contain_class('subscription_manager::install').that_comes_before('subscription_manager::config') }
+  it { is_expected.to contain_class('subscription_manager::config') }
+  it { is_expected.to contain_class('subscription_manager::service').that_subscribes_to('subscription_manager::config') }
+  it { is_expected.to contain_service('goferd').with_ensure('running') }
+  it { is_expected.to contain_package('subscription-manager').with_ensure('present') }
+end
+
+shared_examples_for 'an unsupported operating system' do |os|
+  it { is_expected.to contain_class('subscription_manager') }
+  it { is_expected.to contain_notify("#{os} not supported by subscription_manager") }
+  it { is_expected.to_not contain_class('subscription_manager::install') }
+  it { is_expected.to_not contain_class('subscription_manager::config') }
+  it { is_expected.to_not contain_class('subscription_manager::service') }
+  it { is_expected.to_not contain_package('katello-ca-consumer-foo') }
+  it { is_expected.to_not contain_rhsm_register('foo') }
+  it { is_expected.to_not contain_rhsm_config('/etc/rhsm/rhsm.conf') }
+end
+
+bados = {
+  'Solaris'  => 'Nexenta',
+  'Debian'   => 'Ubuntu',
+  'openSuSE' => 'openSUSE',
+  'SLES'     => 'SLES'
+}
+badosfamily = bados.keys
+
 describe 'subscription_manager' do
-  shared_examples_for 'a supported operating system' do
-    it { is_expected.to contain_class('subscription_manager') }
-    it { is_expected.to contain_class('subscription_manager::defaults') }
-    it { is_expected.to contain_class('subscription_manager::install').that_comes_before('subscription_manager::config') }
-    it { is_expected.to contain_class('subscription_manager::config') }
-    it { is_expected.to contain_class('subscription_manager::service').that_subscribes_to('subscription_manager::config') }
-    it { is_expected.to contain_service('goferd').with_ensure('running') }
-    it { is_expected.to contain_package('subscription-manager').with_ensure('present') }
+
+  context 'unsupported operating systems' do
+    badosfamily.each { |os|
+      describe "on unsupported operating system #{os}" do
+          let(:facts) {{
+            :osfamily        => os,
+            :operatingsystem => bados[os],
+          }}
+          it_behaves_like 'an unsupported operating system', bados[os]
+      end
+    }
   end
 
   context 'supported operating systems' do
-    ['RedHat', 'CentOS', 'Fedora'].each do |osfamily|
+    ['RedHat', 'CentOS', 'Fedora'].each { |osfamily|
       describe "subscription_manager class without any parameters on #{osfamily}" do
         let(:params) {{ }}
         let(:facts) {{ :osfamily => osfamily, }}
@@ -40,38 +72,9 @@ describe 'subscription_manager' do
         it { is_expected.to contain_rhsm_register('foo').that_requires('Rhsm_config[/etc/rhsm/rhsm.conf]') }
         it { is_expected.to contain_rhsm_config('/etc/rhsm/rhsm.conf') }
       end
-
-    end
+    }
   end
 
-  describe "subscription_manager class without any parameters on RedHat with nil puppetversion" do
-        let(:params) {{ }}
-        let(:facts) {{ :osfamily => 'RedHat', :puppetversion => nil }}
-        it { is_expected.to compile.with_all_deps }
-        it { is_expected.to contain_class('subscription_manager::install').that_comes_before('subscription_manager::config') }
-  end
-
-  context 'unsupported operating system' do
-    describe 'subscription_manager class without any parameters on Solaris/Nexenta' do
-      let(:facts) {{
-        :osfamily        => 'Solaris',
-        :operatingsystem => 'Nexenta',
-      }}
-
-      it { expect { is_expected.to contain_package('subscription_manager') }.to raise_error(Puppet::Error, /Nexenta not supported/) }
-    end
-  end
-
-  context 'unsupported operating system' do
-    describe 'subscription_manager class without any parameters on Debian/Ubuntu' do
-      let(:facts) {{
-        :osfamily        => 'Debian',
-        :operatingsystem => 'Ubuntu',
-      }}
-
-      it { expect { is_expected.to contain_package('subscription_manager') }.to raise_error(Puppet::Error, /Ubuntu not supported/) }
-    end
-  end
 
   context 'when given a repo option' do
     let(:facts) {{
@@ -162,4 +165,12 @@ describe 'subscription_manager' do
     it { is_expected.to contain_transition('purge-bad-rhsm_ca-package') }
     it { is_expected.to contain_rhsm_register('foo') }
   end
+
+  context "without any parameters with nil puppetversion" do
+    let(:params) {{ }}
+    let(:facts) {{ :osfamily => 'RedHat', :puppetversion => nil }}
+    it { is_expected.to compile.with_all_deps }
+    it { is_expected.to contain_class('subscription_manager::install').that_comes_before('subscription_manager::config') }
+  end
+
 end

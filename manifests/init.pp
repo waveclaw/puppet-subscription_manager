@@ -90,7 +90,7 @@ class subscription_manager (
       Class['::subscription_manager']
     }
     default: {
-      notice("${::operatingsystem} not supported")
+      notify { "${::operatingsystem} not supported by subscription_manager": }
     }
   }
 }
