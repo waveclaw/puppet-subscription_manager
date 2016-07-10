@@ -41,6 +41,11 @@
 #
 #  Use this if the required packages don't exist in a default repo.
 #
+# == Variables
+#
+# [*osfamily*]
+#   Will reject operation on unsupported platforms
+#
 # === Examples
 #
 #  class { subscription_manager:
@@ -76,8 +81,16 @@ class subscription_manager (
 
   # validate_x() requires puppetlabs-stdlib and annoys some of the users
 
-  class { '::subscription_manager::install': } ->
-  class { '::subscription_manager::config': } ~>
-  class { '::subscription_manager::service': } ->
-  Class['::subscription_manager']
+  # limit use to supported Operating Systems
+  case $::osfamily {
+    'RedHat', 'CentOS', 'Scientific', 'Fedora': {
+      class { '::subscription_manager::install': } ->
+      class { '::subscription_manager::config': } ~>
+      class { '::subscription_manager::service': } ->
+      Class['::subscription_manager']
+    }
+    default: {
+      notice("${::operatingsystem} not supported")
+    }
+  }
 }
