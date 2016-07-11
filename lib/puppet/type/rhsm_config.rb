@@ -41,10 +41,10 @@ EOD
 
 ensurable
 
-  # This type simulates a file but accesses it through an OS command
+# This type simulates a file but accesses it through an OS command
 $default_filename = '/etc/rhsm/rhsm.conf'
 
-def self.regular_options
+def self.text_options
   {:server_proxy_hostname => 'server.proxy_hostname',
   :server_proxy_user => 'server.proxy_user',
   :server_hostname => 'server.hostname',
@@ -78,10 +78,10 @@ end
     desc "The configuration file"
     defaultto $default_filename
     validate do |value|
-      unless value == File.expand_path(value) and
+      unless (value == File.expand_path(value) and
              value =~ /^\/.*/ and
              value.length > 1 and
-             !File.directory?(value)
+             !File.directory?(value))
         fail("Require an absolute path ending in a filename.  Was given #{value} for name.")
       end
     end
