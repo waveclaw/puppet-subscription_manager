@@ -29,7 +29,7 @@ EOF
           end
         }
       rescue Exception => e
-          Facter.debug("#{e.backtrace[0]}: #{$!}.")
+          Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
       end
       value
     end

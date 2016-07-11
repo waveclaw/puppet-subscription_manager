@@ -35,7 +35,7 @@ EOF
           '/usr/sbin/subscription-manager list --available')
         value = get_output(available)
       rescue Exception => e
-          Facter.debug("#{e.backtrace[0]}: #{$!}.")
+          Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
       end
       value
     end

@@ -23,27 +23,28 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   # (Re-)Write the configuration file for subscription-manager.
   #  This controls the target of registration and paths to features.
   def flush
+    Puppet.debug("rhsm.flush: will sync to disk the configuration.")
     if exists?
-      Puppet.debug("This server will be configured for rhsm")
+      Puppet.debug("rhsm.flush: This server will be configured for rhsm.")
       config = :apply
     else
-      Puppet.debug("The configuration will be destroyed.")
+      Puppet.debug("rhsm.flush: The configuration will be destroyed.")
       config = :remove
     end
     cmd = build_config_parameters(config)
     if cmd.nil?
-      Puppet.debug("rhsm.flush given nothing to configure")
+      Puppet.debug("rhsm.flush: given nothing to configure.")
     else
       subscription_manager(*cmd)
     end
   end
 
   def create
-    @resource[:ensure] = :present
+    @property_hash[:ensure] = :present
   end
 
   def destroy
-    @resource[:ensure] = :absent
+    @property_hash[:ensure] = :absent
   end
 
   def exists?
@@ -75,7 +76,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   # @return [hash] the settings of the configuration and the identity
   # @api private
   def self.get_configuration
-    #Puppet.debug("Will parse the configuration")
+    Puppet.debug("Will parse the configuration")
     conf = {}
     data = subscription_manager(['config','--list'])
     #Puppet.debug("Recieved #{data.size} characters of configuration data.")
