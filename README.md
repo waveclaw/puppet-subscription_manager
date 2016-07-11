@@ -141,7 +141,7 @@ Register a RHEL 7 node to Satellite 6 using an activation key.
      config_hash     => {
        server_prefix          => '/rhsm',
        rhsm_baseurl           => "https://${server_hostname}/pulp/repos",
-       rhsm_repo_ca_cert      => '%(ca_cert_dir)skatello-server-ca.pem',
+       rhsm_repo_ca_cert      => '%(ca_cert_dir)s/katello-server-ca.pem',
      },
      service_name    =>'rhsmcertd',
      force           => true,
