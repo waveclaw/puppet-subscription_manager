@@ -39,31 +39,9 @@ Puppet::Type.newtype(:rhsm_config) do
 
 EOD
 
-ensurable do
+ensurable
 
-  newvalue(:present) do
-    provider.create
-  end
-
-  newvalue(:absent) do
-    provider.destroy
-  end
-
-#  def insync?(is)
-#    @should.each { |should|
-#      case should
-#      when :present
-#        return true if is == :present
-#      when :absent
-#        return true if is == :absent
-#      end
-#    }
-#    return false
-#  end
-#  defaultto :present
-end
-
-  # This type simulates a file but access it through the OS command
+  # This type simulates a file but accesses it through an OS command
 $default_filename = '/etc/rhsm/rhsm.conf'
 
 def self.regular_options

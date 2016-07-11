@@ -81,7 +81,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     #Puppet.debug("Recieved #{data.size} characters of configuration data.")
     unless data.nil?
       conf = ini_parse(data)
-      unless conf.nil? or conf == {}
+      unless (conf.nil? or conf == {})
         conf[:name] = '/etc/rhsm/rhsm.conf' #Puppet::Type.type(:rhsm_config).$default_filename
         conf[:provider] = :subscription_manager
         conf[:ensure] = :present
