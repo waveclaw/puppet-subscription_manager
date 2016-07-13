@@ -277,7 +277,7 @@ EOD
             expect(@resource.provider.build_config_parameters(:remove)).to eq([
                 'config', "--remove=#{opt}" ])
           else
-            opt = @resource.class.regular_options[key]
+            opt = @resource.class.text_options[key]
             expect(@resource.provider.build_config_parameters(:apply)).to eq([
               'config', "--#{opt}", properties[key]
               ])
