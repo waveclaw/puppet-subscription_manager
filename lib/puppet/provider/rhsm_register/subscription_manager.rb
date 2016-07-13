@@ -110,7 +110,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
 
   def self.instances
     registration = get_registration
-    if registration.nil? or registration == :absent or registration == {}
+    if registration.nil? or registration == :absent or registration == {} or registration[:ensure] == :absent
       [  ]
     else
       [ new(registration) ]
