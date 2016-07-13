@@ -158,8 +158,8 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
       params << "config"
       #FIXME: code duplication in this section
       if config == :remove
-        @resource.class.regular_options.keys.each { |key|
-          opt = @resource.class.regular_options[key]
+        @resource.class.text_options.keys.each { |key|
+          opt = @resource.class.text_options[key]
           params << "--remove=#{opt}" unless @property_hash[key].nil? or key == :name
         }
         @resource.class.binary_options.keys.each { |key|
