@@ -110,9 +110,11 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
 
   def self.instances
     registration = get_registration
-    if registration.nil? or registration == :absent or registration == {} or registration[:ensure] == :absent
+    # test for == :absent is to handle a specific Ruby issue for Puppet 4
+    # NOT to test if the :ensure field is :absent
+    if registration.nil? or registration == :absent or registration == {}
       [  ]
-    else
+    else 
       [ new(registration) ]
     end
   end
