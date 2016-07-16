@@ -28,6 +28,7 @@ Apache License, Version 2.0. Read the LICENSE file for details of the licensing.
 
 ## Requirements
 * puppet-boolean [on GitHub](https://github.com/adrienthebo/puppet-boolean)
+* [puppetlabs-transition](https://forge.puppet.com/puppetlabs/transition) [on GitHub](https://github.com/puppetlabs/puppetlabs-transition)
 * A good source for subscription-manager and its dependencies like [EPEL](http://repos.fedorapeople.org/repos/candlepin/subscription-manager/epel-subscription-manager.repo).
 
 ## Authors
@@ -111,7 +112,7 @@ class { 'subscription_manager':
 ```
 
 Register a RedHat Enterprise 7 or CentOS 7 node to the RedHat Network with
-Satellite 6.
+Satellite 6 using a password and username.
 
 ```puppet
 class { 'subscription_manager':
@@ -121,9 +122,32 @@ class { 'subscription_manager':
    autosubscribe => true,
    servicelevel  => 'STANDARD',
 }
-```
+
 Putting the explicit password in the code is a *bad* idea. Using hiera-gpg or
 hiera-eyaml back-ends is strongly encouraged for this example.
+
+```
+Register a RedHat Enterprise 7 or CentOS 7 node to Satellite 6 using an activation key.
+
+```puppet
+  class { 'subscription_manager':
+     server_hostname => 'satellite.example.com',
+     org             => 'My_Company_Org',
+     activationkey   => '1234-key',
+     autosubscribe   => true,
+     servicelevel    => 'STANDARD',
+     config_hash     => {
+       server_prefix          => '/rhsm',
+       rhsm_baseurl           => "https://satellite.example.com/pulp/repos",
+       rhsm_repo_ca_cert      => '%(ca_cert_dir)s/katello-server-ca.pem',
+     },
+     service_name    =>'rhsmcertd',
+     force           => true,
+  }
+```
+Notice that the rhsm_repo_ca_cert must change to match the certificate provided
+by the katello-ca-consumer package on the Satellite server.
+
 
 ## Types and Providers
 
@@ -145,8 +169,8 @@ The module adds the following new types:
 - **org**: provide an organization to join (defaults to the Default_Organization
 )
 
-On of either the activation key or a username and password combination is needed
-to register.  Both cannot be provided and will cause an error.
+Either an activation key or a username and password combination is needed to
+register.  Both cannot be provided and will cause an error.
 
 - **activationkey**: The activation key to use when registering the system (cannot be used with username and password)
 - **password**: The password to use when registering the system
@@ -165,8 +189,8 @@ to register.  Both cannot be provided and will cause an error.
 Register clients to RedHat Subscription Management using an activation key:
 
 ```puppet
-rhsm_register { 'satelite.example.com':
-  server_hostname => 'my-satelite.example.com',
+rhsm_register { 'satellite.example.com':
+  server_hostname => 'satellite.example.com',
   activationkey   => '1-myactivationkey',
 }
 ```
@@ -188,7 +212,7 @@ Register clients to RedHat Subscription management and attach to a specific lice
 rhsm_register { 'subscription.rhn.example.com':
   username  => 'myusername',
   password  => 'mypassword',
-  pool		  => 'mypoolid',
+  pool      => 'mypoolid',
 }
 ```
 
@@ -205,7 +229,7 @@ The most important settings are given bellow
 - **server_prefix**: The subscription path.  Usually `/subscription` for RHN and `/rhsm` for a Katello installation.
 - **rhsm_baseurl**: The Content base URL in case the registration server has no content. An example would be [https://cdn.redhat.com](https://cdn.redhat.com) or [https://katello.example.com/pulp/repos](https://katello.example.com/pulp/repos)
 
-Note: rhsmcerd is not the same as Katello's goferd.
+Note: rhsmcertd is not the same as Katello's goferd.
 
 ##### rhsm_config Examples
 
@@ -360,7 +384,9 @@ rhsm_pool { '1a2b3c4d5e6f1234567890abcdef12345':
 
 ### Release Version
 
-For released version the module can be installed with the Puppet module tool from the Puppet Forge.
+For released version the module can be installed with the Puppet module tool
+from the Puppet Forge.  Or even added as a Puppetfile source with Puppet
+Enterprise or r10k or Puppet Librarian.
 
 ```
   puppet module install waveclaw-subscription_manager
@@ -372,19 +398,26 @@ This will install *adrian-boolean* and *puppetlabs-transition* as dependencies.
 For pre-release code the GitHub repository can be cloned.
 
 In your puppet modules directory:
+
+For the original module:
 ```
     git clone https://github.com/jlaska/puppet-subscription_manager.git
 ```
-Ensure the module is present in your puppetmaster's own environment (it doesn't
-have to use it) and that the master has pluginsync enabled.  Run the agent on
-the puppetmaster to cause the custom types to be synced to its local libdir
-(`puppet master --configprint libdir`) and then restart the puppetmaster so it
-loads them.
+
+For this module:
+```
+    git clone https://github.com/waveclaw/puppet-subscription_manager.git
+```
+
+Ensure the module is present in your puppetmaster's own environment.  The Puppet
+Master node doesn't have to use the module or Satellite itself. Ensure that the
+target node to register has pluginsync enabled.  Run the agent on the target node
+to cause the custom types to be synced to the local libdir (`puppet master --configprint libdir`).
 
 ### Acceptance Tests
 
 Acceptance tests require a working katello system, RedHat Satellite server or
-just a repo of pre-built dependant packages.
+just a repo of pre-built dependent packages.
 
 Customization of the spec/spec_acceptance_helper.rb and specific tests is needed to
 point the full tests at working servers.  Otherwise some of the tests must fail.
