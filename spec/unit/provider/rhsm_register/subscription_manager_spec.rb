@@ -61,8 +61,8 @@ describe  provider_class, 'rhsm_register provider' do
      report_package_profile = [1]
 
   [rhsmcertd]
-     autoattachinterval = 1440
- EOD
+     autoattachinterval = [1440]
+  EOD
 
 
   let(:resource) do
@@ -77,8 +77,8 @@ describe  provider_class, 'rhsm_register provider' do
     allow(provider.class).to receive(:suitable?) { true }
     allow(Puppet::Util).to receive(:which).with("subscription-manager") {
       "subscription-manager" }
-      allow(provider.class).to receive(:command).with(:subscription_manager) {
-        "subscription-manager" }
+    allow(provider.class).to receive(:command).with(:subscription_manager) {
+      "subscription-manager" }
   end
 
   after :each do
@@ -162,7 +162,7 @@ describe  provider_class, 'rhsm_register provider' do
       expect(res.provider.build_register_parameters).to eq(
       ["register", "--activationkey", "1-my-activation-key", "--org", "foo"])
     end
-    it 'should exclude envrionment with an activation key' do
+    it 'should exclude environment with an activation key' do
       res = Puppet::Type.type(:rhsm_register).new(
         :name => title,
         :ensure => :present,
@@ -239,6 +239,30 @@ describe  provider_class, 'rhsm_register provider' do
 
       expect(registration.ensure).to eq(:present)
       expect(registration.name).to eq(title)
+      expect(registration.identity).to eq(fake_id)
+    end
+    it "parses subscription manager config --list with non-standard hostname" do
+      expect(provider.class).to receive(:subscription_manager).with(
+        ['config','--list']) { config_data }
+      expect(provider.class).to receive(:identity) { fake_id }
+
+      registrations = provider.class.instances
+      registration = registrations[0]
+
+      expect(registration.ensure).to eq(:present)
+      expect(registration.name).to eq(title)
+      expect(registration.identity).to eq(fake_id)
+    end
+    it "parses subscription manager config --list with [default value]" do
+      expect(provider.class).to receive(:subscription_manager).with(
+        ['config','--list']) { 'hostname = [subscription.rhn.redhat.com]\n'  }
+      expect(provider.class).to receive(:identity) { fake_id }
+
+      registrations = provider.class.instances
+      registration = registrations[0]
+
+      expect(registration.ensure).to eq(:present)
+      expect(registration.name).to eq('subscription.rhn.redhat.com')
       expect(registration.identity).to eq(fake_id)
     end
     it "is absent for good name with bad identity" do
