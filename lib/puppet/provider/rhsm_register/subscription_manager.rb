@@ -114,7 +114,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     # NOT to test if the :ensure field is :absent
     if registration.nil? or registration == :absent or registration == {}
       [  ]
-    else 
+    else
       [ new(registration) ]
     end
   end
@@ -217,7 +217,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     host = nil
     config = subscription_manager(['config','--list'])
     config.split("\n").each { |line|
-      if line =~ /hostname = ([a-z0-9.\-_]+)/
+      if line =~ /hostname = \[?([a-z0-9.\-_]+)\]?/
         host = $1.chomp
       end
     }
