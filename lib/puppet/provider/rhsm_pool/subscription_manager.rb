@@ -8,7 +8,6 @@
 #   See LICENSE for licensing.
 #
 require 'puppet'
-require 'puppet/type/rhsm_pool'
 require 'date'
 
 Puppet::Type.type(:rhsm_pool).provide(:subscription_manager) do

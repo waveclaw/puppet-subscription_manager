@@ -9,7 +9,6 @@
 #
 require 'puppet'
 require 'facter'
-require 'puppet/type/rhsm_register'
 
 
 Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do

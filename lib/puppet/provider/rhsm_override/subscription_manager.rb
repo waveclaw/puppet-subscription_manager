@@ -8,7 +8,6 @@
 #   See LICENSE for licensing.
 #
 require 'puppet'
-require 'puppet/type/rhsm_override'
 require 'json'
 
 Puppet::Type.type(:rhsm_override).provide(:subscription_manager) do
