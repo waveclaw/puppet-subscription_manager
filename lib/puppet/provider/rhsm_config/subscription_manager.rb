@@ -8,7 +8,6 @@
 #   See LICENSE for licensing.
 #
 require 'puppet'
-require 'puppet/type/rhsm_config'
 
 Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   @doc = <<-EOS
