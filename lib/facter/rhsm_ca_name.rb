@@ -14,8 +14,7 @@ module Facter::Util::Rhsm_ca_name
   Identity for this client.
 EOF
   class << self
-    def rhsm_ca_name
-      cafile = '/etc/rhsm/ca/katello-server-ca.pem'
+    def rhsm_ca_name(cafile)
       ca = nil
       if File.exists?(cafile)
         begin
@@ -32,8 +31,18 @@ EOF
   end
 end
 
+cafile = nil
 if File.exists?('/etc/rhsm/ca/katello-server-ca.pem')
-  Facter.add(:rhsm_ca_name) do
-    setcode { Facter::Util::Rhsm_ca_name.rhsm_ca_name }
+  # Katello or Satellite
+  cafile = '/etc/rhsm/ca/katello-server-ca.pem'
+else
+  if File.exists?('/etc/rhsm/ca/candlepin-local.pem')
+    # RedHat SAM
+    cafile = '/etc/rhsm/ca/candlepin-local.pem'
   end
+end
+if !(cafile.nil?)
+    Facter.add(:rhsm_ca_name) do
+      setcode { Facter::Util::Rhsm_ca_name.rhsm_ca_name(cafile) }
+    end
 end
