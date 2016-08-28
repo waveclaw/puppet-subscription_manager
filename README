@@ -3,7 +3,12 @@
  [![Build Status](https://travis-ci.org/waveclaw/puppet-subscription_manager.svg?branch=master)](https://travis-ci.org/waveclaw/puppet-subscription_manager) [![Code Climate](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/badges/gpa.svg)](https://codeclimate.com/github/waveclaw/puppet-subscription_manager)  [![Test Coverage](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/badges/coverage.svg)](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/coverage)
 
 This module provides Custom Puppet Provider to handle registration and
-consumption of RedHat subscriptions using subscription-manager.
+consumption of RedHat subscriptions using subscription-manager as part of Katello
+or RedHat Satellite 6.
+
+This module can be used with RedHat Subscription Access Manager (SAM) but is not
+primarily designed to inter-operate with SAM separate from a Katello or Satellite
+service.
 
 This module is a fork of the [puppet-subscription_manager](https://github.com/jlaska/puppet-subscription_manager)
 module by James Laska that was in turn derived from [puppet-rhnreg_ks module](https://github.com/strider/puppet-rhnreg_ks)

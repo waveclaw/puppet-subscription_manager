@@ -25,7 +25,10 @@ class subscription_manager::install {
       Package[ $::subscription_manager::package_names ]
   }
 
-  $_pkg = "katello-ca-consumer-${::subscription_manager::server_hostname}"
+  $_prefix = $::subscription_manager::ca_package_prefix
+  $_suffix = $::subscription_manager::server_hostname
+  $_pkg = "${_prefix}${_suffix}" # 80-column puppet-lint limit workaround
+
   # four scenarios
   # I.  never registered
   #  - no ca_name
@@ -35,7 +38,7 @@ class subscription_manager::install {
     ensure   => 'latest',
     provider => 'rpm',
     source   =>
-  "http://${::subscription_manager::server_hostname}/pub/katello-ca-consumer-latest.noarch.rpm",
+  "http://${::subscription_manager::server_hostname}/pub/${::ca_package_prefix}latest.noarch.rpm",
   }
 
   # II. registered to correct server
@@ -52,8 +55,8 @@ class subscription_manager::install {
     if $::rhsm_ca_name != $::subscription_manager::server_hostname {
       # but CA is changing
       # remove the old package
-      package { "katello-ca-consumer-${::rhsm_ca_name}": ensure => 'absent', }
-      Package["katello-ca-consumer-${::rhsm_ca_name}"] -> Package[$_pkg]
+      package { "${_prefix}${::rhsm_ca_name}": ensure => 'absent', }
+      Package["${_prefix}${::rhsm_ca_name}"] -> Package[$_pkg]
     }
   }
 

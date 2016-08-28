@@ -38,4 +38,5 @@ class subscription_manager::defaults {
     $force = false
     $org = 'Default_Organization'
     $repo = undef
+    $ca_package_prefix = 'katello-ca-consumer-'
 }

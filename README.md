@@ -3,7 +3,16 @@
  [![Build Status](https://travis-ci.org/waveclaw/puppet-subscription_manager.svg?branch=master)](https://travis-ci.org/waveclaw/puppet-subscription_manager) [![Code Climate](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/badges/gpa.svg)](https://codeclimate.com/github/waveclaw/puppet-subscription_manager)  [![Test Coverage](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/badges/coverage.svg)](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/coverage)
 
 This module provides Custom Puppet Provider to handle registration and
-consumption of RedHat subscriptions using subscription-manager.
+consumption of RedHat subscriptions using subscription-manager as part of Katello
+or RedHat Satellite 6.
+
+This module can be used with RedHat Subscription Access Manager (SAM) but is not
+primarily designed to inter-operate with SAM separate from a Katello or Satellite
+service.
+
+> Note: you cannot use this module to switch between SAM and other products or
+> to SAM from a different product because of the changes in the internal name
+> for the CA certificates.
 
 This module is a fork of the [puppet-subscription_manager](https://github.com/jlaska/puppet-subscription_manager)
 module by James Laska that was in turn derived from [puppet-rhnreg_ks module](https://github.com/strider/puppet-rhnreg_ks)
@@ -18,9 +27,12 @@ Foreman, Puppet and Dogtag the names of properties and resources may be
 confusing.
 * Katello Pools and Satellite Subscriptions are different things presented
   through the same underlying system resources.  This module calls both 'pools.'
-* Satellite, unlike Katello, will require attachment to such subscriptions
+* Satellite, unlike Katello, will require attachment to subscriptions
   whenever paid-for RedHat Network Channels are made available through a
-  repository view.
+  repository view.   This module does not manage those certificates.
+* RedHat SAM is an installable RedHat supported version of the Candlepin service
+  which uses "candlepin-cert-consumer-" package name instead of of the package
+  name "katello-ca-consumer-".  Options are provided to select this.
 
 ## License
 
@@ -70,7 +82,8 @@ the location of external fact files is different between Puppet and facter for
 older versions of Puppet like 2 or 3 and facter 1.x.
 
 The certificate authority is part of the rhsm_config type but is very useful for
-operations in involving subscription management.
+operations in involving subscription management.  This differs slightly between
+Katelo, RedHat Satellte and RedHat SAM.
 * rhsm\_ca\_name
 
 Of course, a fact exists about the identity of the client as known locally.
@@ -145,9 +158,27 @@ Register a RedHat Enterprise 7 or CentOS 7 node to Satellite 6 using an activati
      force           => true,
   }
 ```
-Notice that the rhsm_repo_ca_cert must change to match the certificate provided
-by the katello-ca-consumer package on the Satellite server.
+> Notice that the rhsm_repo_ca_cert must change to match the certificate provided
+> by the katello-ca-consumer package on the Satellite server.
 
+
+Register to a local RedHat SAM server.
+
+```puppet
+  class { 'subscription_manager':
+     server_hostname   => 'sam.example.com',
+     org               => 'My_Company_Org',
+     activationkey     => '1234-key',
+     ca_package_prefix => 'candlepin-cert-consumer-', # note the trailing hypen
+     autosubscribe     => true,
+     servicelevel      => 'PREMIUM',
+     config_hash       => {
+       rhsm_repo_ca_cert      => '/etc/rhsm/ca/candlepin-local.pem',
+     },
+     service_name      =>'rhsmcertd',
+     force             => true,
+  }
+```
 
 ## Types and Providers
 

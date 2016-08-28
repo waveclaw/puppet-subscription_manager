@@ -72,6 +72,19 @@ describe 'subscription_manager' do
         it { is_expected.to contain_rhsm_register('foo').that_requires('Rhsm_config[/etc/rhsm/rhsm.conf]') }
         it { is_expected.to contain_rhsm_config('/etc/rhsm/rhsm.conf') }
       end
+      describe "subscription_manager class with a custom ca_prefix and server name on #{osfamily}" do
+        let(:params) {{
+          :activationkey => 'foo-bar',
+          :server_hostname => 'foo',
+          :ca_package_prefix => 'candlepin-cert-consumer-',
+          }}
+        let(:facts) {{ :osfamily => osfamily, }}
+        it { is_expected.to compile.with_all_deps }
+        it_behaves_like 'a supported operating system'
+        it { is_expected.to contain_package('candlepin-cert-consumer-foo') }
+        it { is_expected.to contain_rhsm_register('foo').that_requires('Rhsm_config[/etc/rhsm/rhsm.conf]') }
+        it { is_expected.to contain_rhsm_config('/etc/rhsm/rhsm.conf') }
+      end
     }
   end
 

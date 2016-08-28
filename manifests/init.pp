@@ -5,8 +5,13 @@
 # === Parameters
 #
 # [*package_names*]
-#   Name of packages to install. Defaults to subscrition-manager and
-#   katello-ca-consumer to get minimal client support working.
+#   Name of packages to install. Defaults to subscrition-manager to get minimal
+#   client support working.
+#
+# [*ca_package_prefix*]
+#   Override the prefix of the package name for CA consumer. This is needed to
+#   inegrate with RedHat Subscription Access Manager (SAM) and is otherwise
+#   set to a default of katello-ca-consumer-, (Please note the hyphen.)
 #
 # [*service_name*]
 #   Name of the services to run or disable.  Defaults to the goferd
@@ -63,6 +68,7 @@
 #
 class subscription_manager (
   $package_names   = $::subscription_manager::defaults::package_names,
+  $ca_package_prefix = $::subscription_manager::defaults::ca_package_prefix,
   $service_name    = $::subscription_manager::defaults::service_name,
   $service_status  = $::subscription_manager::defaults::service_status,
   $server_hostname = $::subscription_manager::defaults::server_hostname,
