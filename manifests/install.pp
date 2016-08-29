@@ -38,7 +38,7 @@ class subscription_manager::install {
     ensure   => 'latest',
     provider => 'rpm',
     source   =>
-  "http://${::subscription_manager::server_hostname}/pub/${::ca_package_prefix}latest.noarch.rpm",
+  "http://${::subscription_manager::server_hostname}/pub/${::subscription_manager::ca_package_prefix}latest.noarch.rpm",
   }
 
   # II. registered to correct server
