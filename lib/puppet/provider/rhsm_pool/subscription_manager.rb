@@ -72,7 +72,7 @@ mk_resource_methods
         subscription.store(key, value)
         next
       end
-      if line =~ /^\s*Pool ID:\s*(\h+)$/
+      if line =~ /^\s*Pool ID:\s*([0-9a-fA-F]+)$/
         value = $1.strip
         subscription.store(:id, value)
         subscription.store(:name, value)

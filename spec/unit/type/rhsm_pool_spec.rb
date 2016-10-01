@@ -81,6 +81,12 @@ describe described_class, 'type' do
         expect{ described_class.new(namevar => '@#_$)=')}.
            to raise_error(Puppet::ResourceError, /.*/)
       end
+      it 'should accept hex values' do
+        value = '1234abcdefABDCF'
+        @resource = described_class.new(namevar => value)
+        expect(@resource[namevar]).to eq(value)
+        expect(@resource[:name]).to eq(value)
+      end
     end
 
     it 'should support enabled' do

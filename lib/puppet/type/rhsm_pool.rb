@@ -68,7 +68,7 @@ end
   newparam(:id, :namevar => true) do
     desc "An Entitlement Pool to which the server is subscribed (Pool ID)"
     validate do |value|
-     raise fail("Pool ID must be an number, was given #{value}") unless value =~ /^\h+$/
+     raise fail("Pool ID must be a hex number, was given #{value}") unless value =~ /^[0-9a-fA-F]+$/
     end
   end
 
