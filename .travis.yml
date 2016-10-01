@@ -4,8 +4,8 @@ bundler_args: "--without development"
 language: "ruby"
 
 # dropped support for 1.9.3 since JSON_PURE 2.0.2 dies not support it
+# dropped suport for 1.8.7 since rake 11.3 does not support it
 rvm:
-- 1.8.7
 - 2.0.0
 - 2.1.5
 

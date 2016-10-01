@@ -451,14 +451,24 @@ For this module:
 Ensure the module is present in your puppetmaster's own environment.  The Puppet
 Master node doesn't have to use the module or Satellite itself. Ensure that the
 target node to register has pluginsync enabled.  Run the agent on the target node
-to cause the custom types to be synced to the local libdir (`puppet master --configprint libdir`).
+to cause the custom types to be synced to the local libdir 
+(`puppet master --configprint libdir`).
+
+### Deprication Warnings
+
+Support for Ruby 1.8.7 and older is ad-hoc at best. Modern `rake` and 
+`json_pure` require newer releases.
+
+The caching functions were pushed to a difference module on the forge,
+`waveclaw-facter_cachable`. Some of the tests do not run properly under
+Travis CI.  These are commended out in the code but can be run locally.
 
 ### Acceptance Tests
 
 Acceptance tests require a working katello system, RedHat Satellite server or
 just a repo of pre-built dependent packages.
 
-Customization of the spec/spec_acceptance_helper.rb and specific tests is needed to
+Customization of the `spec/spec_acceptance_helper.rb` and specific tests is needed to
 point the full tests at working servers.  Otherwise some of the tests must fail.
 
 ## Issues
