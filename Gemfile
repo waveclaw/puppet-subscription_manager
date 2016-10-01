@@ -13,7 +13,7 @@ gem 'hiera-puppet-helper', :git => 'https://github.com/bobtfish/hiera-puppet-hel
 gem "metadata-json-lint"
 gem 'puppet-syntax'
 gem 'puppet-lint'
-gem 'codeclimate-test-reporter', require: false
+gem 'codeclimate-test-reporter', :require => false
 gem 'beaker-rspec'
 gem 'serverspec',                    :require => false
 gem 'beaker-puppet_install_helper',  :require => false
