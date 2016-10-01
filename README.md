@@ -158,7 +158,7 @@ Register a RedHat Enterprise 7 or CentOS 7 node to Satellite 6 using an activati
      force           => true,
   }
 ```
-> Notice that the rhsm_repo_ca_cert must change to match the certificate provided
+> Notice that the `rhsm_repo_ca_cert` must change to match the certificate provided
 > by the katello-ca-consumer package on the Satellite server.
 
 
@@ -179,6 +179,9 @@ Register to a local RedHat SAM server.
      force             => true,
   }
 ```
+
+> For this example one can see that the `config_hash` only needs customized entries
+> so there is no need to provide every default.
 
 ## Types and Providers
 
@@ -320,8 +323,13 @@ will have to provide everything you want to set.
 
 If absolutely necessary the individual yum repositories can be filtered.
 
+> This cannot add new repositories, only filter existing scubscribed repositories.
+> If you require more repositories, edit your Content View(s) or Pool(s).
+> Or just use the `yumrepo` native type that ships with Puppet.
+
 - **ensure**: Valid values are `present`, `absent`. Default value is `present`.
 - **name**: The name of the repository registration to filter.
+
 
 #### rhsm\_repo Examples
 
