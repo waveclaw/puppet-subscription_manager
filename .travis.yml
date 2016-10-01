@@ -14,7 +14,9 @@ env:
     - PUPPET_GEM_VERSION="~> 3.2"
     - PUPPET_GEM_VERSION="~> 3.7"
     - PUPPET_GEM_VERSION="~> 3.8"
-    - PUPPET_GEM_VERSION="~> 4.4.2"
+
+# Don't support Puppet 4 on main until ready
+#    - PUPPET_GEM_VERSION="~> 4.4.2"
 
 # glitter + github integration
 #- https://webhooks.gitter.im/e/4b40092cfdac1cef4538

@@ -129,13 +129,13 @@ end
 shared_examples_for 'cached rhsm repo command' do  |mod, function, label|
   data = {
     :rhsm_disabled_repos => "Repo ID: foo\nEnabled: 0",
-    :rhsm_available_repos => 'Repo ID: foo',
-    :rhsm_enabled_repos => "Repo ID: foo\nEnabled: 1"
+    :rhsm_available_repos => 'Repo ID: bar',
+    :rhsm_enabled_repos => "Repo ID: baz\nEnabled: 1"
   }
   results = {
-    :rhsm_disabled_repos => {"rhsm_disabled_repos" => ['bar']},
+    :rhsm_disabled_repos => {"rhsm_disabled_repos" => ['foo']},
     :rhsm_available_repos => {"rhsm_available_repos" => ['bar']},
-    :rhsm_enabled_repos => {"rhsm_enabled_repos"=>['bar']}
+    :rhsm_enabled_repos => {"rhsm_enabled_repos"=>['baz']}
   }
   let(:fake_class) { Class.new }
   before :each do
@@ -152,14 +152,14 @@ shared_examples_for 'cached rhsm repo command' do  |mod, function, label|
     expect(Facter::Util::Resolution).to receive(:exec).with(
     '/usr/sbin/subscription-manager repos') { data[label] }
     expect(Facter::Util::Facter_cacheable).to receive(:cache).with(
-      label, ['foo']) { nil }
-    expect(Facter.value(label)).to eq(['foo'])
+      label, results[label][function]) { nil }
+    expect(Facter.value(label)).to eq(results[label][function])
   end
   it 'should return a cached value with a full cache' do
     stub_const("Facter::Util::Facter_cacheable", fake_class)
     expect(Facter::Util::Facter_cacheable).to receive(:cached?).with(
     label, 24 * 3600) { results[label] }
     expect(mod).to_not receive(label)
-    expect(Facter.value(label)).to eq(['bar'])
+    expect(Facter.value(label)).to eq(results[label][function])
   end
 end
