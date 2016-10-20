@@ -35,7 +35,7 @@ class subscription_manager::install {
   #  - no identity
   #  - just install normally
   package { $_pkg:
-    ensure   => 'latest',
+    ensure   => 'present',
     provider => 'rpm',
     source   =>
   "http://${::subscription_manager::server_hostname}/pub/${::ca_package_prefix}latest.noarch.rpm",

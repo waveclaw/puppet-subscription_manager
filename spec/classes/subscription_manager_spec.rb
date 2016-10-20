@@ -127,7 +127,7 @@ describe 'subscription_manager' do
       :server_hostname => 'bar',
     }}
     it { is_expected.to contain_package('katello-ca-consumer-foo').with_ensure('absent') }
-    it { is_expected.to contain_package('katello-ca-consumer-bar').with_ensure('latest') }
+    it { is_expected.to contain_package('katello-ca-consumer-bar').with_ensure('present') }
     it { is_expected.to_not contain_transition('purge-bad-rhsm_ca-package') }
     it { is_expected.to contain_rhsm_register('bar') }
   end
@@ -142,7 +142,7 @@ describe 'subscription_manager' do
     let(:params) {{
       :server_hostname => 'foo',
     }}
-    it { is_expected.to contain_package('katello-ca-consumer-foo').with_ensure('latest') }
+    it { is_expected.to contain_package('katello-ca-consumer-foo').with_ensure('present') }
     it { is_expected.to_not contain_transition('purge-bad-rhsm_ca-package') }
     it { is_expected.to_not contain_rhsm_register('foo') }
   end
@@ -158,7 +158,7 @@ describe 'subscription_manager' do
       :server_hostname => 'foo',
             :force           => true,
     }}
-    it { is_expected.to contain_package('katello-ca-consumer-foo').with_ensure('latest') }
+    it { is_expected.to contain_package('katello-ca-consumer-foo').with_ensure('present') }
     it { is_expected.to contain_transition('purge-bad-rhsm_ca-package') }
     it { is_expected.to contain_rhsm_register('foo') }
   end
@@ -174,7 +174,7 @@ describe 'subscription_manager' do
       :server_hostname => 'foo',
       :force           => true,
     }}
-    it { is_expected.to contain_package('katello-ca-consumer-foo').with_ensure('latest') }
+    it { is_expected.to contain_package('katello-ca-consumer-foo').with_ensure('present') }
     it { is_expected.to contain_transition('purge-bad-rhsm_ca-package') }
     it { is_expected.to contain_rhsm_register('foo') }
   end
