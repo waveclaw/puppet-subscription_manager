@@ -8,7 +8,7 @@ class subscription_manager::config {
     'username'        => $::subscription_manager::username,
     'password'        => $::subscription_manager::password,
     'pool'            => $::subscription_manager::pool,
-    'environment'     => $::subscription_manager::environment,
+    'lifecycleenv'    => $::subscription_manager::lifecycleenv,
     'autosubscribe'   => $::subscription_manager::autosubscribe,
     'force'           => $::subscription_manager::force,
     'org'             => $::subscription_manager::org,

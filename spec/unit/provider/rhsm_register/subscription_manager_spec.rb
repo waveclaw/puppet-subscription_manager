@@ -24,7 +24,7 @@ describe  provider_class, 'rhsm_register provider' do
     :username      => 'registered_user',
     :password      => 'password123',
     :activationkey => '1-my-activation-key',
-    :environment   => 'lab',
+    :lifecycleenv  => 'lab',
     :autosubscribe => true,
     :force         => true,
     :org           => 'the cool organization',
@@ -162,13 +162,13 @@ describe  provider_class, 'rhsm_register provider' do
       expect(res.provider.build_register_parameters).to eq(
       ["register", "--activationkey", "1-my-activation-key", "--org", "foo"])
     end
-    it 'should exclude environment with an activation key' do
+    it 'should exclude lifecycle environment with an activation key' do
       res = Puppet::Type.type(:rhsm_register).new(
         :name => title,
         :ensure => :present,
         :activationkey => fake_key,
         :org => 'foo',
-        :environment => 'pants',
+        :lifecycleenv => 'pants',
         :servicelevel => 'STANDARD',
         :autosubscribe => true,
         :provider => :subscription_manager,)
