@@ -55,6 +55,7 @@ def self.text_options
   :server_proxy_port => 'server.proxy_port',
   :server_prefix => 'server.prefix',
   :server_port => 'server.port',
+  :server_timeout => 'server.server_timeout',
   :rhsm_entitlementcertdir => 'rhsm.entitlementcertdir',
   :rhsm_pluginconfdir => 'rhsm.pluginconfdir',
   :rhsm_baseurl => 'rhsm.baseurl',
@@ -141,6 +142,13 @@ end
 
   newproperty(:server_port) do
     desc "Port on the server for the RHSM service."
+    validate do |value|
+      fail("Require a small positive number. Was given #{value}.") unless value.to_i and (value.to_i >= 0)
+    end
+  end
+
+  newproperty(:server_timeout) do
+    desc "Server Timeout"
     validate do |value|
       fail("Require a small positive number. Was given #{value}.") unless value.to_i and (value.to_i >= 0)
     end
