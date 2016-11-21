@@ -14,11 +14,18 @@ gem "metadata-json-lint"
 gem 'puppet-syntax'
 gem 'puppet-lint'
 gem 'codeclimate-test-reporter', :require => false
-gem 'beaker-rspec'
 gem 'serverspec',                    :require => false
 gem 'beaker-puppet_install_helper',  :require => false
 gem 'master_manipulator',            :require => false
 gem 'beaker-hostgenerator'
+end
+
+if RUBY_VERSION < '2.2.5'
+  # lock beaker version
+  gem 'beaker', '~> 2.0'
+  gem 'beaker-rspec', '~> 5.6'
+else
+  gem 'beaker-rspec'
 end
 
 group :development do
