@@ -35,6 +35,8 @@ exclude_paths = [
 ]
 PuppetLint.configuration.ignore_paths = exclude_paths
 PuppetSyntax.exclude_paths = exclude_paths
+PuppetSyntax.future_parser = true
+
 
 task :metadata_lint do
   sh "metadata-json-lint metadata.json"
