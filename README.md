@@ -271,23 +271,27 @@ As a resource.
 
 ```puppet
 rhsm_config { 'katello.example.com':
-    server_hostname             => 'katello.example.com',
-    server_insecure             => false,
-    server_port                 => 443,
-    server_prefix               => '/rhsm',
-    server_ssl_verify_depth     => 3,
-    rhsm_baseurl                => 'https://katello.example.com/pulp/repos',
-    rhsm_ca_cert_dir            => '/etc/rhsm/ca/',
-    rhsm_consumercertdir        => '/etc/pki/consumer',
-    rhsm_entitlementcertdir     => '/etc/pki/entitlement',
-    rhsm_full_refresh_on_yum    => true,
-    rhsm_manage_repos           => true,
-    rhsm_pluginconfdir          => '/etc/rhsm/pluginconf_d',
-    rhsm_plugindir              => '/usr/share/rhsm-plugins',
-    rhsm_productcertdir         => '/etc/pki/product',
-    rhsm_repo_ca_cert           => '/etc/rhsm/ca/katello-server-ca.pem',
-    rhsm_report_package_profile => 1,
+    server_hostname              => 'katello.example.com',
+    server_insecure              => false,
+    server_port                  => 443,
+    server_prefix                => '/rhsm',
+    server_ssl_verify_depth      => 3,
+    rhsm_baseurl                 => 'https://katello.example.com/pulp/repos',
+    rhsm_ca_cert_dir             => '/etc/rhsm/ca/',
+    rhsm_consumercertdir         => '/etc/pki/consumer',
+    rhsm_entitlementcertdir      => '/etc/pki/entitlement',
+    rhsm_full_refresh_on_yum     => true,
+    rhsm_manage_repos            => true,
+    rhsm_pluginconfdir           => '/etc/rhsm/pluginconf_d',
+    rhsm_plugindir               => '/usr/share/rhsm-plugins',
+    rhsm_productcertdir          => '/etc/pki/product',
+    rhsm_repo_ca_cert            => '/etc/rhsm/ca/katello-server-ca.pem',
+    rhsm_report_package_profile  => 1,
     rhsmcertd_autoattachinterval => 1440,
+    server_proxy_hostname        => 'proxy.example.com',
+    server_proxy_user            => 'proxy_user',
+    server_proxy_password        => 'proxy_password',
+    server_proxy_port            => 4443,    
 }
 ```
 
@@ -451,12 +455,12 @@ For this module:
 Ensure the module is present in your puppetmaster's own environment.  The Puppet
 Master node doesn't have to use the module or Satellite itself. Ensure that the
 target node to register has pluginsync enabled.  Run the agent on the target node
-to cause the custom types to be synced to the local libdir 
+to cause the custom types to be synced to the local libdir
 (`puppet master --configprint libdir`).
 
 ### Deprication Warnings
 
-Support for Ruby 1.8.7 and older is ad-hoc at best. Modern `rake` and 
+Support for Ruby 1.8.7 and older is ad-hoc at best. Modern `rake` and
 `json_pure` require newer releases.
 
 The caching functions were pushed to a difference module on the forge,

@@ -18,25 +18,29 @@ provider_class = Puppet::Type.type(:rhsm_config).provider(:subscrption_manager)
 describe  provider_class, 'rhsm_config provider' do
   title = '/etc/rhsm/rhsm.conf' # type.$default_filename
   properties = {
-  :name                        => title,
-  :provider                    => :subscription_manager,
-  :server_hostname             => 'katello.example.com',
-  :server_insecure             => false,
-  :server_port                 => 443,
-  :server_prefix               => '/rhsm',
-  :server_ssl_verify_depth     => 3,
-  :rhsm_baseurl                => 'https://katello.example.com/pulp/repos',
-  :rhsm_ca_cert_dir            => '/etc/rhsm/ca/',
-  :rhsm_consumercertdir        => '/etc/pki/consumer',
-  :rhsm_entitlementcertdir     => '/etc/pki/entitlement',
-  :rhsm_full_refresh_on_yum    => true,
-  :rhsm_manage_repos           => true,
-  :rhsm_pluginconfdir          => '/etc/rhsm/pluginconf.d',
-  :rhsm_plugindir              => '/usr/share/rhsm-plugins',
-  :rhsm_productcertdir         => '/etc/pki/product',
-  :rhsm_repo_ca_cert           => '/etc/rhsm/ca/',
-  :rhsm_report_package_profile => true,
+  :name                         => title,
+  :provider                     => :subscription_manager,
+  :server_hostname              => 'katello.example.com',
+  :server_insecure              => false,
+  :server_port                  => 443,
+  :server_prefix                => '/rhsm',
+  :server_ssl_verify_depth      => 3,
+  :rhsm_baseurl                 => 'https://katello.example.com/pulp/repos',
+  :rhsm_ca_cert_dir             => '/etc/rhsm/ca/',
+  :rhsm_consumercertdir         => '/etc/pki/consumer',
+  :rhsm_entitlementcertdir      => '/etc/pki/entitlement',
+  :rhsm_full_refresh_on_yum     => true,
+  :rhsm_manage_repos            => true,
+  :rhsm_pluginconfdir           => '/etc/rhsm/pluginconf.d',
+  :rhsm_plugindir               => '/usr/share/rhsm-plugins',
+  :rhsm_productcertdir          => '/etc/pki/product',
+  :rhsm_repo_ca_cert            => '/etc/rhsm/ca/',
+  :rhsm_report_package_profile  => true,
   :rhsmcertd_autoattachinterval => 1440,
+  :server_proxy_hostname        => 'proxy.example.com',
+  :server_proxy_user            => 'proxy_user',
+  :server_proxy_password        => 'proxy_password',
+  :server_proxy_port            => 4443,
  }
 
  config_file = '/etc/rhsm/rhsm.conf'
@@ -47,10 +51,10 @@ describe  provider_class, 'rhsm_config provider' do
     insecure = [0]
     port = [443]
     prefix = /rhsm
-    proxy_hostname = []
-    proxy_password = []
-    proxy_port = []
-    proxy_user = []
+    proxy_hostname = proxy.example.com
+    proxy_password = proxy_password
+    proxy_port = 4443
+    proxy_user = proxy_user
     ssl_verify_depth = [3]
 
  [rhsm]
@@ -224,6 +228,8 @@ EOD
         config = provider.class.get_configuration
         expect(config.size).to_not eq(0)
         expect(config[:name]).to eq('/etc/rhsm/rhsm.conf')
+        expect(config[:server_hostname]).to eq('katello.example.com')
+        expect(config[:server_proxy_hostname]).to eq('proxy.example.com')
         expect(config[:provider]).to eq(:subscription_manager)
       end
       it 'accepts hostnames with numbers in them' do
