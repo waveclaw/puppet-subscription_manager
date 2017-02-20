@@ -265,6 +265,21 @@ describe  provider_class, 'rhsm_register provider' do
       expect(registration.name).to eq('subscription.rhn.redhat.com')
       expect(registration.identity).to eq(fake_id)
     end
+
+    it "parses subscription manager config --list with hostname and proxy" do
+      expect(provider.class).to receive(:subscription_manager).with(
+        ['config','--list']) {
+          'hostname = katello.example.com\nproxy_hostname = proxy.example.com' }
+      expect(provider.class).to receive(:identity) { fake_id }
+
+      registrations = provider.class.instances
+      registration = registrations[0]
+
+      expect(registration.ensure).to eq(:present)
+      expect(registration.name).to eq('katello.example.com')
+      expect(registration.identity).to eq(fake_id)
+    end
+
     it "is absent for good name with bad identity" do
       expect(provider.class).to receive(:config_hostname) { title }
       expect(provider.class).to receive(:identity) { nil }
