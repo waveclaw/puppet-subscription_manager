@@ -24,8 +24,11 @@ if RUBY_VERSION < '2.2.5'
   # lock beaker version
   gem 'beaker', '~> 2.0'
   gem 'beaker-rspec', '~> 5.6'
+  # lock nokogiri
+  gem 'nokogiri', '~> 1.6.8'
 else
   gem 'beaker-rspec'
+  gem 'nokogiri'
 end
 
 group :development do
