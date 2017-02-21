@@ -15,7 +15,8 @@ env:
     - PUPPET_GEM_VERSION="~> 3.2"
     - PUPPET_GEM_VERSION="~> 3.7"
     - PUPPET_GEM_VERSION="~> 3.8"
-    - PUPPET_GEM_VERSION="~> 4.9.2"
+    - PUPPET_GEM_VERSION="~> 4.8.0" # PE 201x.y.z
+    - PUPPET_GEM_VERSION="~> 4.9.2" # Latest 2017-02-20
 
 # glitter + github integration
 #- https://webhooks.gitter.im/e/4b40092cfdac1cef4538
