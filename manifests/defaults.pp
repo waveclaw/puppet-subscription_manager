@@ -1,9 +1,22 @@
-# == Class subscription_manager::defaults
+# Class subscription_manager::defaults
+# ====================================
 #
 # This class is meant to be called from subscription_manager.
-# It sets variables according to platform.
+#
 # These defaults are for registration with the RedHat Network.
 # For an examaple with a katello server, see README.md
+#
+# Authors
+# -------
+#
+# Gaël Chamoulaud <gchamoul@redhat.com>
+# JD Powell <waveclaw@waveclaw.net>
+#
+# Copyright
+# ---------
+#
+# Copyright 2016 JD Powell <waveclaw@waveclaw.net>
+#
 class subscription_manager::defaults {
     $server_hostname = 'subscription.rhn.redhat.com'
     $package_names = ['subscription-manager' ]

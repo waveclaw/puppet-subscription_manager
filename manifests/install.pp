@@ -1,6 +1,19 @@
-# == Class subscription_manager::install
+# Class subscription_manager::install
+# ===================================
 #
-# This class is called from subscription_manager for install.
+# This class is called from subscription_manager for install of packages and the
+# setup of repositories for the certificate authority and other tools.
+#
+# Authors
+# -------
+#
+# Gaël Chamoulaud <gchamoul@redhat.com>
+# JD Powell <waveclaw@waveclaw.net>
+#
+# Copyright
+# ---------
+#
+# Copyright 2016 JD Powell <waveclaw@waveclaw.net>
 #
 class subscription_manager::install {
 

@@ -1,6 +1,18 @@
-# == Class subscription_manager::config
+# Class subscription_manager::config
+# ==================================
 #
 # This class is called from subscription_manager for service config.
+#
+# Authors
+# -------
+#
+# Gaël Chamoulaud <gchamoul@redhat.com>
+# JD Powell <waveclaw@waveclaw.net>
+#
+# Copyright
+# ---------
+#
+# Copyright 2016 JD Powell <waveclaw@waveclaw.net>
 #
 class subscription_manager::config {
   $_settings = {
