@@ -1,18 +1,19 @@
 ---
 # an example of a katello (foreman) server
-subscription_manager::server_hostname: 'katello.example.com'
 subscription_manager::package_names:
   - 'subscription-manager'
-subscription_manager::service_name: 'katello-agent'
 subscription_manager::service_status: 'running'
 subscription_manager::ca_package_prefix: 'katello-ca-consumer-'
 subscription_manager::autosubscribe: true
 subscription_manager::force: true
 subscription_manager::org: 'example-org'
 
-# mostly the same as for Satellite 6
+# note that the config_hash server_hostname will be replaced with this one
+subscription_manager::server_hostname: 'katello.example.com'
+
+# most configuration is the same as for Satellite 6; prefix and baseurl changes
 subscription_manager::config_hash:
-  server_hostname: 'katello.waveclaw.com'
+  server_hostname: 'katello.example.com'
   server_insecure:  false
   server_prefix:  '/rhsm'
   server_port:  443
@@ -27,7 +28,10 @@ subscription_manager::config_hash:
   rhsmcertd_certcheckinterval:  240
   rhsmcertd_autoattachinterval:  1440
 
-# example human-readable key or CentOS 7.x 64-bit in the production environment
+# this may be goferd by the time this example is examined
+subscription_manager::service_name: 'katello-agent'
+
+# example human-readable key for CentOS 7.x 64-bit in the production environment
 subscription_manager::activationkey: 'centos-7-x86_64-prod'
 
 # this class should exist or the catalog compile will fail
