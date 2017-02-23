@@ -99,7 +99,7 @@ describe 'subscription_manager' do
           :activationkey => 'foo-bar',
           :server_hostname => 'foo',
           :ca_package_prefix => 'candlepin-cert-consumer-',
-          }}
+        }}
         let(:facts) {{
             :operatingsystem => osfamily , # required for broken service type
             :osfamily => osfamily, # required for broken service type
@@ -112,6 +112,7 @@ describe 'subscription_manager' do
         it { is_expected.to contain_package('candlepin-cert-consumer-foo') }
         it { is_expected.to contain_rhsm_register('foo').that_requires('Rhsm_config[/etc/rhsm/rhsm.conf]') }
         it { is_expected.to contain_rhsm_config('/etc/rhsm/rhsm.conf') }
+        it { is_expected.to contain_transition('purge-bad-rhsm_ca-package') }
       end
       describe "subscription_manager class with an identity on #{osfamily}" do
         let(:params) {{ }}
