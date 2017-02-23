@@ -8,8 +8,9 @@ SimpleCov.formatters = [
 
 SimpleCov.start do
   add_filter '/spec/'
-  # Exclude bundled Gems in `/.vendor/`
+  # Exclude bundled Gems in typical locations
   add_filter '/.vendor/'
+  add_filter '/.bundle/'
 end
 
 require 'puppetlabs_spec_helper/module_spec_helper'
