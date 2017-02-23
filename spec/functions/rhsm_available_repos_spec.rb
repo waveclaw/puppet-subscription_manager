@@ -32,6 +32,9 @@ describe Facter::Util::Rhsm_available_repos, :type => :puppet_function do
 
   context 'when caching' do
     it_behaves_like 'cached rhsm repo command',
-      Facter::Util::Rhsm_available_repos, 'rhsm_available_repos', :rhsm_available_repos
+      Facter::Util::Rhsm_available_repos,
+      'rhsm_available_repos',
+      :rhsm_available_repos,
+      '/var/cache/rhsm/available_repos.yaml'
   end
 end

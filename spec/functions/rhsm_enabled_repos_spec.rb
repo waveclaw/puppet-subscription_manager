@@ -29,6 +29,9 @@ describe Facter::Util::Rhsm_enabled_repos, :type => :puppet_function do
 
   context 'when caching' do
     it_behaves_like 'cached rhsm repo command',
-      Facter::Util::Rhsm_enabled_repos, 'rhsm_enabled_repos', :rhsm_enabled_repos
+      Facter::Util::Rhsm_enabled_repos,
+      'rhsm_enabled_repos',
+      :rhsm_enabled_repos,
+      '/var/cache/rhsm/enabled_repos.yaml'
   end
 end
