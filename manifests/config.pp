@@ -28,6 +28,20 @@ class subscription_manager::config {
     'ensure'          => 'present',
   }
 
+  # this part can be used with a pulp server used to 'init' new servers
+  #  if $::subscription_manager::config_hash['rhsm_baseurl'] == undef {
+  #    $_conf_params['/etc/rhsm/rhsm.conf']['rhsm_baseurl'] =
+  #      "https://${::subscription_manager::server_hostname}/pulp/repos"
+  #  }
+    rhsm_config {
+      default:
+        * => $::subscription_manager::config_hash
+      ;
+      '/etc/rhsm/rhsm.conf':
+        ensure => present,
+      ;
+    }
+
   # Four cases
   # I.  never registered
   # II. registered to correct server but forcing it
@@ -41,21 +55,10 @@ class subscription_manager::config {
           * =>  $_settings
         ;
         $::subscription_manager::server_hostname:
-          require => Rhsm_config['/etc/rhsm/rhsm.conf']
+          ensure  => present,
+          require => Rhsm_config['/etc/rhsm/rhsm.conf'],
         ;
       }
   }
 
-# this part can be used with a pulp server used to 'init' new servers
-#  if $::subscription_manager::config_hash['rhsm_baseurl'] == undef {
-#    $_conf_params['/etc/rhsm/rhsm.conf']['rhsm_baseurl'] =
-#      "https://${::subscription_manager::server_hostname}/pulp/repos"
-#  }
-  rhsm_config {
-    default:
-      * => $::subscription_manager::config_hash
-    ;
-    '/etc/rhsm/rhsm.conf':
-    ;
-  }
 }

@@ -17,30 +17,40 @@
 #
 class subscription_manager::install {
 
+  # the files for the Facts
+  $_file_defaults = {
+    'owner' => 0,
+    'group' => 0,
+    'mode'  => '0755',
+  }
+  file {
+    default:
+      * => $_file_defaults
+    ;
+    '/var/cache/rhsm':
+      ensure => directory
+    ;
+  }
+
   # any generic passed into the model
   package { $::subscription_manager::package_names:
     ensure => present,
   }
 
-  # support a custom repository if provided
-  $_version = $::puppetversion ? {
-    undef   => '', # when was puppetversion added? (see PUP-4359)
-    default => $::puppetversion,
-  }
+
   if $::subscription_manager::repo != '' and
     $::subscription_manager::repo != undef {
-    if versioncmp($_version, '3.4.1') > 0 {
       contain $::subscription_manager::repo
-    } else {
-      include $::subscription_manager::repo
-    }
-    Class[ $::subscription_manager::repo ] ->
+      Class[ $::subscription_manager::repo ] ->
       Package[ $::subscription_manager::package_names ]
   }
 
-  $_prefix = $::subscription_manager::ca_package_prefix
-  $_suffix = $::subscription_manager::server_hostname
-  $_pkg = "${_prefix}${_suffix}" # 80-column puppet-lint limit workaround
+  # shorten several really long names
+  $_ca       = $::facts['rhsm_ca_name']
+  $_id       = $::facts['rhsm_identity']
+  $_prefix   = $::subscription_manager::ca_package_prefix
+  $_hostname = $::subscription_manager::server_hostname
+  $_pkg      = "${_prefix}${_hostname}" # 80-column puppet-lint limit workaround
 
   # four scenarios
   # I.  never registered
@@ -51,7 +61,7 @@ class subscription_manager::install {
     ensure   => 'present',
     provider => 'rpm',
     source   =>
-  "http://${::subscription_manager::server_hostname}/pub/${::ca_package_prefix}latest.noarch.rpm",
+  "http://${_hostname}/pub/${_prefix}latest.noarch.rpm",
   }
 
   # II. registered to correct server
@@ -63,13 +73,14 @@ class subscription_manager::install {
   #  - ca_name != server_hostname
   #  - identity may or may not be set
   #  - remove old, install new
-  if $::rhsm_ca_name != '' and $::rhsm_ca_name != undef {
+  if $_ca != '' and $_ca != undef {
     # an SSL Certificate Authority is detected
-    if $::rhsm_ca_name != $::subscription_manager::server_hostname {
+    # does it match server_hostname (aka _suffix for the package)
+    if $_ca != $_hostname {
       # but CA is changing
       # remove the old package
-      package { "${_prefix}${::rhsm_ca_name}": ensure => 'absent', }
-      Package["${_prefix}${::rhsm_ca_name}"] -> Package[$_pkg]
+      package { "${_prefix}${_ca}": ensure => 'absent', }
+      Package["${_prefix}${_ca}"] -> Package[$_pkg]
     }
   }
 
@@ -78,10 +89,8 @@ class subscription_manager::install {
   #  - identity is not set
   #  - reinstall (this requires a pupetlabs-transition)
   # This case is meant to prevent extra regitrations on pre-6.2 Satellite
-  if ((($::rhsm_identity == '' or $::rhsm_identity == undef) and
-    $::rhsm_ca_name == $::subscription_manager::server_hostname) or
-    ($::rhsm_ca_name == $::subscription_manager::server_hostname and
-    $::subscription_manager::force == true )) {
+  if ((($_id == '' or $_id == undef) and $_ca == $_hostname) or
+    ($_ca == $_hostname and $::subscription_manager::force == true )) {
     $_attributes = {
       'ensure'          => 'absent',
       'provider'        => 'rpm',

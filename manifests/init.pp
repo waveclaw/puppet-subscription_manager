@@ -126,11 +126,11 @@ class subscription_manager (
   String $activationkey = '',
   String $pool = '',
   String $lifecycleenv = 'library',
-  Optional[String, Boolean, Enum['yes','no']] $autosubscribe = false,
+  Variant[String, Boolean, Enum['yes','no']] $autosubscribe = false,
   String $servicelevel = 'Standard',
-  Optional[String, Boolean, Enum['yes','no']] $force = false,
+  Variant[String, Boolean, Enum['yes','no']] $force = false,
   String $org = 'Default_Organization',
-  Optional[String, Class] $repo = '',
+  Variant[String, Class] $repo = '',
   Hash $config_hash = {},
 ) {
 
