@@ -11,13 +11,6 @@ require 'spec_helper'
 require 'pool_tests'
 require 'facter/rhsm_available_pools'
 
-# stub facter_cacheable
-module Facter::Util::Facter_cacheable
-  class <<self
-    def cached?
-    end
-  end
-end
 
 available_cases = {
   :one   => {
@@ -157,6 +150,9 @@ describe Facter::Util::Rhsm_available_pools, :type => :puppet_function do
 
   context 'when caching' do
     it_behaves_like 'cached pools',
-      Facter::Util::Rhsm_available_pools, 'rhsm_available_pools', :rhsm_available_pools
+      Facter::Util::Rhsm_available_pools,
+      'rhsm_available_pools',
+      :rhsm_available_pools,
+      "/var/cache/rhsm/available_pools.yaml"
   end
 end

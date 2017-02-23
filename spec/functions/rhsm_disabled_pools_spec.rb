@@ -11,7 +11,6 @@ require 'spec_helper'
 require 'pool_tests'
 require 'facter/rhsm_disabled_pools'
 
-
 describe Facter::Util::Rhsm_disabled_pools, :type => :puppet_function do
   context 'on a supported platform' do
     it_behaves_like 'consumed pools',
@@ -31,6 +30,9 @@ describe Facter::Util::Rhsm_disabled_pools, :type => :puppet_function do
 
   context 'when caching' do
     it_behaves_like 'cached pools',
-      Facter::Util::Rhsm_disabled_pools, 'rhsm_disabled_pools', :rhsm_disabled_pools
+      Facter::Util::Rhsm_disabled_pools,
+      'rhsm_disabled_pools',
+      :rhsm_disabled_pools,
+      '/var/cache/rhsm/disabled_pools.yaml'
   end
 end

@@ -30,6 +30,9 @@ describe Facter::Util::Rhsm_enabled_pools, :type => :puppet_function do
 
   context 'when caching' do
     it_behaves_like 'cached pools',
-      Facter::Util::Rhsm_enabled_pools, 'rhsm_enabled_pools', :rhsm_enabled_pools
+      Facter::Util::Rhsm_enabled_pools,
+      'rhsm_enabled_pools',
+      :rhsm_enabled_pools,
+      '/var/cache/rhsm/enabled_pools.yaml'
   end
 end
