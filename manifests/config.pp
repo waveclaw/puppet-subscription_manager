@@ -6,8 +6,8 @@
 # Authors
 # -------
 #
-# Gaël Chamoulaud <gchamoul@redhat.com>
-# JD Powell <waveclaw@waveclaw.net>
+# * Gaël Chamoulaud <gchamoul@redhat.com>
+# * JD Powell <waveclaw@waveclaw.net>
 #
 # Copyright
 # ---------
@@ -27,7 +27,6 @@ class subscription_manager::config {
     'servicelevel'    => $::subscription_manager::servicelevel,
     'ensure'          => 'present',
   }
-  $_reg_params = { "${::subscription_manager::server_hostname}" => $_settings, }
 
   # Four cases
   # I.  never registered
@@ -37,18 +36,26 @@ class subscription_manager::config {
   if ($::rhsm_identity == '' or $::rhsm_identity == undef or
       $::rhsm_ca_name != $::subscription_manager::server_hostname or
       $::subscription_manager::force == true ) {
-      create_resources('rhsm_register', $_reg_params,
-        {'require' => Rhsm_config['/etc/rhsm/rhsm.conf']})
+      rhsm_register {
+        default:
+          * =>  $_settings
+        ;
+        $::subscription_manager::server_hostname:
+          require => Rhsm_config['/etc/rhsm/rhsm.conf']
+        ;
+      }
   }
-
-  $_conf_params = { '/etc/rhsm/rhsm.conf' =>
-    $::subscription_manager::config_hash, }
 
 # this part can be used with a pulp server used to 'init' new servers
 #  if $::subscription_manager::config_hash['rhsm_baseurl'] == undef {
 #    $_conf_params['/etc/rhsm/rhsm.conf']['rhsm_baseurl'] =
 #      "https://${::subscription_manager::server_hostname}/pulp/repos"
 #  }
-
-  create_resources('rhsm_config', $_conf_params)
+  rhsm_config {
+    default:
+      * => $::subscription_manager::config_hash
+    ;
+    '/etc/rhsm/rhsm.conf':
+    ;
+  }
 }
