@@ -1,0 +1,40 @@
+---
+subscription_manager::server_hostname: 'subscription.rhn.redhat.com'
+subscription_manager::package_names:
+  - 'subscription-manager'
+subscription_manager::service_name: 'goferd'
+subscription_manager::service_status: 'running'
+subscription_manager::ca_package_prefix: 'katello-ca-consumer-'
+subscription_manager::autosubscribe: false
+subscription_manager::force: false
+subscription_manager::org: 'Default_Organization'
+subscription_manager::config_hash:
+    server_insecure: false
+    server_prefix: '/subscription'
+    server_port: 443
+    server_ssl_verify_depth: 3
+    rhsm_baseurl: 'https://cdn.redhat.com'
+    rhsm_ca_cert_dir: '/etc/rhsm/ca'
+    rhsm_repo_ca_cert: '%(ca_cert_dir)s/redhat-uep.pem'
+    rhsm_productcertdir: '/etc/pki/product'
+    rhsm_entitlementcertdir: '/etc/pki/entitlement'
+    rhsm_consumercertdir: '/etc/pki/consumer'
+    rhsm_manage_repos: true
+    rhsmcertd_certcheckinterval: 240
+    rhsmcertd_autoattachinterval: 1440
+# also, proxy settings
+#    server_proxy_hostname: ''
+#    server_proxy_port: ''
+#    server_proxy_user: ''
+#    server_proxy_password: ''
+
+## pick one of these, but not both!
+# subscription_manager::username: "myuser"
+# subscription_manager::password: "mypassword"
+# subscription_manager::servicelevel: "Standard"
+# subscription_manager::lifecycleenv: "library"
+## or
+# subscription_manager::activationkey: "my-rhn-key"
+#
+#subscription_manager::pool: ""
+#subscription_manager::repo: ""

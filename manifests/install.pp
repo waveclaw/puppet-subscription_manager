@@ -7,8 +7,8 @@
 # Authors
 # -------
 #
-# Gaël Chamoulaud <gchamoul@redhat.com>
-# JD Powell <waveclaw@waveclaw.net>
+# * Gaël Chamoulaud <gchamoul@redhat.com>
+# * JD Powell <waveclaw@waveclaw.net>
 #
 # Copyright
 # ---------
