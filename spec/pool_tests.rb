@@ -196,6 +196,13 @@ shared_examples_for 'consumed pools' do |mod, function, label|
       '/usr/sbin/subscription-manager list --consumed') { throw Error }
     expect(mod.send(function)).to eq([])
   end
+  it "should return nothing when there is an error with output" do
+    expect(Facter::Util::Resolution).to receive(:exec).with(
+      '/usr/sbin/subscription-manager list --consumed') { nil }
+    expect(mod).to receive(:get_output) { throw Error }
+    expect(Facter).to receive(:debug)
+    expect(mod.send(function)).to eq([])
+  end
   consumed_cases.keys.each { |key|
     desc = consumed_cases[key][:desc]
     it "should process with get_input #{desc}" do
