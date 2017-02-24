@@ -14,8 +14,11 @@ gem "metadata-json-lint"
 gem 'puppet-syntax'
 gem 'puppet-lint'
 gem 'codeclimate-test-reporter', :require => false
+gem 'pry', :require => false
+# beaker tests that usually end up in something like :system_tests
 gem 'serverspec',                    :require => false
 gem 'beaker-puppet_install_helper',  :require => false
+gem 'beaker-module_install_helper',  :require => false
 gem 'master_manipulator',            :require => false
 gem 'beaker-hostgenerator'
 
