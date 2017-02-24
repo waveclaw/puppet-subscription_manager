@@ -49,9 +49,9 @@ describe 'subscription_manager' do
             :osfamily => os, # required for broken service type
             :os => {
               :family => os, :description => bados[os],
-              :rhsm_ca_name => 'subscription.rhn.redhat.com',
-              :rhsm_identity => '1234567890'
-            }
+            },
+            :rhsm_ca_name => 'subscription.rhn.redhat.com',
+            :rhsm_identity => '1234567890'
           }}
           it { is_expected.to compile.with_all_deps }
           it_behaves_like 'an unsupported operating system', bados[os]
@@ -131,12 +131,19 @@ describe 'subscription_manager' do
       end
     }
   end
-=begin
+end
+
+
+describe 'subscription_manager' do
+  facts = {
+    :operatingsystem => 'RedHat' , # required for broken service type
+    :osfamily => 'RedHat', # required for broken service type
+    :os => { 'family' => 'RedHat' },
+    :rhsm_ca_name => 'subscription.rhn.redhat.com',
+    :rhsm_identity => '12334567890'
+  }
   context 'when given a repo option' do
-    let(:'::facts') {{
-      :osfamily        => 'RedHat',
-      :operatingsystem => 'RedHat',
-    }}
+    let(:facts) { facts }
     let(:params) {{
      :repo => 'sm_repo',
     }}
@@ -145,14 +152,11 @@ describe 'subscription_manager' do
     }
     it { is_expected.to contain_class('sm_repo') }
     it { is_expected.to contain_package('subscription-manager').
-      with_ensure('present').that_requires('sm_repo') }
+      with_ensure('present').that_requires('Class[sm_repo]') }
   end
 
   context 'when told to disable the service' do
-    let(:facts) {{
-      :osfamily        => 'RedHat',
-      :operatingsystem => 'RedHat',
-    }}
+    let(:facts) { facts }
     let(:params) {{
      :service_status => 'disabled',
     }}
@@ -160,12 +164,12 @@ describe 'subscription_manager' do
   end
 
   context 'when the rhsm_ca_name is different' do
-    let(:facts) {{
-      :osfamily        => 'RedHat',
-      :operatingsystem => 'RedHat',
-      :rhsm_ca_name    => 'foo',
-      :rhsm_identity   => 'baz',
-    }}
+    let(:facts) do
+      facts.merge({
+        :rhsm_ca_name    => 'foo',
+        :rhsm_identity   => 'baz',
+      })
+    end
     let(:params) {{
       :server_hostname => 'bar',
     }}
@@ -176,12 +180,12 @@ describe 'subscription_manager' do
   end
 
   context "when registration is good but force is false (the default)" do
-    let(:facts) {{
-      :osfamily        => 'RedHat',
-      :operatingsystem => 'RedHat',
-      :rhsm_ca_name    => 'foo',
-      :rhsm_identity   => 'x',
-    }}
+    let(:facts) do
+      facts.merge({
+        :rhsm_ca_name    => 'foo',
+        :rhsm_identity   => 'x',
+      })
+    end
     let(:params) {{
       :server_hostname => 'foo',
     }}
@@ -191,12 +195,12 @@ describe 'subscription_manager' do
   end
 
   context "when registration is good but force is true" do
-    let(:facts) {{
-      :osfamily        => 'RedHat',
-      :operatingsystem => 'RedHat',
-      :rhsm_ca_name    => 'foo',
-      :rhsm_identity   => 'x',
-    }}
+    let(:facts) do
+      facts.merge({
+        :rhsm_ca_name    => 'foo',
+        :rhsm_identity   => 'x',
+      })
+    end
     let(:params) {{
       :server_hostname => 'foo',
             :force           => true,
@@ -207,12 +211,12 @@ describe 'subscription_manager' do
   end
 
   context "when registration is bad but force is true" do
-    let(:facts) {{
-      :osfamily        => 'RedHat',
-      :operatingsystem => 'RedHat',
-      :rhsm_ca_name    => 'foo',
-      :rhsm_identity   => '',
-    }}
+    let(:facts) do
+      facts.merge({
+        :rhsm_ca_name    => 'foo',
+        :rhsm_identity   => '',
+      })
+    end
     let(:params) {{
       :server_hostname => 'foo',
       :force           => true,
@@ -224,10 +228,15 @@ describe 'subscription_manager' do
 
   context "without any parameters with nil puppetversion" do
     let(:params) {{ }}
-    let(:facts) {{ :osfamily => 'RedHat', :puppetversion => nil }}
+    let(:facts) do
+      facts.merge({
+        :puppetversion => nil
+      })
+    end
     it { is_expected.to compile.with_all_deps }
-    it { is_expected.to contain_class('subscription_manager::install').that_comes_before('subscription_manager::config') }
+    it { is_expected.to contain_class(
+      'subscription_manager::install').that_comes_before(
+      'Class[subscription_manager::config]') }
   end
-=end
 
 end

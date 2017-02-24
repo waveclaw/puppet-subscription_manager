@@ -47,8 +47,8 @@ class subscription_manager::config {
   # II. registered to correct server but forcing it
   # III. registered to different server
   # IV. registered to same server but forcing it
-  if ($::rhsm_identity == '' or $::rhsm_identity == undef or
-      $::rhsm_ca_name != $::subscription_manager::server_hostname or
+  if ($::facts['rhsm_identity'] == '' or $::facts['rhsm_identity'] == undef or
+      $::facts['rhsm_ca_name'] != $::subscription_manager::server_hostname or
       $::subscription_manager::force == true ) {
       rhsm_register {
         default:

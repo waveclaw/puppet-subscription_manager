@@ -119,7 +119,7 @@ class subscription_manager (
   Array[String] $package_names = ['subscription-manager'],
   String $ca_package_prefix = 'katello-ca-consumer-',
   String $service_name = 'goferd',
-  Enum['running','stopped'] $service_status = 'running',
+  Enum['running','stopped', 'disabled', 'enabled'] $service_status = 'running',
   String $server_hostname = 'subscription.rhn.redhat.com',
   String $username = '',
   String $password = '',
