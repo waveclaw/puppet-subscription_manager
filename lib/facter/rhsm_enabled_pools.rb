@@ -17,37 +17,36 @@ module Facter::Util::Rhsm_enabled_pools
   @doc=<<EOF
   Consumed available Subscription Pools for this client.
 EOF
-  class << self
-    def get_output(input)
-      lines = []
-      tmp = nil
-      input.split("\n").each { |line|
-        if line =~ /Pool ID:\s*(.+)$/
-          tmp = $1.chomp
-          next
-        end
-        if line =~ /Active:.+True/ and !tmp.nil?
-          tmpcopy = tmp
-          lines.push(tmpcopy) # pointer math ahoy
-          next
-        end
-        if line =~/Active:.+False/
-          tmp = ''
-        end
-      }
-      lines
-    end
-    def rhsm_enabled_pools
-      value = []
-      begin
-        consumed = Facter::Util::Resolution.exec(
-            '/usr/sbin/subscription-manager list --consumed')
-        value = get_output(consumed)
-      rescue Exception => e
-          Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
+  extend self
+  def get_output(input)
+    lines = []
+    tmp = nil
+    input.split("\n").each { |line|
+      if line =~ /Pool ID:\s*(.+)$/
+        tmp = $1.chomp
+        next
       end
-      value
+      if line =~ /Active:.+True/ and !tmp.nil?
+        tmpcopy = tmp
+        lines.push(tmpcopy) # pointer math ahoy
+        next
+      end
+      if line =~/Active:.+False/
+        tmp = ''
+      end
+    }
+    lines
+  end
+  def rhsm_enabled_pools
+    value = []
+    begin
+      consumed = Facter::Util::Resolution.exec(
+          '/usr/sbin/subscription-manager list --consumed')
+      value = get_output(consumed)
+    rescue Exception => e
+        Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
     end
+    value
   end
 end
 

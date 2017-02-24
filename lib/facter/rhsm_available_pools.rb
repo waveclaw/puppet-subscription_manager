@@ -17,28 +17,27 @@ module Facter::Util::Rhsm_available_pools
   @doc=<<EOF
   Available Subscription Pools for this client.
 EOF
-  class << self
-    def get_output(input)
-      lines = []
-      input.split("\n").each { |line|
-        if line =~ /Pool ID:\s+(.+)$/
-          lines.push($1.chomp)
-          next
-        end
-      }
-      lines
-    end
-    def rhsm_available_pools
-      value = []
-      begin
-        available = Facter::Util::Resolution.exec(
-          '/usr/sbin/subscription-manager list --available')
-        value = get_output(available)
-      rescue Exception => e
-          Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
+  extend self
+  def get_output(input)
+    lines = []
+    input.split("\n").each { |line|
+      if line =~ /Pool ID:\s+(.+)$/
+        lines.push($1.chomp)
+        next
       end
-      value
+    }
+    lines
+  end
+  def rhsm_available_pools
+    value = []
+    begin
+      available = Facter::Util::Resolution.exec(
+        '/usr/sbin/subscription-manager list --available')
+      value = get_output(available)
+    rescue Exception => e
+        Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
     end
+    value
   end
 end
 

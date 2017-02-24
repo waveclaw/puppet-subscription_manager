@@ -17,28 +17,27 @@ module Facter::Util::Rhsm_disabled_repos
   @doc=<<EOF
   Disabled RHSM repos for this client.
 EOF
-  class << self
-    def rhsm_disabled_repos
-      value = []
-      begin
-        reponame = ''
-        output = Facter::Util::Resolution.exec(
-          '/usr/sbin/subscription-manager repos')
-        output.split("\n").each { |line|
-          if line =~ /Repo ID:\s+(\S+)/
-            reponame = $1.chomp
-          elsif line =~ /.*Enabled:\s+0/
-            if reponame != ''
-              value.push(reponame)
-              reponame = ''
-            end
+  extend self
+  def rhsm_disabled_repos
+    value = []
+    begin
+      reponame = ''
+      output = Facter::Util::Resolution.exec(
+        '/usr/sbin/subscription-manager repos')
+      output.split("\n").each { |line|
+        if line =~ /Repo ID:\s+(\S+)/
+          reponame = $1.chomp
+        elsif line =~ /.*Enabled:\s+0/
+          if reponame != ''
+            value.push(reponame)
+            reponame = ''
           end
-        }
-      rescue Exception => e
-          Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
-      end
-      value
+        end
+      }
+    rescue Exception => e
+        Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
     end
+    value
   end
 end
 

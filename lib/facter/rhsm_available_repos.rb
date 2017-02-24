@@ -17,22 +17,21 @@ module Facter::Util::Rhsm_available_repos
   @doc=<<EOF
   Available RHSM repos for this client.
 EOF
-  class << self
-    def rhsm_available_repos
-      value = []
-      begin
-        output = Facter::Util::Resolution.exec(
-          '/usr/sbin/subscription-manager repos')
-        output.split("\n").each { |line|
-          if line =~ /Repo ID:\s+(\S+)/
-            value.push($1.chomp)
-          end
-        }
-      rescue Exception => e
-          Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
-      end
-      value
+  extend self
+  def rhsm_available_repos
+    value = []
+    begin
+      output = Facter::Util::Resolution.exec(
+        '/usr/sbin/subscription-manager repos')
+      output.split("\n").each { |line|
+        if line =~ /Repo ID:\s+(\S+)/
+          value.push($1.chomp)
+        end
+      }
+    rescue Exception => e
+        Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
     end
+    value
   end
 end
 
