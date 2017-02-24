@@ -41,6 +41,6 @@ describe Facter::Util::Rhsm_available_repos, :type => :puppet_function do
       Facter::Util::Rhsm_available_repos,
       'rhsm_available_repos',
       :rhsm_available_repos,
-      '/var/cache/rhsm/available_repos.yaml'
-  end
+      Facter::Util::Rhsm_available_repos::CACHE_FILE
+    end
 end
