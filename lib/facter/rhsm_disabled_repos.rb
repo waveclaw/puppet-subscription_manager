@@ -17,8 +17,8 @@ module Facter::Util::Rhsm_disabled_repos
   @doc=<<EOF
   Disabled RHSM repos for this client.
 EOF
-  CACHE_TTL = 86400 # 24 * 60 * 60 seconds
-  CACHE_FILE = '/var/cache/rhsm/disabled_repos.yaml'
+  CACHE_TTL = 86400 unless defined? CACHE_TTL # 24 * 60 * 60 seconds
+  CACHE_FILE = '/var/cache/rhsm/disabled_repos.yaml' unless defined? CACHE_FILE
   extend self
   def rhsm_disabled_repos
     value = []

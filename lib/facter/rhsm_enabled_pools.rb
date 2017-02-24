@@ -17,8 +17,8 @@ module Facter::Util::Rhsm_enabled_pools
   @doc=<<EOF
   Consumed available Subscription Pools for this client.
 EOF
-  CACHE_TTL = 86400 # 24 * 60 * 60 seconds
-  CACHE_FILE = '/var/cache/rhsm/enabled_pools.yaml'
+  CACHE_TTL = 86400 unless defined? CACHE_TTL # 24 * 60 * 60 seconds
+  CACHE_FILE = '/var/cache/rhsm/enabled_pools.yaml' unless defined? CACHE_FILE
   extend self
   def get_output(input)
     lines = []
