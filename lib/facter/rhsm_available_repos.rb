@@ -17,6 +17,8 @@ module Facter::Util::Rhsm_available_repos
   @doc=<<EOF
   Available RHSM repos for this client.
 EOF
+  CACHE_TTL = 86400 # 24 * 60 * 60 seconds
+  CACHE_FILE = '/var/cache/rhsm/available_repos.yaml'
   extend self
   def rhsm_available_repos
     value = []
@@ -35,23 +37,21 @@ EOF
   end
 end
 
+# TODO: massive refactoring opportunity with facter_cacheable
 if File.exist? '/usr/sbin/subscription-manager'
+  repos = Facter::Util::Rhsm_available_repos
   if Puppet.features.facter_cacheable?
     Facter.add(:rhsm_available_repos) do
       setcode do
         # TODO: use another fact to set the TTL in userspace
         # right now this can be done by removing the cache files
         cache = Facter::Util::Facter_cacheable.cached?(
-          :rhsm_available_repos,
-          24 * 3600,
-          '/var/cache/rhsm/available_repos.yaml')
+          :rhsm_available_repos, repos::CACHE_TTL, repos::CACHE_FILE)
         if ! cache
-          repos = Facter::Util::Rhsm_available_repos.rhsm_available_repos
+          repo = repos.rhsm_available_repos
           Facter::Util::Facter_cacheable.cache(
-            :rhsm_available_repos,
-            repos,
-            '/var/cache/rhsm/available_repos.yaml')
-          repos
+            :rhsm_available_repos, repo, repos::CACHE_FILE)
+          repo
         else
           if cache.is_a? Array
             cache
@@ -63,7 +63,7 @@ if File.exist? '/usr/sbin/subscription-manager'
     end
   else
     Facter.add(:rhsm_available_repos) do
-      setcode { Facter::Util::Rhsm_available_repos.rhsm_available_repos }
+      setcode { repos.rhsm_available_repos }
     end
   end
 end

@@ -17,6 +17,8 @@ module Facter::Util::Rhsm_enabled_pools
   @doc=<<EOF
   Consumed available Subscription Pools for this client.
 EOF
+  CACHE_TTL = 86400 # 24 * 60 * 60 seconds
+  CACHE_FILE = '/var/cache/rhsm/enabled_pools.yaml'
   extend self
   def get_output(input)
     lines = []
@@ -50,23 +52,21 @@ EOF
   end
 end
 
+# TODO: massive refactoring opportunity with facter_cacheable
 if File.exist? '/usr/sbin/subscription-manager'
+  pools = Facter::Util::Rhsm_enabled_pools
   if Puppet.features.facter_cacheable?
     Facter.add(:rhsm_enabled_pools) do
       setcode do
         # TODO: use another fact to set the TTL in userspace
         # right now this can be done by removing the cache files
         cache = Facter::Util::Facter_cacheable.cached?(
-          :rhsm_enabled_pools,
-          24 * 3600,
-          '/var/cache/rhsm/enabled_pools.yaml')
+          :rhsm_enabled_pools, pools::CACHE_TTL, pools::CACHE_FILE)
         if ! cache
-          repos = Facter::Util::Rhsm_enabled_pools.rhsm_enabled_pools
+          pool = pools.rhsm_enabled_pools
           Facter::Util::Facter_cacheable.cache(
-            :rhsm_enabled_pools,
-            repos,
-            '/var/cache/rhsm/enabled_pools.yaml')
-          repos
+            :rhsm_enabled_pools, pool, pools::CACHE_FILE)
+          pool
         else
           if cache.is_a? Array
             cache
@@ -78,7 +78,7 @@ if File.exist? '/usr/sbin/subscription-manager'
     end
   else
     Facter.add(:rhsm_enabled_pools) do
-      setcode { Facter::Util::Rhsm_enabled_pools.rhsm_enabled_pools }
+      setcode { pools.rhsm_enabled_pools }
     end
   end
 end

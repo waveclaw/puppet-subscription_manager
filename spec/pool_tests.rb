@@ -15,8 +15,6 @@ module Facter::Util::Facter_cacheable
   end
 end
 
-ttl = 86400 # 24 * 3600 seconds
-
 consumed_cases = {
   :one   => {
     :desc => 'a single active pool',
@@ -248,9 +246,7 @@ shared_examples_for 'cached pools' do  |mod, function, label, source|
     stub_const("Facter::Util::Facter_cacheable", fake_class)
     expect(results[label][label.to_s]).to_not eq(nil)
     expect(Facter::Util::Facter_cacheable).to receive(:cached?).with(
-      label,
-      ttl,
-      source) { nil }
+      label, mod::CACHE_TTL, source) { nil }
     expect(Facter::Util::Resolution).to receive(:exec).with(
     "/usr/sbin/subscription-manager list #{option}") { data[label] }
     expect(Facter::Util::Facter_cacheable).to receive(:cache).with(
@@ -262,9 +258,7 @@ shared_examples_for 'cached pools' do  |mod, function, label, source|
   it 'should return a cached value with a full cache' do
     stub_const("Facter::Util::Facter_cacheable", fake_class)
     expect(Facter::Util::Facter_cacheable).to receive(:cached?).with(
-      label,
-      ttl,
-      source) { results[label] }
+      label, mod::CACHE_TTL, mod::CACHE_FILE) { results[label] }
     expect(mod).to_not receive(label)
     expect(results[label][label.to_s]).to_not eq(nil)
     expect(Facter.value(label)).to eq(results[label][label.to_s])
@@ -275,9 +269,7 @@ shared_examples_for 'cached pools' do  |mod, function, label, source|
   it 'should return a cached value with a full cache when cache is not a hash' do
     stub_const("Facter::Util::Facter_cacheable", fake_class)
     expect(Facter::Util::Facter_cacheable).to receive(:cached?).with(
-      label,
-      ttl,
-      source) { results[label][label.to_s] }
+      label, mod::CACHE_TTL, mod::CACHE_FILE) { results[label][label.to_s] }
     expect(mod).to_not receive(label)
     expect(results[label][label.to_s]).to_not eq(nil)
     expect(Facter.value(label)).to eq(results[label][label.to_s])

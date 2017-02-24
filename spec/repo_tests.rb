@@ -7,9 +7,6 @@
 #   See LICENSE for licensing.
 #
 
-ttl = 86400 # 24 * 3600 seconds
-
-
 # stub facter_cacheable
 module Facter::Util::Facter_cacheable
   class <<self
@@ -151,23 +148,17 @@ shared_examples_for 'cached rhsm repo command' do  |mod, function, label, source
   it 'should return and save a computed value with an empty cache' do
     stub_const("Facter::Util::Facter_cacheable", fake_class)
     expect(Facter::Util::Facter_cacheable).to receive(:cached?).with(
-    label,
-    ttl,
-    source) { nil }
+    label, mod::CACHE_TTL, mod::CACHE_FILE) { nil }
     expect(Facter::Util::Resolution).to receive(:exec).with(
     '/usr/sbin/subscription-manager repos') { data[label] }
     expect(Facter::Util::Facter_cacheable).to receive(:cache).with(
-      label,
-      results[label][function],
-      source) { nil }
+      label, results[label][function], mod::CACHE_FILE) { nil }
     expect(Facter.value(label)).to eq(results[label][function])
   end
   it 'should return a cached value with a full cache' do
     stub_const("Facter::Util::Facter_cacheable", fake_class)
     expect(Facter::Util::Facter_cacheable).to receive(:cached?).with(
-    label,
-    ttl,
-    source) { results[label] }
+    label, mod::CACHE_TTL, mod::CACHE_FILE) { results[label] }
     expect(mod).to_not receive(label)
     expect(Facter.value(label)).to eq(results[label][function])
   end
