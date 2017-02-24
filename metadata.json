@@ -8,6 +8,7 @@
   "source": "https://github.com/waveclaw/puppet-subscription_manager",
   "project_page": "https://github.com/waveclaw/puppet-subscription_manager",
   "issues_url": "https://github.com/waveclaw/puppet-subscription_manager/issues",
+  "data_provider": "hiera",
   "requirements": [
     { "name": "pe", "version_requirement": ">= 2015.5.1" },
     { "name": "puppet", "version_requirement": ">= 4.5.0" }

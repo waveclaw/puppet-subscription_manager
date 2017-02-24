@@ -7,6 +7,7 @@ gem "puppet", ENV['PUPPET_VERSION'] || '~> 4.9.0'
 gem "rspec-puppet", :git => 'https://github.com/rodjek/rspec-puppet.git'
 gem "puppetlabs_spec_helper"
 gem 'rspec-puppet-utils', :git => 'https://github.com/Accuity/rspec-puppet-utils.git'
+gem 'rspec-puppet-facts', :git => 'https://github.com/mcanevet/rspec-puppet-facts.git'
 gem 'hiera-puppet-helper', :git => 'https://github.com/bobtfish/hiera-puppet-helper.git'
 # there seems to be a bug with puppet-blacksmith and metadata-json-lint
 # removing metadata for now

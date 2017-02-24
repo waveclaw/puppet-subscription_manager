@@ -59,34 +59,32 @@ describe 'subscription_manager' do
     }
   end
 
-  context 'supported operating systems' do
-    ['RedHat', 'CentOS', 'Fedora'].each { |osfamily|
-      describe "subscription_manager class without any parameters on #{osfamily}" do
+  on_supported_os.each { |os, facts|
+    context "supported operating system #{os}" do
+      describe "subscription_manager class without any parameters on #{os}" do
+        let(:facts) do
+          facts.merge({
+            :rhsm_ca_name => 'subscription.rhn.redhat.com',
+            :rhsm_identity => ''
+          })
+        end
         let(:params) {{ }}
-        let(:facts) {{
-          :operatingsystem => osfamily , # required for broken service type
-          :osfamily => osfamily, # required for broken service type
-          :os => { 'family' => osfamily },
-          :rhsm_ca_name => 'subscription.rhn.redhat.com',
-          :rhsm_identity => ''
-        }}
         it { is_expected.to compile.with_all_deps }
         it_behaves_like 'a supported operating system'
         it { is_expected.to contain_package('katello-ca-consumer-subscription.rhn.redhat.com') }
         it { is_expected.to contain_rhsm_register('subscription.rhn.redhat.com').that_requires('Rhsm_config[/etc/rhsm/rhsm.conf]') }
         it { is_expected.to contain_rhsm_config('/etc/rhsm/rhsm.conf') }
       end
-      describe "subscription_manager class with an activation key and server name on #{osfamily}" do
+      describe "subscription_manager class with an activation key and server name on #{os}" do
+        let(:facts) do
+          facts.merge({
+            :rhsm_ca_name => 'foo',
+            :rhsm_identity => ''# no rhsm_register without force if identity is valid
+          })
+        end
         let(:params) {{
           :activationkey => 'foo-bar',
           :server_hostname => 'foo'
-        }}
-        let(:facts) {{
-          :operatingsystem => osfamily , # required for broken service type
-          :osfamily => osfamily, # required for broken service type
-          :os => { 'family' => osfamily },
-          :rhsm_ca_name => 'foo',
-          :rhsm_identity => '' # no rhsm_register without force if identity is valid
         }}
         it { is_expected.to compile.with_all_deps }
         it_behaves_like 'a supported operating system'
@@ -94,18 +92,17 @@ describe 'subscription_manager' do
         it { is_expected.to contain_rhsm_register('foo').that_requires('Rhsm_config[/etc/rhsm/rhsm.conf]') }
         it { is_expected.to contain_rhsm_config('/etc/rhsm/rhsm.conf') }
       end
-      describe "subscription_manager class with a custom ca_prefix and server name on #{osfamily}" do
+      describe "subscription_manager class with a custom ca_prefix and server name on #{os}" do
+        let(:facts) do
+          facts.merge({
+            :rhsm_ca_name => 'foo',
+            :rhsm_identity => ''# no rhsm_register without force if identity is valid
+          })
+        end
         let(:params) {{
           :activationkey => 'foo-bar',
           :server_hostname => 'foo',
           :ca_package_prefix => 'candlepin-cert-consumer-',
-        }}
-        let(:facts) {{
-            :operatingsystem => osfamily , # required for broken service type
-            :osfamily => osfamily, # required for broken service type
-            :os => { 'family' => osfamily },
-            :rhsm_ca_name => 'foo',
-            :rhsm_identity => '' # no rhsm_register without force if identity is valid
         }}
         it { is_expected.to compile.with_all_deps }
         it_behaves_like 'a supported operating system'
@@ -114,23 +111,22 @@ describe 'subscription_manager' do
         it { is_expected.to contain_rhsm_config('/etc/rhsm/rhsm.conf') }
         it { is_expected.to contain_transition('purge-bad-rhsm_ca-package') }
       end
-      describe "subscription_manager class with an identity on #{osfamily}" do
+      describe "subscription_manager class with an identity on #{os}" do
+        let(:facts) do
+          facts.merge({
+             :rhsm_ca_name => 'subscription.rhn.redhat.com',
+            :rhsm_identity => '12334567890'
+          })
+        end
         let(:params) {{ }}
-        let(:facts) {{
-          :operatingsystem => osfamily , # required for broken service type
-          :osfamily => osfamily, # required for broken service type
-          :os => { 'family' => osfamily },
-          :rhsm_ca_name => 'subscription.rhn.redhat.com',
-          :rhsm_identity => '12334567890'
-        }}
         it { is_expected.to compile.with_all_deps }
         it_behaves_like 'a supported operating system'
         it { is_expected.to contain_package('katello-ca-consumer-subscription.rhn.redhat.com') }
         it { is_expected.to_not contain_rhsm_register('subscription.rhn.redhat.com') }
         it { is_expected.to contain_rhsm_config('/etc/rhsm/rhsm.conf') }
       end
-    }
-  end
+    end
+  }
 end
 
 
