@@ -78,7 +78,7 @@ EOD
     desc "The license pool to attach to after registering the system"
   end
 
-  newparam(:environment) do
+  newparam(:smenvironment) do
     desc "The environment to subscribe to in the case of using katello."
   end
 

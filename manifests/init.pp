@@ -34,7 +34,7 @@
 #    * password
 #    * activationkeys
 #    * pool
-#    * environment
+#    * smenvironment
 #    * autosubscribe
 #    * servicelevel
 #    * force
@@ -76,7 +76,7 @@ class subscription_manager (
   $password        = $::subscription_manager::defaults::password,
   $activationkey   = $::subscription_manager::defaults::activationkey,
   $pool            = $::subscription_manager::defaults::pool,
-  $environment     = $::subscription_manager::defaults::environment,
+  $smenvironment     = $::subscription_manager::defaults::smenvironment,
   $autosubscribe   = $::subscription_manager::defaults::autosubscribe,
   $servicelevel    = $::subscription_manager::defaults::servicelevel,
   $force           = $::subscription_manager::defaults::force,

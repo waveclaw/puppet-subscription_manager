@@ -24,7 +24,7 @@ describe  provider_class, 'rhsm_register provider' do
     :username      => 'registered_user',
     :password      => 'password123',
     :activationkey => '1-my-activation-key',
-    :environment   => 'lab',
+    :smenvironment => 'lab',
     :autosubscribe => true,
     :force         => true,
     :org           => 'the cool organization',
@@ -168,7 +168,7 @@ describe  provider_class, 'rhsm_register provider' do
         :ensure => :present,
         :activationkey => fake_key,
         :org => 'foo',
-        :environment => 'pants',
+        :smenvironment => 'pants',
         :servicelevel => 'STANDARD',
         :autosubscribe => true,
         :provider => :subscription_manager,)
