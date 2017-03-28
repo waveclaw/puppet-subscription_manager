@@ -65,7 +65,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     execute(clean, { :failonfail => false, :combine => true})
   end
 
-  # trigger actions related to reistration on update of the properties
+  # trigger actions related to registration on update of the properties
   def flush
     if exists?
       if self.identity.nil? or self.identity == :absent
@@ -168,7 +168,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     params = []
     user = @resource[:username]
     key = @resource[:activationkey]
-    if (user.nil? and key.nil?) or (user == :absent and key == :absent)
+    if (user.nil? and key.nil?) or (user == :absent and key == :absent) or (user == '' and key == '')
          self.fail("Need an activation key or a username and password. Was given user '#{user}' and key '#{key}'")
      end
      if bothset(user, key)
@@ -180,7 +180,9 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     params << "register"
     params << "--force" if @resource[:force] and @resource[:force] != :absent
     if !user.nil? and !@resource[:password].nil? and
-      user != :absent and @resource[:password] != :absent
+      user != :absent and @resource[:password] != :absent and
+      user != '' and @resource[:password] != '' and
+      user != undef and @resource[:password] != undef
       params << "--username" << user
       params << "--password" << @resource[:password]
       params << "--autosubscribe" if @resource[:autosubscribe]
