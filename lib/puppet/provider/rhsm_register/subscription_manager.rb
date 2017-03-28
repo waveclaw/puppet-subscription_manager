@@ -182,7 +182,6 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     if !user.nil? and !@resource[:password].nil? and
       user != :absent and @resource[:password] != :absent and
       user != '' and @resource[:password] != '' and
-      user != undef and @resource[:password] != undef
       params << "--username" << user
       params << "--password" << @resource[:password]
       params << "--autosubscribe" if @resource[:autosubscribe]
