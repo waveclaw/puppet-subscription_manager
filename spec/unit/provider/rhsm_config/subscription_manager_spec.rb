@@ -204,8 +204,7 @@ EOD
       @res.provider.set(:server_insecure => false)
       @res.provider.set(:server_port     => 443)
       expect(@res.provider.class).to receive(:subscription_manager).with(
-        "config", "--remove=server.port", "--remove=server.insecure"
-      )
+        "config", "--remove=server.insecure", "--remove=server.port",)
       allow(@res.provider).to receive(:exists?) { false }
       @res.provider.flush
     end
@@ -261,8 +260,28 @@ EOD
 
     describe 'build_config_parameters' do
       it 'returns nothing for missing parameters' do
-        @resource = Puppet::Type.type(:rhsm_config).new({ :provider => provider, :name => title })
+        @resource = Puppet::Type.type(:rhsm_config).new(
+          {:provider => provider, :name => title })
         expect(@resource.provider.build_config_parameters(:apply)).to be(nil)
+      end
+      it "skips empty options" do
+        @resource = Puppet::Type.type(:rhsm_config).new(
+          {:provider => provider, :name => title })
+        @resource.provider.set(:server_port      => '')
+        @resource[:server_port] = ''
+        expect(@resource.provider.build_config_parameters(:apply)).to eq(nil)
+      end
+      it "removes set options using empty parameters" do
+        @resource = Puppet::Type.type(:rhsm_config).new(
+          {:provider => provider, :name => title })
+        @resource.provider.set(:server_insecure  => '')
+        @resource[:server_insecure] = 'false'
+        @resource.provider.set(:server_port      => '')
+        @resource[:server_port] = '8080'
+        @resource.provider.set(:rhsm_ca_cert_dir => '')
+        @resource[:rhsm_ca_cert_dir] = '/bin/foo'
+        expect(@resource.provider.build_config_parameters(:apply)).to eq(
+        ["config", "--remove=server.insecure", "--remove=server.port", "--remove=rhsm.ca_cert_dir"])
       end
         properties.keys.each { |key|
           if key == :provider or key == :name
@@ -278,14 +297,13 @@ EOD
             opt = @resource.class.binary_options[key]
             value = (properties[key] == true ) ? 1 : 0
             expect(@resource.provider.build_config_parameters(:apply)).to eq([
-              'config', ["--#{opt}", "#{value}"]
-              ])
+              'config', "--#{opt}", "#{value}" ])
             expect(@resource.provider.build_config_parameters(:remove)).to eq([
                 'config', "--remove=#{opt}" ])
           else
             opt = @resource.class.text_options[key]
             expect(@resource.provider.build_config_parameters(:apply)).to eq([
-              'config', "--#{opt}", properties[key]
+              'config', "--#{opt}", properties[key].to_s
               ])
             expect(@resource.provider.build_config_parameters(:remove)).to eq([
               'config', "--remove=#{opt}" ])
@@ -298,12 +316,12 @@ EOD
           @resource.provider.set(:server_insecure  => false)
           @resource.provider.set(:server_port      => 443)
           @resource.provider.set(:rhsm_ca_cert_dir => '/etc/rhsm/ca/')
-          expect(@resource.provider.build_config_parameters(:apply)).to eq([
+          expect(@resource.provider.build_config_parameters(:apply).sort!).to eq([
             'config',
-            "--server.port", 443, "--rhsm.ca_cert_dir", "/etc/rhsm/ca/", ["--server.insecure", "0"]
-            ])
-          expect(@resource.provider.build_config_parameters(:remove)).to eq([
-              'config',  "--remove=server.port", "--remove=rhsm.ca_cert_dir", "--remove=server.insecure" ])
+            "--server.port", "443", "--rhsm.ca_cert_dir", "/etc/rhsm/ca/", "--server.insecure", "0"
+          ].sort!)
+          expect(@resource.provider.build_config_parameters(:remove).sort!).to eq([
+              'config',  "--remove=server.port", "--remove=rhsm.ca_cert_dir", "--remove=server.insecure" ].sort!)
         end
     end
 end
