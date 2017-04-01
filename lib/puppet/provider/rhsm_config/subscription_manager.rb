@@ -39,7 +39,17 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   end
 
   def create
-    @property_hash[:ensure] = :present
+       resource.class.text_options.each { |property|
+         if value = resource.should(property)
+           @property_hash[property] = value
+         end
+       }
+       resource.class.binary_options.each { |property|
+         if value = resource.should(property)
+           @property_hash[property] = value
+         end
+       }
+       @property_hash[:ensure] = :present
   end
 
   def destroy
