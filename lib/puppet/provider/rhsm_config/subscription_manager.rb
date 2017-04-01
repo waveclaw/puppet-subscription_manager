@@ -39,6 +39,8 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   end
 
   def create
+    # setup properties
+    # see https://groups.google.com/forum/#!topic/puppet-users/G3z41gFi0Dk
        resource.class.text_options.each { |property|
          if value = resource.should(property)
            @property_hash[property] = value
@@ -135,7 +137,9 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
           raw_value = $2.chomp
           case raw_value
           when /\[\]/
-            value = nil
+            # if nil is used here then puppet considers parameters set to
+            # '' to be in need of sync at all time
+            value = ''
           when /\[(\d+)\]/, /^(\d+)$/
             digit = $1
             if Puppet::Type.type(:rhsm_config).binary_options.has_key? "#{section}_#{title}".to_sym
@@ -146,7 +150,8 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
           when /\[(.+)\]/, /(\S+)/
             value = $1
           else
-            value = nil
+            # same as above, avoid nil for undefined parameters
+            value = ''
           end
           #Puppet.debug("in section #{section} in title #{title} with value #{value}")
           unless value.nil? or section.nil? or title.nil?
