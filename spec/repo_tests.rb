@@ -126,7 +126,7 @@ shared_examples_for 'rhsm repo command' do |mod, function, label|
   }
 end
 
-shared_examples_for 'cached rhsm repo command' do  |mod, function, label|
+shared_examples_for 'cached rhsm repo command' do  |mod, function, label, source|
   data = {
     :rhsm_disabled_repos => "Repo ID: foo\nEnabled: 0",
     :rhsm_available_repos => 'Repo ID: bar',
@@ -148,17 +148,17 @@ shared_examples_for 'cached rhsm repo command' do  |mod, function, label|
   it 'should return and save a computed value with an empty cache' do
     stub_const("Facter::Util::Facter_cacheable", fake_class)
     expect(Facter::Util::Facter_cacheable).to receive(:cached?).with(
-    label, 24 * 3600) { nil }
+    label, mod::CACHE_TTL, mod::CACHE_FILE) { nil }
     expect(Facter::Util::Resolution).to receive(:exec).with(
     '/usr/sbin/subscription-manager repos') { data[label] }
     expect(Facter::Util::Facter_cacheable).to receive(:cache).with(
-      label, results[label][function]) { nil }
+      label, results[label][function], mod::CACHE_FILE) { nil }
     expect(Facter.value(label)).to eq(results[label][function])
   end
   it 'should return a cached value with a full cache' do
     stub_const("Facter::Util::Facter_cacheable", fake_class)
     expect(Facter::Util::Facter_cacheable).to receive(:cached?).with(
-    label, 24 * 3600) { results[label] }
+    label, mod::CACHE_TTL, mod::CACHE_FILE) { results[label] }
     expect(mod).to_not receive(label)
     expect(Facter.value(label)).to eq(results[label][function])
   end

@@ -17,42 +17,52 @@ module Facter::Util::Rhsm_available_pools
   @doc=<<EOF
   Available Subscription Pools for this client.
 EOF
-  class << self
-    def get_output(input)
-      lines = []
-      input.split("\n").each { |line|
-        if line =~ /Pool ID:\s+(.+)$/
-          lines.push($1.chomp)
-          next
-        end
-      }
-      lines
-    end
-    def rhsm_available_pools
-      value = []
-      begin
-        available = Facter::Util::Resolution.exec(
-          '/usr/sbin/subscription-manager list --available')
-        value = get_output(available)
-      rescue Exception => e
-          Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
+  CACHE_TTL = 86400 unless defined? CACHE_TTL # 24 * 60 * 60 seconds
+  CACHE_FILE = '/var/cache/rhsm/available_pools.yaml' unless defined? CACHE_FILE
+  extend self
+  def get_output(input)
+    lines = []
+    input.split("\n").each { |line|
+      if line =~ /Pool ID:\s+(.+)$/
+        lines.push($1.chomp)
+        next
       end
-      value
+    }
+    lines
+  end
+  def rhsm_available_pools
+    value = []
+    begin
+      available = Facter::Util::Resolution.exec(
+        '/usr/sbin/subscription-manager list --available')
+      value = get_output(available)
+    rescue Exception => e
+        Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
     end
+    value
   end
 end
 
+# TODO: massive refactoring opportunity with facter_cacheable
 if File.exist? '/usr/sbin/subscription-manager'
+  pools = Facter::Util::Rhsm_available_pools
   if Puppet.features.facter_cacheable?
     Facter.add(:rhsm_available_pools) do
       setcode do
         # TODO: use another fact to set the TTL in userspace
         # right now this can be done by removing the cache files
-        cache = Facter::Util::Facter_cacheable.cached?(:rhsm_available_pools, 24 * 3600)
+        cache = Facter::Util::Facter_cacheable.cached?(
+          :rhsm_available_pools,
+          pools::CACHE_TTL,
+          pools::CACHE_FILE
+          )
         if ! cache
-          repos = Facter::Util::Rhsm_available_pools.rhsm_available_pools
-          Facter::Util::Facter_cacheable.cache(:rhsm_available_pools, repos)
-          repos
+          pool = Facter::Util::Rhsm_available_pools.rhsm_available_pools
+          Facter::Util::Facter_cacheable.cache(
+            :rhsm_available_pools,
+            pool,
+            pools::CACHE_FILE)
+          pool
         else
           if cache.is_a? Array
             cache
@@ -64,7 +74,7 @@ if File.exist? '/usr/sbin/subscription-manager'
     end
   else
     Facter.add(:rhsm_available_pools) do
-      setcode { Facter::Util::Rhsm_available_pools.rhsm_available_pools }
+      setcode { pools.rhsm_available_pools }
     end
   end
 end

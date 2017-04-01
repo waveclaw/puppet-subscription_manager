@@ -39,7 +39,19 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   end
 
   def create
-    @property_hash[:ensure] = :present
+    # setup properties
+    # see https://groups.google.com/forum/#!topic/puppet-users/G3z41gFi0Dk
+       resource.class.text_options.each { |property|
+         if value = resource.should(property)
+           @property_hash[property] = value
+         end
+       }
+       resource.class.binary_options.each { |property|
+         if value = resource.should(property)
+           @property_hash[property] = value
+         end
+       }
+       @property_hash[:ensure] = :present
   end
 
   def destroy
@@ -125,7 +137,9 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
           raw_value = $2.chomp
           case raw_value
           when /\[\]/
-            value = nil
+            # if nil is used here then puppet considers parameters set to
+            # '' to be in need of sync at all time
+            value = ''
           when /\[(\d+)\]/, /^(\d+)$/
             digit = $1
             if Puppet::Type.type(:rhsm_config).binary_options.has_key? "#{section}_#{title}".to_sym
@@ -136,7 +150,8 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
           when /\[(.+)\]/, /(\S+)/
             value = $1
           else
-            value = nil
+            # same as above, avoid nil for undefined parameters
+            value = ''
           end
           #Puppet.debug("in section #{section} in title #{title} with value #{value}")
           unless value.nil? or section.nil? or title.nil?
@@ -155,31 +170,24 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     def build_config_parameters(config)
       params = []
       params << "config"
-      #FIXME: code duplication in this section
-      if config == :remove
-        @resource.class.text_options.keys.each { |key|
-          opt = @resource.class.text_options[key]
-          params << "--remove=#{opt}" unless @property_hash[key].nil? or key == :name
-        }
-        @resource.class.binary_options.keys.each { |key|
-          opt = @resource.class.binary_options[key]
-          params << "--remove=#{opt}" unless @property_hash[key].nil?
-        }
-      else
-        @resource.class.text_options.keys.each { |key|
-          opt = @resource.class.text_options[key]
-          params << "--#{opt}" << @property_hash[key] unless @property_hash[key].nil?
-        }
-        @resource.class.binary_options.keys.each { |key|
-          opt = @resource.class.binary_options[key]
-          if @property_hash[key] == true
-            value = 1
-          else
-            value = 0
+      # only set non-empty non-equal values
+      @property_hash.keys.each { |key|
+        unless key == :ensure or key == :title or key == :tags
+          section = key.to_s.sub('_','.')
+          if config == :remove or (@property_hash[key] == '' and @property_hash[key] != @resource[key])
+            params << "--remove=#{section}" unless key == :name
           end
-          params << ["--#{opt}", "#{value}"] unless @property_hash[key].nil?
-        }
-      end
+          if config == :apply and (@property_hash[key] != '')
+            params << "--#{section}"
+          end
+          if @resource.class.binary_options.has_key? key and @property_hash[key] != ''
+            value = (@property_hash[key] == true ) ? 1 : 0
+          else
+            value = @property_hash[key]
+          end
+          params << value.to_s unless config == :remove or @property_hash[key] == ''
+        end
+      }
       if params == ['config']
         nil
       else

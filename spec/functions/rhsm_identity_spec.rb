@@ -1,6 +1,6 @@
 #!/usr/bin/ruby -S rspec
 #
-#  Test the rhsm_identity fact 
+#  Test the rhsm_identity fact
 #
 #   Copyright 2016 WaveClaw <waveclaw@hotmail.com>
 #
@@ -27,25 +27,36 @@ environment name: Library
 EOD
 
 
-describe Facter::Util::Rhsm_identity, :type => :puppet_function do
+describe Facter::Util::Rhsm_identity, :type => :fact do
+  before :each do
+    Facter::Util::Loader.any_instance.stubs(:load_all)
+    Facter.clear
+    Facter.clear_messages
+  end
   it "should return the expected data for old style return" do
     expect(Facter::Util::Resolution).to receive(:exec).
       with("/usr/sbin/subscription-manager identity") { raw_data1 }
-    expect(Facter::Util::Rhsm_identity.rhsm_identity).to eq(expected_data)
+    expect(subject.rhsm_identity).to eq(expected_data)
   end
   it "should return the expected data for new style" do
     expect(Facter::Util::Resolution).to receive(:exec).
       with("/usr/sbin/subscription-manager identity") { raw_data2 }
-    expect(Facter::Util::Rhsm_identity.rhsm_identity).to eq(expected_data)
+    expect(subject.rhsm_identity).to eq(expected_data)
   end
   it "should return the nothing for no data" do
     expect(Facter::Util::Resolution).to receive(:exec).
       with("/usr/sbin/subscription-manager identity") { '' }
-    expect(Facter::Util::Rhsm_identity.rhsm_identity).to eq(nil)
+    expect(subject.rhsm_identity).to eq(nil)
   end
   it "should return the nothing for no command" do
     expect(Facter::Util::Resolution).to receive(:exec).
+      with("/usr/sbin/subscription-manager identity") { nil }
+    expect(subject.rhsm_identity).to eq(nil)
+  end
+  it "should return the nothing for an error" do
+    expect(Facter::Util::Resolution).to receive(:exec).
       with("/usr/sbin/subscription-manager identity") { throw Error }
-    expect(Facter::Util::Rhsm_identity.rhsm_identity).to eq(nil)
+    expect(Facter).to receive(:debug)
+    expect(subject.rhsm_identity).to eq(nil)
   end
 end

@@ -35,6 +35,8 @@ Puppet::Type.newtype(:rhsm_config) do
      productcertdir         => '/etc/pki/product',
      repo_ca_cert           => '/etc/rhsm/ca/ca.pem,'
      report_package_profile => 1,
+     proxy_hostname         => 'proxy.example.com',
+     proxy_port             => '44443',
   }
 
 EOD

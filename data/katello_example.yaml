@@ -1,0 +1,38 @@
+---
+# an example of a katello (foreman) server
+subscription_manager::package_names:
+  - 'subscription-manager'
+subscription_manager::service_status: 'running'
+subscription_manager::ca_package_prefix: 'katello-ca-consumer-'
+subscription_manager::autosubscribe: true
+subscription_manager::force: true
+subscription_manager::org: 'example-org'
+
+# note that the config_hash server_hostname will be replaced with this one
+subscription_manager::server_hostname: 'katello.example.com'
+
+# most configuration is the same as for Satellite 6; prefix and baseurl changes
+subscription_manager::config_hash:
+  server_hostname: 'katello.example.com'
+  server_insecure:  false
+  server_prefix:  '/rhsm'
+  server_port:  443
+  server_ssl_verify_depth:  3
+  rhsm_baseurl:  'https://katello.example.com/pulp/repos'
+  rhsm_ca_cert_dir:  '/etc/rhsm/ca'
+  rhsm_repo_ca_cert:  '%(ca_cert_dir)s/katello-server-ca.pem'
+  rhsm_productcertdir:  '/etc/pki/product'
+  rhsm_entitlementcertdir:  '/etc/pki/entitlement'
+  rhsm_consumercertdir:  '/etc/pki/consumer'
+  rhsm_manage_repos:  true
+  rhsmcertd_certcheckinterval:  240
+  rhsmcertd_autoattachinterval:  1440
+
+# this may be goferd by the time this example is examined
+subscription_manager::service_name: 'katello-agent'
+
+# example human-readable key for CentOS 7.x 64-bit in the production environment
+subscription_manager::activationkey: 'centos-7-x86_64-prod'
+
+# this class should exist or the catalog compile will fail
+subscription_manager::repo: 'profile::katello::example_com_repo'

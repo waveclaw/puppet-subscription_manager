@@ -24,7 +24,7 @@ describe  provider_class, 'rhsm_register provider' do
     :username      => 'registered_user',
     :password      => 'password123',
     :activationkey => '1-my-activation-key',
-    :environment   => 'lab',
+    :lifecycleenv  => 'lab',
     :autosubscribe => true,
     :force         => true,
     :org           => 'the cool organization',
@@ -162,13 +162,13 @@ describe  provider_class, 'rhsm_register provider' do
       expect(res.provider.build_register_parameters).to eq(
       ["register", "--activationkey", "1-my-activation-key", "--org", "foo"])
     end
-    it 'should exclude environment with an activation key' do
+    it 'should exclude lifecycle environment with an activation key' do
       res = Puppet::Type.type(:rhsm_register).new(
         :name => title,
         :ensure => :present,
         :activationkey => fake_key,
         :org => 'foo',
-        :environment => 'pants',
+        :lifecycleenv => 'pants',
         :servicelevel => 'STANDARD',
         :autosubscribe => true,
         :provider => :subscription_manager,)
@@ -265,19 +265,21 @@ describe  provider_class, 'rhsm_register provider' do
       expect(registration.name).to eq('subscription.rhn.redhat.com')
       expect(registration.identity).to eq(fake_id)
     end
-    it "parses subscription manager config --list hostname and proxy" do
+
+    it "parses subscription manager config --list with hostname and proxy" do
       expect(provider.class).to receive(:subscription_manager).with(
         ['config','--list']) {
-          'hostname = foo\nproxy_hostname = bar\n'  }
+          'hostname = katello.example.com\nproxy_hostname = proxy.example.com' }
       expect(provider.class).to receive(:identity) { fake_id }
 
       registrations = provider.class.instances
       registration = registrations[0]
 
       expect(registration.ensure).to eq(:present)
-      expect(registration.name).to eq('foo')
+      expect(registration.name).to eq('katello.example.com')
       expect(registration.identity).to eq(fake_id)
     end
+
     it "is absent for good name with bad identity" do
       expect(provider.class).to receive(:config_hostname) { title }
       expect(provider.class).to receive(:identity) { nil }

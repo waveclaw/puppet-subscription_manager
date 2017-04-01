@@ -78,8 +78,8 @@ EOD
     desc "The license pool to attach to after registering the system"
   end
 
-  newparam(:environment) do
-    desc "The environment to subscribe to in the case of using katello."
+  newparam(:lifecycleenv) do
+    desc "The lifecyle environment to subscribe to in the case of using katello."
   end
 
   newparam(:servicelevel) do

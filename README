@@ -213,7 +213,7 @@ register.  Both cannot be provided and will cause an error.
 ##### Optional
 
 - **pool**: A specific license pool to attach the system to. Can include a default view using the formant pool-name/view-name.
-- **environment**: which environment to join at registration time
+- **lifecycleenv**: which lifecycle environment to join at registration time (incompatible with using activation keys)
 - **autosubscribe**: Enable automatic subscription to repositories based on default Pool settings. Must be false when using an activation key unless specifying a service level.
 - **servicelevel**: provide automatic attachment to a service level in Satellite. Not applicable to katello installations.
 - **force**: Should the registration be forced. Use this option with caution, setting it true will cause the system to be unregistered before running 'subscription-manager register'. Default value `false`.

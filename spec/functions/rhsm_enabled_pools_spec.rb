@@ -11,14 +11,22 @@ require 'spec_helper'
 require 'pool_tests'
 require 'facter/rhsm_enabled_pools'
 
-describe Facter::Util::Rhsm_enabled_pools, :type => :puppet_function do
+describe Facter::Util::Rhsm_enabled_pools, :type => :fact do
   context 'on a supported platform' do
+    before :each do
+      Facter::Util::Loader.any_instance.stubs(:load_all)
+      Facter.clear
+      Facter.clear_messages
+    end
     it_behaves_like 'consumed pools',
       Facter::Util::Rhsm_enabled_pools, 'rhsm_enabled_pools', :enabled
   end
 
   context 'on an unsupported platform' do
     before :each do
+      Facter::Util::Loader.any_instance.stubs(:load_all)
+      Facter.clear
+      Facter.clear_messages
       allow(File).to receive(:exist?).with(
       '/usr/sbin/subscription-manager') { false }
       allow(Puppet.features).to receive(:facter_cacheable?) { false }
@@ -30,6 +38,9 @@ describe Facter::Util::Rhsm_enabled_pools, :type => :puppet_function do
 
   context 'when caching' do
     it_behaves_like 'cached pools',
-      Facter::Util::Rhsm_enabled_pools, 'rhsm_enabled_pools', :rhsm_enabled_pools
+      Facter::Util::Rhsm_enabled_pools,
+      'rhsm_enabled_pools',
+      :rhsm_enabled_pools,
+      '/var/cache/rhsm/enabled_pools.yaml'
   end
 end

@@ -12,22 +12,21 @@ module Facter::Util::Rhsm_identity
   @doc=<<EOF
   Identity for this client.
 EOF
-  class << self
-    def rhsm_identity
-      value = nil
-      begin
-        output = Facter::Util::Resolution.exec(
-          '/usr/sbin/subscription-manager identity')
-        output.split("\n").each { |line|
-          if line =~ /.* identity(?: is)?: (\S{8}\-\S{4}\-\S{4}\-\S{4}\-\S{12}).*/
-            value = $1
-          end
-        }
-      rescue Exception => e
-          Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
-      end
-      value
+  extend self
+  def rhsm_identity
+    value = nil
+    begin
+      output = Facter::Util::Resolution.exec(
+        '/usr/sbin/subscription-manager identity')
+      output.split("\n").each { |line|
+        if line =~ /.* identity(?: is)?: (\S{8}\-\S{4}\-\S{4}\-\S{4}\-\S{12}).*/
+          value = $1
+        end
+      }
+    rescue Exception => e
+        Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
     end
+    value
   end
 end
 

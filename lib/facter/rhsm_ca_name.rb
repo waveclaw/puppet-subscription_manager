@@ -13,20 +13,19 @@ module Facter::Util::Rhsm_ca_name
   @doc=<<EOF
   Identity for this client.
 EOF
-  class << self
-    def rhsm_ca_name(cafile)
-      ca = nil
-      if File.exists?(cafile)
-        begin
-          cert = OpenSSL::X509::Certificate.new(File.open(cafile).read)
-          if cert.subject.to_s =~ /.+CN=(.+)/
-            ca = $1.chomp
-          end
-        rescue Exception => e
-          Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
+  extend self
+  def rhsm_ca_name(cafile)
+    ca = nil
+    if File.exists?(cafile)
+      begin
+        cert = OpenSSL::X509::Certificate.new(File.open(cafile).read)
+        if cert.subject.to_s =~ /.+CN=(.+)/
+          ca = $1.chomp
         end
-        ca
+      rescue Exception => e
+        Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
       end
+      ca
     end
   end
 end

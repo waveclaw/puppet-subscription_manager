@@ -1,11 +1,20 @@
 #!/usr/bin/ruby -S rspec
 #
-# Common tests for repositories
+# Common tests for pools or subscriptions
 #
 #   Copyright 2016 WaveClaw <waveclaw@hotmail.com>
 #
 #   See LICENSE for licensing.
 #
+
+# stub facter_cacheable
+module Facter::Util::Facter_cacheable
+  class <<self
+    def cached?
+    end
+  end
+end
+
 consumed_cases = {
   :one   => {
     :desc => 'a single active pool',
@@ -178,11 +187,18 @@ shared_examples_for 'consumed pools' do |mod, function, label|
   before :each do
     allow(File).to receive(:exist?).with(
     '/usr/sbin/subscription-manager') { true }
-    allow(Facter::Util::Facter_cacheable).to receive(:cached?) { false }    
+    allow(Facter::Util::Facter_cacheable).to receive(:cached?) { false }
   end
   it "should return nothing when there is an error" do
     expect(Facter::Util::Resolution).to receive(:exec).with(
       '/usr/sbin/subscription-manager list --consumed') { throw Error }
+    expect(mod.send(function)).to eq([])
+  end
+  it "should return nothing when there is an error with output" do
+    expect(Facter::Util::Resolution).to receive(:exec).with(
+      '/usr/sbin/subscription-manager list --consumed') { nil }
+    expect(mod).to receive(:get_output) { throw Error }
+    expect(Facter).to receive(:debug)
     expect(mod.send(function)).to eq([])
   end
   consumed_cases.keys.each { |key|
@@ -201,7 +217,7 @@ shared_examples_for 'consumed pools' do |mod, function, label|
   }
 end
 
-shared_examples_for 'cached pools' do  |mod, function, label|
+shared_examples_for 'cached pools' do  |mod, function, label, source|
   options = {
     :rhsm_disabled_pools => '--consumed',
     :rhsm_enabled_pools => '--consumed',
@@ -230,17 +246,19 @@ shared_examples_for 'cached pools' do  |mod, function, label|
     stub_const("Facter::Util::Facter_cacheable", fake_class)
     expect(results[label][label.to_s]).to_not eq(nil)
     expect(Facter::Util::Facter_cacheable).to receive(:cached?).with(
-    label, 24 * 3600) { nil }
+      label, mod::CACHE_TTL, source) { nil }
     expect(Facter::Util::Resolution).to receive(:exec).with(
     "/usr/sbin/subscription-manager list #{option}") { data[label] }
     expect(Facter::Util::Facter_cacheable).to receive(:cache).with(
-      label, results[label][label.to_s])
+      label,
+      results[label][label.to_s],
+      source)
     expect(Facter.value(label)).to eq(results[label][label.to_s])
   end
   it 'should return a cached value with a full cache' do
     stub_const("Facter::Util::Facter_cacheable", fake_class)
     expect(Facter::Util::Facter_cacheable).to receive(:cached?).with(
-    label, 24 * 3600) { results[label] }
+      label, mod::CACHE_TTL, mod::CACHE_FILE) { results[label] }
     expect(mod).to_not receive(label)
     expect(results[label][label.to_s]).to_not eq(nil)
     expect(Facter.value(label)).to eq(results[label][label.to_s])
@@ -251,7 +269,7 @@ shared_examples_for 'cached pools' do  |mod, function, label|
   it 'should return a cached value with a full cache when cache is not a hash' do
     stub_const("Facter::Util::Facter_cacheable", fake_class)
     expect(Facter::Util::Facter_cacheable).to receive(:cached?).with(
-    label, 24 * 3600) { results[label][label.to_s] }
+      label, mod::CACHE_TTL, mod::CACHE_FILE) { results[label][label.to_s] }
     expect(mod).to_not receive(label)
     expect(results[label][label.to_s]).to_not eq(nil)
     expect(Facter.value(label)).to eq(results[label][label.to_s])
