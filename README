@@ -44,11 +44,8 @@ Apache License, Version 2.0. Read the LICENSE file for details of the licensing.
 * A good source for subscription-manager and its dependencies like [EPEL](http://repos.fedorapeople.org/repos/candlepin/subscription-manager/epel-subscription-manager.repo).
 
 ## Authors
-* Gaël Chamoulaud (gchamoul at redhat dot com)
-* James Laska (jlaska at redhat dot com)
-* JD Powell (waveclaw at hotmail dot com)
 
-See CONTRIBUTORS for others that have code consumed by this fork.
+See CONTRIBUTORS.
 
 ## Classes and Defines
 
@@ -252,18 +249,24 @@ rhsm_register { 'subscription.rhn.example.com':
 
 ### rhsm_config
 
+Please see man(5) RHSM.CONF for your locally supported options.  There are quite
+ a few and they require specific inputs.
+
 ##### rhsm_config options
 
-See the documentation at [RedHat Support](https://access.redhat.com/documentation/en-US/Red_Hat_Subscription_Management/1/html/RHSM/rhsm-config.html#tab.rhsm.conf-parameters) for details on the `/etc/rhsm/rhsm.conf` file.
+See the documentation at [RedHat Support](https://access.redhat.com/documentation/en-US/Red_Hat_Subscription_Management/1/html/RHSM/rhsm-config.html#tab.rhsm.conf-parameters) for RedHat provided details on the `/etc/rhsm/rhsm.conf` file.
 
-The most important settings are given bellow
+The most important settings are as follows.  Specific support is made for them.
 
 - **server_hostname**: Same as the title or name of the resource
 - **server_insecure**: If HTTP is used or HTTPS with an untrusted certificate
 - **server_prefix**: The subscription path.  Usually `/subscription` for RHN and `/rhsm` for a Katello installation.
 - **rhsm_baseurl**: The Content base URL in case the registration server has no content. An example would be [https://cdn.redhat.com](https://cdn.redhat.com) or [https://katello.example.com/pulp/repos](https://katello.example.com/pulp/repos)
 
-Note: rhsmcertd is not the same as Katello's goferd.
+> rhsmcertd is not the same as Katello's goferd.
+
+Other options can be rolled into a configuration hash and fed to the module as a
+whole. See init.pp and the following YAML example for details.
 
 ##### rhsm_config Examples
 
@@ -317,9 +320,18 @@ subscription_manager::config_hash:
 
 ```
 
-Users should only need to provide the settings in hiera that differ from any of
-the defaults which are used in the module.  If you are using the resource you
-will have to provide everything you want to set.
+Users should only need to provide the settings in `config_hash` _that differ_
+from any of the defaults which are used in the module.
+
+If you are using the resource you will have to provide everything you want to set.
+
+Un-setting a required default by providing a blank option will make the a
+subscription stop working.
+
+The `default_log_level` and basic *module_name* logging settings are available.
+None of the sub-modules are available.  A suggestion for those would be to ship
+customized file-line resources to not conflict with changes created through the
+`subscription-manager` command.
 
 ### rhsm\_repo
 
@@ -327,7 +339,7 @@ will have to provide everything you want to set.
 
 If absolutely necessary the individual yum repositories can be filtered.
 
-> This cannot add new repositories, only filter existing scubscribed repositories.
+> This cannot add new repositories, only filter existing subscribed repositories.
 > If you require more repositories, edit your Content View(s) or Pool(s).
 > Or just use the `yumrepo` native type that ships with Puppet.
 
@@ -490,17 +502,20 @@ For Pull Requests please:
 * puppet-lint code
 * provide rSpec tests if possible: code that sets tests on fire won't be merged
 * Follow the module style naming standards
+* Add your name to CONTRIBUTORS if you are new
 
 For a bug report please include or link:
 
 * Code that triggers the error
 * Output of ```facter -p``` from the system where the error occurs
-* _Relevant_ error logs
-* Any other information needed to understand the error
+* _Relevant_ error logs (e.g. from RHSM parts or `subscription-manager` output)
+* Of course, the basic 'how to ask a good question' information.
 - What did you do (terminal session logs, etc)?
 - What was expected?
 - What actually happened?
 - When did it start happening?
-- Is it _still_ happening or happening all the time?
+- Is it _still_ happening?
+- Does it happen all the time?
+* Any other information needed to understand the error
 
-None of this guarantees a solution but at the least it can warn others.
+None of this guarantees a solution. At the least a good bug report can warn others.
