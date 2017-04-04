@@ -6,11 +6,11 @@ This module provides Custom Puppet Provider to handle registration and
 consumption of RedHat subscriptions using subscription-manager as part of Katello
 or RedHat Satellite 6.
 
-This module can be used with RedHat Subscription Access Manager (SAM) but is not
-primarily designed to inter-operate with SAM separate from a Katello or Satellite
-service.
-
-> Note: you cannot use this module to switch between SAM and other products or
+> This module can be used with RedHat Subscription Access Manager (SAM) but is
+> not primarily designed to inter-operate with SAM separate from a Katello or
+> Satellite service.
+>
+> You cannot use this module to switch between SAM and other products or
 > to SAM from a different product because of the changes in the internal name
 > for the CA certificates.
 
