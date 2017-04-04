@@ -38,10 +38,11 @@ describe described_class, 'type' do
 
   [ :server_hostname, :server_proxy_hostname, :server_proxy_user,
     :server_ssl_verify_depth,  :server_proxy_password, :server_proxy_port,
-    :server_prefix, :server_port,  :rhsm_entitlementcertdir,:rhsm_pluginconfdir,
-    :rhsm_baseurl, :rhsm_plugindir,  :rhsm_ca_cert_dir, :rhsm_productcertdir,
-    :rhsm_consumercertdir,  :rhsm_repo_ca_cert, :rhsmcertd_certcheckinterval,
-    :rhsmcertd_autoattachinterval ].each { |params|
+    :server_prefix, :server_port, :server_server_timeout , :rhsm_entitlementcertdir,
+    :rhsm_pluginconfdir, :rhsm_baseurl, :rhsm_plugindir,  :rhsm_ca_cert_dir,
+    :rhsm_productcertdir, :rhsm_consumercertdir,  :rhsm_repo_ca_cert,
+    :rhsmcertd_certcheckinterval, :rhsmcertd_autoattachinterval,
+    ].each { |params|
       context "for #{params}" do
         it "should be of type property" do
           expect(described_class.attrtype(params)).to eq(:property)
@@ -128,7 +129,7 @@ describe described_class, 'type' do
        expect(@resource[:rhsm_baseurl]).to eq('https://a.b.c')
        @resource = described_class.new(
         :name => '/foo/x.conf', :rhsm_baseurl => 'file://a.b.c')
-       expect(@resource[:rhsm_baseurl]).to eq('file://a.b.c')       
+       expect(@resource[:rhsm_baseurl]).to eq('file://a.b.c')
      end
      it 'should reject path values' do
          expect{ described_class.new(
