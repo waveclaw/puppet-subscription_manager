@@ -36,13 +36,8 @@ describe described_class, 'type' do
     expect(described_class.attrtype(:ensure)).to eq(:property)
   end
 
-  [ :server_hostname, :server_proxy_hostname, :server_proxy_user,
-    :server_ssl_verify_depth,  :server_proxy_password, :server_proxy_port,
-    :server_prefix, :server_port, :server_server_timeout , :rhsm_entitlementcertdir,
-    :rhsm_pluginconfdir, :rhsm_baseurl, :rhsm_plugindir,  :rhsm_ca_cert_dir,
-    :rhsm_productcertdir, :rhsm_consumercertdir,  :rhsm_repo_ca_cert,
-    :rhsmcertd_certcheckinterval, :rhsmcertd_autoattachinterval,
-    ].each { |params|
+
+  described_class.text_options.keys.each { |params|
       context "for #{params}" do
         it "should be of type property" do
           expect(described_class.attrtype(params)).to eq(:property)
@@ -80,12 +75,12 @@ describe described_class, 'type' do
     it 'should reject invalid values' do
       expect{ described_class.new(
        namevar => '@#$%foooooo^!)')}.to raise_error(
-        Puppet::ResourceError, /.*/)
+        Puppet::ResourceError,
+ /.*/)
     end
   end
 
-  [ :server_insecure, :rhsm_report_package_profile, :rhsm_manage_repos,
-    :rhsm_full_refresh_on_yum ].each { |boolean_property|
+  described_class.binary_options.keys.each { |boolean_property|
     context "for #{boolean_property}" do
       it "should be a property" do
         expect(described_class.attrtype(boolean_property)).to eq(:property)
