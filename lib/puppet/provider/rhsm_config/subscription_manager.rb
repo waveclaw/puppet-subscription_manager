@@ -172,7 +172,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
       params << "config"
       # only set non-empty non-equal values
       @property_hash.keys.each { |key|
-        unless key == :ensure or key == :title or key == :tags
+        unless key == :ensure or key == :title or key == :tags or key == :name or key == :provider
           section = key.to_s.sub('_','.')
           if config == :remove or (@property_hash[key] == '' and @property_hash[key] != @resource[key])
             params << "--remove=#{section}" unless key == :name
