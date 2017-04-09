@@ -259,7 +259,7 @@ EOD
     end
 
     describe 'build_config_parameters' do
-      it 'returns nothing for missing parameters' do
+      it 'returns nothing when provider or title are the only parameters' do
         @resource = Puppet::Type.type(:rhsm_config).new(
           {:provider => provider, :name => title })
         expect(@resource.provider.build_config_parameters(:apply)).to be(nil)
