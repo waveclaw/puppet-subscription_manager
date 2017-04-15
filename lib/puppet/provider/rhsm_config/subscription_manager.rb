@@ -27,14 +27,20 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
       Puppet.debug("rhsm.flush: This server will be configured for rhsm.")
       config = :apply
     else
-      Puppet.debug("rhsm.flush: The configuration will be destroyed.")
+      Puppet.debug("rhsm.flush: The configuration will be completely set to default.")
       config = :remove
     end
-    cmd = build_config_parameters(config)
-    if cmd.nil?
+    cmds = build_config_parameters(config)
+    puts "****", cmds, "****"
+    if (cmds[:remove]).nil?
+      Puppet.debug("rhsm.flush: given nothing to remove.")
+    else
+        subscription_manager(*cmds[:remove])
+    end
+    if (cmds[:apply]).nil?
       Puppet.debug("rhsm.flush: given nothing to configure.")
     else
-      subscription_manager(*cmd)
+      subscription_manager(*cmds[:apply])
     end
   end
 
@@ -165,34 +171,36 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   end
 
     # Build a config option string
-    # @return [Array(String)] the options for a config command
+    # @return [Hash(Array(String))] the options for a config command
+    #  split into :apply array of setter options and :remove array of removals
     # @api private
     def build_config_parameters(config)
-      params = []
-      params << "config"
+      setparams = [ "config" ]
+      removeparams = [ "config" ]
       # only set non-empty non-equal values
       @property_hash.keys.each { |key|
-        unless key == :ensure or key == :title or key == :tags or key == :name or key == :provider
+        unless [ :ensure, :title,  :tags, :name, :provider].include? key
           section = key.to_s.sub('_','.')
-          if config == :remove or (@property_hash[key] == '' and @property_hash[key] != @resource[key])
-            params << "--remove=#{section}" unless key == :name
-          end
-          if config == :apply and (@property_hash[key] != '')
-            params << "--#{section}"
+          if config == :remove or
+            (@property_hash[key] == '' and @property_hash[key] != @resource[key]) or
+            (@property_hash[key] == nil and @property_hash[key] != @resource[key])
+            removeparams << "--remove=#{section}"
+          elsif config == :apply and (@property_hash[key] != '')
+            setparams << "--#{section}"
           end
           if @resource.class.binary_options.has_key? key and @property_hash[key] != ''
             value = (@property_hash[key] == true ) ? 1 : 0
           else
             value = @property_hash[key]
           end
-          params << value.to_s unless config == :remove or @property_hash[key] == ''
+          unless config == :remove or @property_hash[key] == '' or value == '' or value.nil?
+             setparams << value.to_s
+          end
         end
       }
-      if params == ['config']
-        nil
-      else
-        params
-      end
+      setparams = nil if setparams == ['config']
+      removeparams = nil if removeparams == ['config']
+      {:apply => setparams, :remove => removeparams}
     end
 
 end

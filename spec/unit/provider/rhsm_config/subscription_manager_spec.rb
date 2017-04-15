@@ -193,7 +193,7 @@ EOD
       @res.provider.set(:ensure          => :present)
       @res.provider.set(:server_insecure => false)
       @res.provider.set(:server_port     => 443)
-      expect(@res.provider).to receive(:build_config_parameters) { ['foo'] }
+      expect(@res.provider).to receive(:build_config_parameters) { { :apply => ['foo'], :remove => nil } }
       expect(@res.provider).to receive(:subscription_manager).with('foo')
       allow(@res.provider).to receive(:exists?) { true }
       @res.provider.flush
@@ -262,14 +262,16 @@ EOD
       it 'returns nothing when provider or title are the only parameters' do
         @resource = Puppet::Type.type(:rhsm_config).new(
           {:provider => provider, :name => title })
-        expect(@resource.provider.build_config_parameters(:apply)).to be(nil)
+        expect(@resource.provider.build_config_parameters(:apply)).to eq(
+         { :apply => nil, :remove => nil})
       end
       it "skips empty options" do
         @resource = Puppet::Type.type(:rhsm_config).new(
           {:provider => provider, :name => title })
         @resource.provider.set(:server_port      => '')
         @resource[:server_port] = ''
-        expect(@resource.provider.build_config_parameters(:apply)).to eq(nil)
+        expect(@resource.provider.build_config_parameters(:apply)).to eq(
+         { :apply => nil, :remove => nil})
       end
       it "removes set options using empty parameters" do
         @resource = Puppet::Type.type(:rhsm_config).new(
@@ -280,10 +282,10 @@ EOD
         @resource[:server_port] = '8080'
         @resource.provider.set(:rhsm_ca_cert_dir => '')
         @resource[:rhsm_ca_cert_dir] = '/bin/foo'
-        expect(@resource.provider.build_config_parameters(:apply)).to eq(
-        ["config", "--remove=server.insecure", "--remove=server.port", "--remove=rhsm.ca_cert_dir"])
+        expect((@resource.provider.build_config_parameters(:apply)[:remove]).sort!).to eq(
+        ["config", "--remove=server.insecure", "--remove=server.port", "--remove=rhsm.ca_cert_dir"].sort!)
       end
-        properties.keys.each { |key|
+      properties.keys.each { |key|
           if key == :provider or key == :name
             # provider is irrelevant to the operating system command
             # name is always passed in as name of the type
@@ -296,31 +298,50 @@ EOD
           if @resource.class.binary_options.include?(key)
             opt = @resource.class.binary_options[key]
             value = (properties[key] == true ) ? 1 : 0
-            expect(@resource.provider.build_config_parameters(:apply)).to eq([
+            expect(@resource.provider.build_config_parameters(:apply)[:apply]).to eq([
               'config', "--#{opt}", "#{value}" ])
-            expect(@resource.provider.build_config_parameters(:remove)).to eq([
+            expect(@resource.provider.build_config_parameters(:remove)[:remove]).to eq([
                 'config', "--remove=#{opt}" ])
           else
             opt = @resource.class.text_options[key]
-            expect(@resource.provider.build_config_parameters(:apply)).to eq([
+            expect(@resource.provider.build_config_parameters(:apply)[:apply]).to eq([
               'config', "--#{opt}", properties[key].to_s
               ])
-            expect(@resource.provider.build_config_parameters(:remove)).to eq([
-              'config', "--remove=#{opt}" ])
+            expect(@resource.provider.build_config_parameters(:remove)[:remove]).to eq(
+              [ 'config', "--remove=#{opt}" ])
           end
         end
-        }
+      }
+      it "correctly splits mixes of remove and create options into two commands" do
+        @resource = Puppet::Type.type(:rhsm_config).new(
+          {:provider => provider, :name => title, :server_port => 999,
+            :rhsm_ca_cert_dir => '/foo'})
+        @resource.provider.set(:server_insecure  => false)
+        @resource.provider.set(:server_port      => nil)
+        @resource.provider.set(:rhsm_ca_cert_dir => "/etc/rhsm/ca/")
+        combo = @resource.provider.build_config_parameters(:apply)
+        apply_expected = [ "config", "--rhsm.ca_cert_dir", "/etc/rhsm/ca/",
+          "--server.insecure", "0"].sort!
+        remove_expected = [ "config", "--remove=server.port"].sort!
+        expect((combo[:apply]).sort!).to eq(apply_expected)
+        expect((combo[:remove]).sort!).to eq(remove_expected)
+      end
+
         it "correctly combines several options into a command" do
           @resource = Puppet::Type.type(:rhsm_config).new(
             {:provider => provider, :name => title })
           @resource.provider.set(:server_insecure  => false)
           @resource.provider.set(:server_port      => 443)
           @resource.provider.set(:rhsm_ca_cert_dir => '/etc/rhsm/ca/')
-          expect(@resource.provider.build_config_parameters(:apply).sort!).to eq([
+          apply = @resource.provider.build_config_parameters(:apply)
+          expect(apply[:apply].sort!).to eq([
             'config',
             "--server.port", "443", "--rhsm.ca_cert_dir", "/etc/rhsm/ca/", "--server.insecure", "0"
           ].sort!)
-          expect(@resource.provider.build_config_parameters(:remove).sort!).to eq([
+          expect(apply[:remove]).to eq(nil)
+          remove = @resource.provider.build_config_parameters(:remove)
+          expect(remove[:apply]).to eq(nil)
+          expect(remove[:remove].sort!).to eq([
               'config',  "--remove=server.port", "--remove=rhsm.ca_cert_dir", "--remove=server.insecure" ].sort!)
         end
     end

@@ -1,3 +1,7 @@
+2017-04-15 3.1.0
+- Run remove options as a secondary configuration item
+- fix broken simplecov report
+
 2017-04-08 3.0.2
 - Filter out name and provider when writing the configuration
 
