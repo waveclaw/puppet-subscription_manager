@@ -1,10 +1,5 @@
 # First line of spec/spec_helper.rb
-require 'codeclimate-test-reporter'
-
-SimpleCov.formatters = [
-  SimpleCov::Formatter::HTMLFormatter,
-  CodeClimate::TestReporter::Formatter
-]
+require "simplecov"
 
 SimpleCov.start do
   add_filter '/spec/'
