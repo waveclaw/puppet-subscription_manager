@@ -12,4 +12,4 @@
 #
 require 'puppet/util/feature'
 
-Puppet.features.add(:json, :libs => ["json"]) if !Puppet.feature[:json]
+Puppet.features.add(:json, :libs => ["json"]) if !Puppet.features.test(:json, :libs => ["json"])
