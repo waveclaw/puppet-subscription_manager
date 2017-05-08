@@ -1,3 +1,6 @@
+2017-05-07 3.1.1
+- Abandon old test for json features already present when requiring json libs
+
 2017-04-15 3.1.0
 - Run remove options as a secondary configuration item
 - fix broken simplecov report
