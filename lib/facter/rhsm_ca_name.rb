@@ -31,14 +31,15 @@ EOF
 end
 
 cafile = nil
-if File.exists?('/etc/rhsm/ca/katello-server-ca.pem')
+if File.exists?('/etc/rhsm/ca/katello-default-ca.pem')
+  # Katello or Satellite with custom CA cert
+  cafile = '/etc/rhsm/ca/katello-default-ca.pem'
+elsif File.exists?('/etc/rhsm/ca/katello-server-ca.pem')
   # Katello or Satellite
   cafile = '/etc/rhsm/ca/katello-server-ca.pem'
-else
-  if File.exists?('/etc/rhsm/ca/candlepin-local.pem')
-    # RedHat SAM
-    cafile = '/etc/rhsm/ca/candlepin-local.pem'
-  end
+elsif File.exists?('/etc/rhsm/ca/candlepin-local.pem')
+  # RedHat SAM
+  cafile = '/etc/rhsm/ca/candlepin-local.pem'
 end
 if !(cafile.nil?)
     Facter.add(:rhsm_ca_name) do
