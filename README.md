@@ -156,7 +156,11 @@ Register a RedHat Enterprise 7 or CentOS 7 node to Satellite 6 using an activati
   }
 ```
 > Notice that the `rhsm_repo_ca_cert` must change to match the certificate provided
-> by the katello-ca-consumer package on the Satellite server.
+> by the katello-ca-consumer package on the Satellite server.  This can be
+> contained in the files searched by the `rhsm_ca_cert` fact. These are SSL
+> certificates which do not take into account Subject Alternative Names. Only
+> the primary name in the certificate is used to check if the client is
+> registered to the correct server.
 
 
 Register to a local RedHat SAM server.
