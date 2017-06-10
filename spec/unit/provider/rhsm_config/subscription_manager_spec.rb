@@ -204,7 +204,9 @@ EOD
       @res.provider.set(:server_insecure => false)
       @res.provider.set(:server_port     => 443)
       expect(@res.provider.class).to receive(:subscription_manager).with(
-        "config", "--remove=server.insecure", "--remove=server.port",)
+        "config --remove=server.insecure" )
+      expect(@res.provider.class).to receive(:subscription_manager).with(
+        "config --remove=server.port",)
       allow(@res.provider).to receive(:exists?) { false }
       @res.provider.flush
     end
@@ -283,7 +285,7 @@ EOD
         @resource.provider.set(:rhsm_ca_cert_dir => '')
         @resource[:rhsm_ca_cert_dir] = '/bin/foo'
         expect((@resource.provider.build_config_parameters(:apply)[:remove]).sort!).to eq(
-        ["config", "--remove=server.insecure", "--remove=server.port", "--remove=rhsm.ca_cert_dir"].sort!)
+        ["--remove=server.insecure", "--remove=server.port", "--remove=rhsm.ca_cert_dir"].sort!)
       end
       properties.keys.each { |key|
           if key == :provider or key == :name
@@ -301,14 +303,14 @@ EOD
             expect(@resource.provider.build_config_parameters(:apply)[:apply]).to eq([
               'config', "--#{opt}", "#{value}" ])
             expect(@resource.provider.build_config_parameters(:remove)[:remove]).to eq([
-                'config', "--remove=#{opt}" ])
+                "--remove=#{opt}" ])
           else
             opt = @resource.class.text_options[key]
             expect(@resource.provider.build_config_parameters(:apply)[:apply]).to eq([
               'config', "--#{opt}", properties[key].to_s
               ])
             expect(@resource.provider.build_config_parameters(:remove)[:remove]).to eq(
-              [ 'config', "--remove=#{opt}" ])
+              [ "--remove=#{opt}" ])
           end
         end
       }
@@ -322,7 +324,7 @@ EOD
         combo = @resource.provider.build_config_parameters(:apply)
         apply_expected = [ "config", "--rhsm.ca_cert_dir", "/etc/rhsm/ca/",
           "--server.insecure", "0"].sort!
-        remove_expected = [ "config", "--remove=server.port"].sort!
+        remove_expected = [ "--remove=server.port"].sort!
         expect((combo[:apply]).sort!).to eq(apply_expected)
         expect((combo[:remove]).sort!).to eq(remove_expected)
       end
@@ -342,7 +344,7 @@ EOD
           remove = @resource.provider.build_config_parameters(:remove)
           expect(remove[:apply]).to eq(nil)
           expect(remove[:remove].sort!).to eq([
-              'config',  "--remove=server.port", "--remove=rhsm.ca_cert_dir", "--remove=server.insecure" ].sort!)
+              "--remove=server.port", "--remove=rhsm.ca_cert_dir", "--remove=server.insecure" ].sort!)
         end
     end
 end

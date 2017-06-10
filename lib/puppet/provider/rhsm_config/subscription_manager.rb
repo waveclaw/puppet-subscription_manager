@@ -35,7 +35,9 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     if (cmds[:remove]).nil?
       Puppet.debug("rhsm.flush: given nothing to remove.")
     else
-        subscription_manager(*cmds[:remove])
+      cmds[:remove].each { |parameter|
+        subscription_manager("config #{parameter}")
+      }
     end
     if (cmds[:apply]).nil?
       Puppet.debug("rhsm.flush: given nothing to configure.")
@@ -176,7 +178,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     # @api private
     def build_config_parameters(config)
       setparams = [ "config" ]
-      removeparams = [ "config" ]
+      removeparams = [ ]
       # only set non-empty non-equal values
       @property_hash.keys.each { |key|
         unless [ :ensure, :title,  :tags, :name, :provider].include? key
@@ -199,7 +201,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
         end
       }
       setparams = nil if setparams == ['config']
-      removeparams = nil if removeparams == ['config']
+      removeparams = nil if removeparams == []
       {:apply => setparams, :remove => removeparams}
     end
 
