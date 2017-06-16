@@ -36,7 +36,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
       Puppet.debug("rhsm.flush: given nothing to remove.")
     else
       cmds[:remove].each { |parameter|
-        subscription_manager("config #{parameter}")
+        subscription_manager(*['config', parameter])
       }
     end
     if (cmds[:apply]).nil?

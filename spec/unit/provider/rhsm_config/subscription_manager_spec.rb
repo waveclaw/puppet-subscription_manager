@@ -204,9 +204,9 @@ EOD
       @res.provider.set(:server_insecure => false)
       @res.provider.set(:server_port     => 443)
       expect(@res.provider.class).to receive(:subscription_manager).with(
-        "config --remove=server.insecure" )
+        'config', '--remove=server.insecure' )
       expect(@res.provider.class).to receive(:subscription_manager).with(
-        "config --remove=server.port",)
+        'config', '--remove=server.port')
       allow(@res.provider).to receive(:exists?) { false }
       @res.provider.flush
     end
