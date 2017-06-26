@@ -183,9 +183,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
       @property_hash.keys.each { |key|
         unless [ :ensure, :title,  :tags, :name, :provider].include? key
           section = key.to_s.sub('_','.')
-          if config == :remove or
-            (@property_hash[key] == '' and @property_hash[key] != @resource[key]) or
-            (@property_hash[key] == nil and @property_hash[key] != @resource[key])
+          if config == :remove or (@property_hash[key] == '' and @resource[key] != nil ) 
             removeparams << "--remove=#{section}"
           elsif config == :apply and (@property_hash[key] != '')
             setparams << "--#{section}"
