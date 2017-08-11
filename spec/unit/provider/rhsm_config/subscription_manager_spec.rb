@@ -195,6 +195,7 @@ EOD
       @res.provider.set(:server_port     => 443)
       expect(@res.provider).to receive(:build_config_parameters) { { :apply => ['foo'], :remove => nil } }
       expect(@res.provider).to receive(:subscription_manager).with('foo')
+      expect(@res.provider.class).to receive(:subscription_manager).with(["config","--list"]) {}
       allow(@res.provider).to receive(:exists?) { true }
       @res.provider.flush
     end
@@ -207,6 +208,7 @@ EOD
         'config', '--remove=server.insecure' )
       expect(@res.provider.class).to receive(:subscription_manager).with(
         'config', '--remove=server.port')
+      expect(@res.provider.class).to receive(:subscription_manager).with(["config","--list"]) {}
       allow(@res.provider).to receive(:exists?) { false }
       @res.provider.flush
     end

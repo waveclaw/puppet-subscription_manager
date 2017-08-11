@@ -31,7 +31,6 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
       config = :remove
     end
     cmds = build_config_parameters(config)
-    puts "****", cmds, "****"
     if (cmds[:remove]).nil?
       Puppet.debug("rhsm.flush: given nothing to remove.")
     else
@@ -44,6 +43,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     else
       subscription_manager(*cmds[:apply])
     end
+    @property_hash = self.class.get_configuration
   end
 
   def create
@@ -126,20 +126,39 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     conf
   end
 
+  # return a digit or boolean based on option type
+  # @return [bootlean|integer] the value
+  # @param [String] the section
+  # @param [String] the title
+  # @param [digit] the data
+  # @api private
+  def self.parse_digit(section, title, digit)
+    if Puppet::Type.type(:rhsm_config).binary_options.has_key? "#{section}_#{title}".to_sym
+      value = (digit == '1') ? true : false
+    else
+      value = digit.to_i
+    end
+    value
+  end
+
+
   # Primitive init parser for the strange output of subscription-manager
   # @return [hash] the parsed configuration data
   # @param [String] the raw data
   # @api private
   def self.ini_parse(input)
+    @defaulted_to = []
     output = {}
     title = nil
     section = nil
     input.split("\n").each { |line|
+      # secdions look like ' [abc] '
       if line =~/^\s*\[(.+)\]/
         section = $1
         next
       end
       # lines can be 'thing = [], thing = value or thing = [value]'
+      # 'thing = [value]' is a default, they can either be skipped or noted later
       if line =~ /\s*([a-z_]+) = (.*)/
           title = $1
           raw_value = $2.chomp
@@ -148,14 +167,16 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
             # if nil is used here then puppet considers parameters set to
             # '' to be in need of sync at all time
             value = ''
-          when /\[(\d+)\]/, /^(\d+)$/
-            digit = $1
-            if Puppet::Type.type(:rhsm_config).binary_options.has_key? "#{section}_#{title}".to_sym
-              value = (digit == '1') ? true : false
-            else
-              value = digit.to_i
-            end
-          when /\[(.+)\]/, /(\S+)/
+            @defaulted_to.push "#{section}_#{title}".to_sym
+          when /\[(\d+)\]/
+            @defaulted_to.push "#{section}_#{title}".to_sym
+            value = parse_digit(section, title, $1)
+          when /^(\d+)$/
+            value = parse_digit(section, title, $1)
+          when /\[(.+)\]/
+            @defaulted_to.push "#{section}_#{title}".to_sym
+            value = $1
+          when /(\S+)/
             value = $1
           else
             # same as above, avoid nil for undefined parameters
@@ -181,7 +202,9 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
       removeparams = [ ]
       # only set non-empty non-equal values
       @property_hash.keys.each { |key|
-        unless [ :ensure, :title,  :tags, :name, :provider].include? key
+        # skip meta parameters and default values
+        unless [ :ensure, :title,  :tags, :name, :provider].include? key or
+         (!@defaulted_to.nil? and @defaulted_to.include? key)
           section = key.to_s.sub('_','.')
           if config == :remove or
             (@property_hash[key] == '' and @property_hash[key] != @resource[key]) or
