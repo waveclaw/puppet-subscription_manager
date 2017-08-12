@@ -141,6 +141,21 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     value
   end
 
+  # helper function for testing the defaults_to array
+  # @return [array] the list of discovered default setting parameters
+  # @api private
+  def self.defaults_to?
+    @defaults_to
+  end
+
+  # helper function for testing the defaults_to array
+  # @return [array] the default list
+  # @param [symbol] the default setting parameter to exclude
+  # @api private
+  def self.defaults_to=(value)
+    @defaults_to = value
+  end
+
 
   # Primitive init parser for the strange output of subscription-manager
   # @return [hash] the parsed configuration data

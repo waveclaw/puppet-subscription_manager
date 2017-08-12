@@ -348,5 +348,16 @@ EOD
           expect(remove[:remove].sort!).to eq([
               "--remove=server.port", "--remove=rhsm.ca_cert_dir", "--remove=server.insecure" ].sort!)
         end
+
+        it "skips default options" do
+          @resource = Puppet::Type.type(:rhsm_config).new(
+            {:provider => provider, :name => title })
+          @resource.provider.set(:server_insecure  => false)
+          @resource.provider.set(:server_port      => 443)
+          @resource.provider.set(:rhsm_ca_cert_dir => '/etc/rhsm/ca/')
+          @resource.provider.class.defaults_to = [ :server_port ]
+          apply = @resource.provider.build_config_parameters(:apply)
+          expect(apply).to_not include(:server_port)
+        end
     end
 end
