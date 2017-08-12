@@ -162,7 +162,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   # @param [String] the raw data
   # @api private
   def self.ini_parse(input)
-    @defaulted_to = []
+    @defaults_to = []
     output = {}
     title = nil
     section = nil
@@ -182,14 +182,14 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
             # if nil is used here then puppet considers parameters set to
             # '' to be in need of sync at all time
             value = ''
-            @defaulted_to.push "#{section}_#{title}".to_sym
+            @defaults_to.push "#{section}_#{title}".to_sym
           when /\[(\d+)\]/
-            @defaulted_to.push "#{section}_#{title}".to_sym
+            @defaults_to.push "#{section}_#{title}".to_sym
             value = parse_digit(section, title, $1)
           when /^(\d+)$/
             value = parse_digit(section, title, $1)
           when /\[(.+)\]/
-            @defaulted_to.push "#{section}_#{title}".to_sym
+            @defaults_to.push "#{section}_#{title}".to_sym
             value = $1
           when /(\S+)/
             value = $1
@@ -219,7 +219,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
       @property_hash.keys.each { |key|
         # skip meta parameters and default values
         unless [ :ensure, :title,  :tags, :name, :provider].include? key or
-         (!@defaulted_to.nil? and @defaulted_to.include? key)
+         (!@defaults_to.nil? and @defaults_to.include? key)
           section = key.to_s.sub('_','.')
           if config == :remove or
             (@property_hash[key] == '' and @property_hash[key] != @resource[key]) or
