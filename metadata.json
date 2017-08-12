@@ -1,6 +1,6 @@
 {
   "name": "waveclaw-subscription_manager",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "author": "JD Powell <waveclaw@hotmail.com>",
   "summary": "Manage Katello or Satellite registrations.",
   "description": "Register CentOS or RHEL to Katello or Satellite 6.",
