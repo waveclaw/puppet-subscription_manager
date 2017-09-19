@@ -57,6 +57,7 @@ def self.text_options
   :server_proxy_port => 'server.proxy_port',
   :server_proxy_user => 'server.proxy_user',
   :server_proxy_password => 'server.proxy_password',
+  :server_no_proxy => 'server.no_proxy',
   :rhsm_baseurl => 'rhsm.baseurl',
   :rhsm_ca_cert_dir => 'rhsm.ca_cert_dir',
   :rhsm_repo_ca_cert => 'rhsm.repo_ca_cert',
@@ -137,6 +138,10 @@ end
     validate do |value|
       fail("Require a small positive number. Was given #{value}.") unless value.nil? or ( value.to_i and (value.to_i >= 0))
     end
+  end
+  
+  newproperty(:server_no_proxy) do
+    desc "Proxy exception list"
   end
 
   newproperty(:server_prefix) do
