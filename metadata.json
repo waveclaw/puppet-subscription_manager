@@ -1,41 +1,64 @@
 {
   "name": "waveclaw-subscription_manager",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "author": "JD Powell <waveclaw@hotmail.com>",
   "summary": "Manage Katello or Satellite registrations.",
-  "description": "Register CentOS or RHEL to Katello or Satellite 6.",
   "license": "Apache-2.0",
   "source": "https://github.com/waveclaw/puppet-subscription_manager",
   "project_page": "https://github.com/waveclaw/puppet-subscription_manager",
   "issues_url": "https://github.com/waveclaw/puppet-subscription_manager/issues",
-  "requirements": [
-    { "name": "pe", "version_requirement": ">= 2015.5.1" },
-    { "name": "puppet", "version_requirement": ">= 4.5.0" }
-  ],
-  "operatingsystem_support": [
-  {
-    "operatingsystem":"RedHat",
-    "operatingsystemrelease":[ "5", "6", "7" ]
-  },
-  {
-    "operatingsystem":"CentOS",
-    "operatingsystemrelease":[ "5", "6", "7" ]
-  },
-  {
-    "operatingsystem":"Scientific",
-    "operatingsystemrelease":[ "5", "6", "7" ]
-  }
-
-  ],
   "dependencies": [
-    { "name": "puppetlabs/transition",
+    {
+      "name": "puppetlabs/transition",
       "version_requiement": ">= 0.1.0 < 1.0.0"
     },
-    { "name": "puppet/boolean",
+    {
+      "name": "puppet/boolean",
       "version_requirement": ">= 1.1.0 < 2.0.0"
     },
-    { "name": "waveclaw/facter_cacheable",
-      "version_requirement": ">= 0.1.0 < 1.0.0"
+    {
+      "name": "waveclaw/facter_cacheable",
+      "version_requirement": ">= 0.2.2 < 1.0.0"
     }
-  ]
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Scientific",
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "pe",
+      "version_requirement": ">= 2015.5.1"
+    },
+    {
+      "name": "puppet",
+      "version_requirement": ">= 4.5.0"
+    }
+  ],
+  "description": "Register CentOS or RHEL to Katello or Satellite 6.",
+  "pdk-version": "1.4.1",
+  "template-url": "file:///opt/puppetlabs/pdk/share/cache/pdk-templates.git",
+  "template-ref": "1.4.1-0-g52adbbb"
 }
