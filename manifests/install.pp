@@ -41,8 +41,8 @@ class subscription_manager::install {
   if $::subscription_manager::repo != '' and
     $::subscription_manager::repo != undef {
       contain $::subscription_manager::repo
-      Class[ $::subscription_manager::repo ] ->
-      Package[ $::subscription_manager::package_names ]
+      Class[ $::subscription_manager::repo ]
+      -> Package[ $::subscription_manager::package_names ]
   }
 
   # shorten several really long names

@@ -137,10 +137,10 @@ class subscription_manager (
   # limit use to supported Operating Systems
   case $::facts['os']['family'] {
     'RedHat', 'CentOS', 'Scientific', 'Fedora': {
-      class { '::subscription_manager::install': } ->
-      class { '::subscription_manager::config': } ~>
-      class { '::subscription_manager::service': } ->
-      Class['::subscription_manager']
+      class { '::subscription_manager::install': }
+      -> class { '::subscription_manager::config': }
+      ~> class { '::subscription_manager::service': }
+      -> Class['::subscription_manager']
     }
     default: {
       notify { "${::facts['os']['description']} not supported by subscription_manager": }
