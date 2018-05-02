@@ -53,7 +53,7 @@ class subscription_manager::config {
   #  }
     rhsm_config { '/etc/rhsm/rhsm.conf':
       ensure => present,
-      *      => $::subscription_manager::config_hash
+      *      => $::subscription_manager::config_hash,
     }
 
   # Four cases
@@ -67,7 +67,7 @@ class subscription_manager::config {
       rhsm_register { $::subscription_manager::server_hostname:
         ensure  => present,
         require => Rhsm_config['/etc/rhsm/rhsm.conf'],
-        *       =>  $_settings
+        *       =>  $_settings,
       }
   }
 
