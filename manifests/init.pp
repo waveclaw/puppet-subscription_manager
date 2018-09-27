@@ -43,6 +43,10 @@
 #   An activation key to use for registration of the agent to the server.
 #   Conflicts with the username and password registration method.
 #
+# @param release pin a certain release when registering a server
+# * `release`
+#   The release command sets a sticky OS version to use when installing or updating packages.
+#
 # @param pool a pool or RedHat Entitlement to automatically use
 # * `pool`
 #   A subscription pool or RedHat Entitlement to associate with this system.
@@ -124,6 +128,7 @@ class subscription_manager (
   String $username = '',
   String $password = '',
   String $activationkey = '',
+  String $release = '',
   String $pool = '',
   String $lifecycleenv = 'library',
   Variant[String, Boolean, Enum['yes','no']] $autosubscribe = false,

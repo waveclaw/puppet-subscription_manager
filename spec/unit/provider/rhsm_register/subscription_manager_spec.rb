@@ -213,6 +213,17 @@ describe  provider_class, 'rhsm_register provider' do
       ["register", "--force", "--username", "foo", "--password", "bar",
         "--autosubscribe", "--org", "foo"])
     end
+    it 'should build a command with a release' do
+      res = Puppet::Type.type(:rhsm_register).new(
+        :name => title,
+        :ensure => :present,
+        :activationkey => fake_key,
+        :org => 'foo',
+        :release => '7.3',
+        :provider => :subscription_manager,)
+      expect(res.provider.build_register_parameters).to eq(
+      ["register", "--activationkey", "1-my-activation-key", "--org", "foo", "--release", "7.3"])
+    end
   end
 
   describe 'self.instances' do

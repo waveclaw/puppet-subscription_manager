@@ -217,6 +217,7 @@ register.  Both cannot be provided and will cause an error.
 - **lifecycleenv**: which lifecycle environment to join at registration time (incompatible with using activation keys)
 - **autosubscribe**: Enable automatic subscription to repositories based on default Pool settings. Must be false when using an activation key unless specifying a service level.
 - **servicelevel**: provide automatic attachment to a service level in Satellite. Not applicable to katello installations.
+- **release**: The release command sets a sticky OS version to use when installing or updating packages. This sets a preference for the minor version of the OS, such as 6.2 or 6.3. This can prevent unplanned or unsupported operating system version upgrades when an IT environment must maintain a certified configuration.  
 - **force**: Should the registration be forced. Use this option with caution, setting it true will cause the system to be unregistered before running 'subscription-manager register'. Default value `false`.
 
 ### rhsm_register Examples

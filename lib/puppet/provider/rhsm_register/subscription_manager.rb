@@ -32,7 +32,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
       Puppet.debug("This server will be attached to a service level")
       begin
         subscription_manager(['attach',
-          "--servicelevel=#{@resource[:servicelevel]}", '--auto'])
+                              "--servicelevel=#{@resource[:servicelevel]}", '--auto'])
       rescue Puppet::ExecutionFailure => e
         Puppet.debug("Auto-attach returned: #{e}")
       end
@@ -43,15 +43,15 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   # This builds the command using a helper method and attempts to
   # deal with expected non-zero return codes from subscription-manager.
   def register
-      Puppet.debug("This server will be registered")
-      # Command will fail with various return codes on re-registration
-      # RETCODE 1 for new registrations to new servers with an old registration
-      # RETCODE 2 for re-registrations to the same server after unregister
-      begin
-        subscription_manager(build_register_parameters)
-      rescue Puppet::ExecutionFailure => e
-        Puppet.debug("Registration returned: #{e}")
-      end
+    Puppet.debug("This server will be registered")
+    # Command will fail with various return codes on re-registration
+    # RETCODE 1 for new registrations to new servers with an old registration
+    # RETCODE 2 for re-registrations to the same server after unregister
+    begin
+      subscription_manager(build_register_parameters)
+    rescue Puppet::ExecutionFailure => e
+      Puppet.debug("Registration returned: #{e}")
+    end
   end
 
   # Completely remove the registration locally and attempt to notify the server.
@@ -69,7 +69,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   def flush
     if exists?
       if self.identity.nil? or self.identity == :absent
-      # no valid registration
+        # no valid registration
         register
         subscription_attach
       elsif @property_hash[:name] and @property_hash[:name] != @resource[:name]
@@ -81,9 +81,9 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
         # trying to re-register
         if (@property_hash[:force].nil? or @property_hash[:force] == :absent or
             @property_hash[:force] == false) and
-           (@resource[:force].nil? or @resource[:force] == :absent or
-            @resource[:force] == false)
-              self.fail("Require force => true to register already registered server")
+          (@resource[:force].nil? or @resource[:force] == :absent or
+           @resource[:force] == false)
+          self.fail("Require force => true to register already registered server")
         end
         register
         subscription_attach
@@ -168,14 +168,15 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     params = []
     user = @resource[:username]
     key = @resource[:activationkey]
+    release = @resource[:release]
     if (user.nil? and key.nil?) or (user == :absent and key == :absent) or (user == '' and key == '')
-         self.fail("Need an activation key or a username and password. Was given user '#{user}' and key '#{key}'")
-     end
-     if bothset(user, key)
-       self.fail("Only provide an activation key or username and password not both. Was given user '#{user}' and key '#{key}'")
-     end
+      self.fail("Need an activation key or a username and password. Was given user '#{user}' and key '#{key}'")
+    end
+    if bothset(user, key)
+      self.fail("Only provide an activation key or username and password not both. Was given user '#{user}' and key '#{key}'")
+    end
     if (@resource[:org].nil? or @resource[:org] == :absent)
-        self.fail("The 'org' paramater is required to register the system")
+      self.fail("The 'org' paramater is required to register the system")
     end
     params << "register"
     params << "--force" if @resource[:force] and @resource[:force] != :absent
@@ -190,10 +191,13 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
       # no autosubscribe with keys, see attach step instead
     end
     if ((!@resource[:lifecycleenv].nil? and !@resource[:lifecycleenv] == :absent) and
-      (@resource[:activationkey].nil? or @resource[:activationkey] == :absent))
-     params << "--environment" << @resource[:lifecycleenv]
+        (@resource[:activationkey].nil? or @resource[:activationkey] == :absent))
+      params << "--environment" << @resource[:lifecycleenv]
     end
     params << "--org" << @resource[:org]
+    if !release.nil?
+      params << "--release" << release
+    end
     return params
   end
 
@@ -203,9 +207,9 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   def self.certified?
     if File.exists?('/etc/pki/consumer/cert.pem') or
       File.exists?('/etc/pki/consumer/key.pem')
-        true
+      true
     else
-        false
+      false
     end
   end
 
