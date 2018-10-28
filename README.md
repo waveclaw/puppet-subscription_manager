@@ -201,12 +201,12 @@ The module adds the following new types:
 ##### Mandatory
 
 - **server_hostname**: Specify a registration server hostname such as subscription.rhn.redhat.com.
-- **org**: provide an organization to join (defaults to the Default_Organization).  In the Sat6 UI this can be set to `<%= @host.rhsm_organization_label %>`
+- **org**: provide an organization to join (defaults to the Default_Organization).  In the commerical Satellite 6 product's user interface this can be set to a template value such as  `<%= @host.rhsm_organization_label %>`
 
 Either an activation key or a username and password combination is needed to
 register.  Both cannot be provided and will cause an error.
 
-- **activationkey**: The activation key to use when registering the system (cannot be used with username and password).  In the Sat6 UI this can be set to `<%= @host.params['kt_activation_keys'] %>`
+- **activationkey**: The activation key to use when registering the system (cannot be used with username and password).  In the commerical Satellite 6 product's user interface this can be set to a template value such as `<%= @host.params['kt_activation_keys'] %>`
 - **password**: The password to use when registering the system
 - **username**: The username to use when registering the system
 
@@ -261,7 +261,7 @@ See the documentation at [RedHat Support](https://access.redhat.com/documentatio
 
 The most important settings are as follows.  Specific support is made for them.
 
-- **server_hostname**: Same as the title or name of the resource.  In the Sat6 UI this can be set to `<%= @host.content_source.hostname %>`
+- **server_hostname**: Same as the title or name of the resource.  In the commerical Satellite 6 product's user interface this can be set to a template value such as `<%= @host.content_source.hostname %>`
 - **server_insecure**: If HTTP is used or HTTPS with an untrusted certificate
 - **server_prefix**: The subscription path.  Usually `/subscription` for RHN and `/rhsm` for a Katello installation.
 - **rhsm_baseurl**: The Content base URL in case the registration server has no content. An example would be [https://cdn.redhat.com](https://cdn.redhat.com) or [https://katello.example.com/pulp/repos](https://katello.example.com/pulp/repos)
