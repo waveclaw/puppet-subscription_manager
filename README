@@ -1,6 +1,6 @@
-# Puppet-Subscription_manager
+# Puppet-Subscription\_manager
 
- [![Build Status](https://travis-ci.org/waveclaw/puppet-subscription_manager.svg?branch=master)](https://travis-ci.org/waveclaw/puppet-subscription_manager) [![Code Climate](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/badges/gpa.svg)](https://codeclimate.com/github/waveclaw/puppet-subscription_manager)  [![Test Coverage](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/badges/coverage.svg)](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/coverage)
+ [![Build Status](https://travis-ci.org/waveclaw/puppet-subscription_manager.svg?branch=master)](https://travis-ci.org/waveclaw/puppet-subscription_manager) [![Code Climate](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/badges/gpa.svg)](https://codeclimate.com/github/waveclaw/puppet-subscription_manager)  [![Test Coverage](https://codeclimate.com/github/waveclaw/puppet-subscription_manager/badges/coverage.svg)](https://codeclimate.com/github/waveclaw/puppet-subscription\_manager/coverage)
 
 This module provides Custom Puppet Provider to handle registration and
 consumption of RedHat subscriptions using subscription-manager as part of Katello
@@ -156,7 +156,11 @@ Register a RedHat Enterprise 7 or CentOS 7 node to Satellite 6 using an activati
   }
 ```
 > Notice that the `rhsm_repo_ca_cert` must change to match the certificate provided
-> by the katello-ca-consumer package on the Satellite server.
+> by the katello-ca-consumer package on the Satellite server.  This can be
+> contained in the files searched by the `rhsm_ca_cert` fact. These are SSL
+> certificates which do not take into account Subject Alternative Names. Only
+> the primary name in the certificate is used to check if the client is
+> registered to the correct server.
 
 
 Register to a local RedHat SAM server.
@@ -197,13 +201,12 @@ The module adds the following new types:
 ##### Mandatory
 
 - **server_hostname**: Specify a registration server hostname such as subscription.rhn.redhat.com.
-- **org**: provide an organization to join (defaults to the Default_Organization
-)
+- **org**: provide an organization to join (defaults to the Default_Organization).  In the commerical Satellite 6 product's user interface this can be set to a template value such as  `<%= @host.rhsm_organization_label %>`
 
 Either an activation key or a username and password combination is needed to
 register.  Both cannot be provided and will cause an error.
 
-- **activationkey**: The activation key to use when registering the system (cannot be used with username and password)
+- **activationkey**: The activation key to use when registering the system (cannot be used with username and password).  In the commerical Satellite 6 product's user interface this can be set to a template value such as `<%= @host.params['kt_activation_keys'] %>`
 - **password**: The password to use when registering the system
 - **username**: The username to use when registering the system
 
@@ -258,7 +261,7 @@ See the documentation at [RedHat Support](https://access.redhat.com/documentatio
 
 The most important settings are as follows.  Specific support is made for them.
 
-- **server_hostname**: Same as the title or name of the resource
+- **server_hostname**: Same as the title or name of the resource.  In the commerical Satellite 6 product's user interface this can be set to a template value such as `<%= @host.content_source.hostname %>`
 - **server_insecure**: If HTTP is used or HTTPS with an untrusted certificate
 - **server_prefix**: The subscription path.  Usually `/subscription` for RHN and `/rhsm` for a Katello installation.
 - **rhsm_baseurl**: The Content base URL in case the registration server has no content. An example would be [https://cdn.redhat.com](https://cdn.redhat.com) or [https://katello.example.com/pulp/repos](https://katello.example.com/pulp/repos)
