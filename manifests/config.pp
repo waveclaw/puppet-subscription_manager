@@ -20,12 +20,13 @@ class subscription_manager::config {
   if  $::subscription_manager::activationkey != undef and
       $::subscription_manager::activationkey != '' {
         $_settings = {
-          'pool'            => $::subscription_manager::pool,
-          'autosubscribe'   => $::subscription_manager::autosubscribe,
-          'force'           => $::subscription_manager::force,
-          'org'             => $::subscription_manager::org,
-          'servicelevel'    => $::subscription_manager::servicelevel,
-          'activationkey'   => $::subscription_manager::activationkey,
+          'pool'          => $::subscription_manager::pool,
+          'autosubscribe' => $::subscription_manager::autosubscribe,
+          'force'         => $::subscription_manager::force,
+          'org'           => $::subscription_manager::org,
+          'servicelevel'  => $::subscription_manager::servicelevel,
+          'activationkey' => $::subscription_manager::activationkey,
+          'release'       => $::subscription_manager::release,
         }
   } else {
     if  $::subscription_manager::username != undef and
@@ -40,7 +41,9 @@ class subscription_manager::config {
             'servicelevel'  => $::subscription_manager::servicelevel,
             'username'      => $::subscription_manager::username,
             'password'      => $::subscription_manager::password,
-            'lifecycleenv'  => $::subscription_manager::lifecycleenv, }
+            'lifecycleenv'  => $::subscription_manager::lifecycleenv,
+            'release'       => $::subscription_manager::release,
+          }
     } else {
       $_settings = {}
     }

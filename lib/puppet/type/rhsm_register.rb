@@ -86,6 +86,10 @@ EOD
     desc "A service level for automatic attachement with Satellite servers."
   end
 
+  newparam(:release) do
+    desc "The release command sets a sticky OS version to use when installing or updating packages."
+  end
+
   newparam(:org) do
     desc "The organization the system should be assigned to."
     validate do |value|
