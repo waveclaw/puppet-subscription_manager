@@ -8,14 +8,24 @@ AllCops:
   Exclude:
   - bin/*
   - ".vendor/**/*"
-  - Gemfile
-  - Rakefile
+  - "**/Gemfile"
+  - "**/Rakefile"
   - pkg/**/*
   - spec/fixtures/**/*
   - vendor/**/*
+  - "**/Puppetfile"
+  - "**/Vagrantfile"
+  - "**/Guardfile"
+  - "lib/types/**/*"
+  - "lib/puppet/**/*"
+  - "lib/facter/**/*"
 Metrics/LineLength:
   Description: People have wide screens, use them.
   Max: 200
+GetText/DecorateString:
+  Description: We don't want to decorate test output.
+  Exclude:
+  - spec/*
 RSpec/BeforeAfterAll:
   Description: Beware of using after(:all) as it may cause state to leak between tests.
     A necessary evil in acceptance testing.
@@ -65,6 +75,12 @@ Style/SymbolArray:
   EnforcedStyle: brackets
 RSpec/MessageSpies:
   EnforcedStyle: receive
+Style/Documentation:
+  Exclude:
+  - lib/puppet/parser/functions/**/*
+  - spec/**/*
+Style/WordArray:
+  EnforcedStyle: brackets
 Style/CollectionMethods:
   Enabled: true
 Style/MethodCalledOnDoEndBlock:
@@ -72,6 +88,8 @@ Style/MethodCalledOnDoEndBlock:
 Style/StringMethods:
   Enabled: true
 Layout/EndOfLine:
+  Enabled: false
+Layout/IndentHeredoc:
   Enabled: false
 Metrics/AbcSize:
   Enabled: false
