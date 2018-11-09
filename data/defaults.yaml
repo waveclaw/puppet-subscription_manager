@@ -4,6 +4,7 @@ subscription_manager::package_names:
   - 'subscription-manager'
 subscription_manager::service_name: 'goferd'
 subscription_manager::service_status: 'running'
+subscription_manager::ca_package: true
 subscription_manager::ca_package_prefix: 'katello-ca-consumer-'
 subscription_manager::autosubscribe: false
 subscription_manager::force: false
