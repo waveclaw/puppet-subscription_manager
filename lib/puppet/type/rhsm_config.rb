@@ -34,6 +34,7 @@ Puppet::Type.newtype(:rhsm_config) do
      plugindir              => '/usr/share/rhsm-plugins',
      productcertdir         => '/etc/pki/product',
      repo_ca_cert           => '/etc/rhsm/ca/ca.pem,'
+     repomd_gpg_url         => 'https://example.com/EXAMPLE-KEY.pub',
      report_package_profile => 1,
      proxy_hostname         => 'proxy.example.com',
      proxy_port             => '44443',
@@ -61,6 +62,7 @@ def self.text_options
   :rhsm_baseurl => 'rhsm.baseurl',
   :rhsm_ca_cert_dir => 'rhsm.ca_cert_dir',
   :rhsm_repo_ca_cert => 'rhsm.repo_ca_cert',
+  :rhsm_repomd_gpg_url=> 'rhsm.repomd_gpg_url',
   :rhsm_productcertdir => 'rhsm.productcertdir',
   :rhsm_entitlementcertdir => 'rhsm.entitlementcertdir',
   :rhsm_consumercertdir => 'rhsm.consumercertdir',
@@ -310,6 +312,10 @@ end
 
   newproperty(:rhsm_repo_ca_cert) do
     desc "Path to Repository CA certificates."
+  end
+
+  newproperty(:rhsm_repomd_gpg_url) do
+    desc "The URL of the GPG key that was used to sign this repository's metadata."
   end
 
   newproperty(:rhsmcertd_certcheckinterval) do
