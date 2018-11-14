@@ -17,8 +17,6 @@ provider_class = Puppet::Type.type(:rhsm_repo).provider(:subscription_manager)
 
 describe provider_class, 'rhsm_repo provider' do
 
-  config_file = '/etc/rhsm/rhsm.conf'
-
   one_data =<<-EOD
   Repo ID:   rhel-5-server-rpms
   Repo Name: RedHat Enterprise Linux 5 Server (RPMs)
