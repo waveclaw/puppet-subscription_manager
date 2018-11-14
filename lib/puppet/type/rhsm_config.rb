@@ -66,6 +66,7 @@ def self.text_options
   :rhsm_consumercertdir => 'rhsm.consumercertdir',
   :rhsm_pluginconfdir => 'rhsm.pluginconfdir',
   :rhsm_plugindir => 'rhsm.plugindir',
+  :rhsm_repomd_gpg_url => 'rhsm.repomd_gpg_url',
   :rhsmcertd_certcheckinterval => 'rhsmcertd.certcheckinterval',
   :rhsmcertd_autoattachinterval => 'rhsmcertd.autoattachinterval',
   :logging_default_log_level => 'logging.default_log_level',
@@ -324,6 +325,10 @@ end
     validate do |value|
       fail("Require a small positive number. Was given #{value}.") unless value.to_i and (value.to_i >= 0)
     end
+  end
+
+  newproperty(:rhsm_repomd_gpg_url) do
+    desc "Repo gpg"
   end
 
 end
