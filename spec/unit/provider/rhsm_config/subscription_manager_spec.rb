@@ -35,7 +35,7 @@ describe  provider_class, 'rhsm_config provider' do
   :rhsm_plugindir               => '/usr/share/rhsm-plugins',
   :rhsm_productcertdir          => '/etc/pki/product',
   :rhsm_repo_ca_cert            => '/etc/rhsm/ca/',
-  :repomd_gpg_url               => 'https://example.com/EXAMPLE-KEY.pub',
+  :rhsm_repomd_gpg_url               => 'https://example.com/EXAMPLE-KEY.pub',
   :rhsm_report_package_profile  => true,
   :rhsmcertd_autoattachinterval => 1440,
   :server_proxy_hostname        => 'proxy.example.com',
@@ -99,6 +99,7 @@ raw_hostname01_data =<<-EOD
     plugindir = [/usr/share/rhsm-plugins]
     productcertdir = [/etc/pki/product]
     repo_ca_cert = /etc/rhsm/ca/
+    repomd_gpg_url = https://example.com/EXAMPLE-KEY.pub
     report_package_profile = [1]
 
  [rhsmcertd]
