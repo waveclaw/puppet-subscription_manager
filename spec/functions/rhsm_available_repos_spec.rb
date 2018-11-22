@@ -13,7 +13,7 @@ require 'spec_helper'
 require 'repo_tests'
 require 'facter/rhsm_available_repos'
 
-describe Facter::Util::Rhsm_available_repos, type: :puppet_function do
+describe Facter::Util::RhsmAvailalbeRepos, type: :puppet_function do
   context 'on a supported platform' do
     before :each do
       Facter::Util::Loader.stubs(:load_all)
@@ -21,7 +21,7 @@ describe Facter::Util::Rhsm_available_repos, type: :puppet_function do
       Facter.clear_messages
     end
     it_behaves_like 'rhsm repo command',
-                    Facter::Util::Rhsm_available_repos, 'rhsm_available_repos', :available
+                    Facter::Util::RhsmAvailalbeRepos, 'rhsm_available_repos', :available
   end
 
   context 'on an unsupported platform' do
@@ -34,15 +34,15 @@ describe Facter::Util::Rhsm_available_repos, type: :puppet_function do
       ) { false }
     end
     it 'returns nothing' do
-      expect(Facter::Util::Rhsm_available_repos.rhsm_available_repos).to eq([])
+      expect(Facter::Util::RhsmAvailalbeRepos.rhsm_available_repos).to eq([])
     end
   end
 
   context 'when caching' do
     it_behaves_like 'cached rhsm repo command',
-                    Facter::Util::Rhsm_available_repos,
+                    Facter::Util::RhsmAvailalbeRepos,
                     'rhsm_available_repos',
                     :rhsm_available_repos,
-                    Facter::Util::Rhsm_available_repos::CACHE_FILE
+                    Facter::Util::RhsmAvailalbeRepos::CACHE_FILE
   end
 end

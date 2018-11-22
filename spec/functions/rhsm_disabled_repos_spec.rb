@@ -12,7 +12,7 @@ require 'spec_helper'
 require 'repo_tests'
 require 'facter/rhsm_disabled_repos'
 
-describe Facter::Util::Rhsm_disabled_repos, type: :fact do
+describe Facter::Util::RhsmDisabledRepos, type: :fact do
   context 'on a supported platform' do
     before :each do
       Facter::Util::Loader.stubs(:load_all)
@@ -20,7 +20,7 @@ describe Facter::Util::Rhsm_disabled_repos, type: :fact do
       Facter.clear_messages
     end
     it_behaves_like 'rhsm repo command',
-                    Facter::Util::Rhsm_disabled_repos, 'rhsm_disabled_repos', :disabled
+                    Facter::Util::RhsmDisabledRepos, 'rhsm_disabled_repos', :disabled
   end
 
   context 'on an unsupported platform' do
@@ -33,15 +33,20 @@ describe Facter::Util::Rhsm_disabled_repos, type: :fact do
       ) { false }
     end
     it 'returns nothing' do
-      expect(Facter::Util::Rhsm_disabled_repos.rhsm_disabled_repos).to eq([])
+      expect(Facter::Util::RhsmDisabledRepos.rhsm_disabled_repos).to eq([])
     end
   end
 
-  #
-  # This test does not work on travis CI, but does work everywhere else.
-  #
-  #  context 'when caching' do
-  #    it_behaves_like 'cached rhsm repo command',
-  #      Facter::Util::Rhsm_disabled_repos, 'rhsm_disabled_repos', :rhsm_disabled_repos
-  #  end
+  context 'when caching' do
+    before :each do
+      Facter::Util::Loader.stubs(:load_all)
+      Facter.clear
+      Facter.clear_messages
+    end
+    it_behaves_like 'cached rhsm repo command',
+                    Facter::Util::RhsmDisabledRepos,
+                    'rhsm_disabled_repos',
+                    :rhsm_disabled_repos,
+                    '/var/cache/rhsm/disabled_repos.yaml'
+  end
 end
