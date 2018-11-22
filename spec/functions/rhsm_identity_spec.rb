@@ -28,36 +28,35 @@ org ID: default-org
 environment name: Library
 EOD
 
-describe Facter::Util::Rhsm_identity, type: :fact do
+describe Facter::Util::RhsmIdentity, type: :fact do
   before :each do
     Facter::Util::Loader.stubs(:load_all)
     Facter.clear
     Facter.clear_messages
   end
   it 'returns the expected data for old style return' do
-    expect(Facter::Util::Resolution).to receive(:exec)
-      .with('/usr/sbin/subscription-manager identity').and_return(raw_data1)
-    expect(Facter::Util::Rhsm_identity.rhsm_identity).to eq(expected_data)
+    expect( Facter::Core::Execution).to receive(:execute)
+      .with('/usr/sbin/subscription-manager identity',
+      { :on_fail => Facter::Core::Execution::ExecutionFailure }
+    ).and_return(raw_data1)
+    expect(Facter::Util::RhsmIdentity.rhsm_identity).to eq(expected_data)
   end
   it 'returns the expected data for new style' do
-    expect(Facter::Util::Resolution).to receive(:exec)
-      .with('/usr/sbin/subscription-manager identity').and_return(raw_data2)
-    expect(Facter::Util::Rhsm_identity.rhsm_identity).to eq(expected_data)
+    expect( Facter::Core::Execution).to receive(:execute).and_return(raw_data2)
+    expect(Facter::Util::RhsmIdentity.rhsm_identity).to eq(expected_data)
   end
   it 'returns the nothing for no data' do
-    expect(Facter::Util::Resolution).to receive(:exec)
-      .with('/usr/sbin/subscription-manager identity').and_return('')
-    expect(Facter::Util::Rhsm_identity.rhsm_identity).to eq(nil)
+    expect( Facter::Core::Execution).to receive(:execute).and_return('')
+    expect(Facter::Util::RhsmIdentity.rhsm_identity).to eq(nil)
   end
   it 'returns the nothing for no command' do
-    expect(Facter::Util::Resolution).to receive(:exec)
-      .with('/usr/sbin/subscription-manager identity').and_return(nil)
-    expect(Facter::Util::Rhsm_identity.rhsm_identity).to eq(nil)
+    expect( Facter::Core::Execution).to receive(:execute).and_return(nil)
+    expect(Facter::Util::RhsmIdentity.rhsm_identity).to eq(nil)
   end
   it 'returns the nothing for an error' do
-    expect(Facter::Util::Resolution).to receive(:exec)
-      .with('/usr/sbin/subscription-manager identity') { throw Error }
+    expect( Facter::Core::Execution).to receive(:execute) {
+        throw Facter::Core::Execution::ExecutionFailure }
     expect(Facter).to receive(:debug)
-    expect(Facter::Util::Rhsm_identity.rhsm_identity).to eq(nil)
+    expect(Facter::Util::RhsmIdentity.rhsm_identity).to eq(nil)
   end
 end
