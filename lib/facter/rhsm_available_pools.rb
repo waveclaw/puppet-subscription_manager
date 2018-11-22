@@ -43,7 +43,6 @@ EOF
   end
 end
 
-# TODO: massive refactoring opportunity with facter_cacheable
 if File.exist? '/usr/sbin/subscription-manager'
   pools = Facter::Util::Rhsm_available_pools
   if Puppet.features.facter_cacheable?
