@@ -1,4 +1,6 @@
 #!/usr/bin/ruby
+# frozen_string_literal: true
+
 #
 # Provider for the rhsm_pool Puppet native ruby type based
 # on the subscription_manager tool.
@@ -15,46 +17,48 @@ Puppet::Type.type(:rhsm_pool).provide(:subscription_manager) do
     Manage attachment of a server to specific Entitlement Pools.
   EOS
 
-  confine :osfamily => :redhat
-  confine :feature => :json
+  confine osfamily: :redhat
+  confine feature: :json
 
-  commands :subscription_manager => "subscription-manager"
+  commands subscription_manager: 'subscription-manager'
 
-mk_resource_methods
+  mk_resource_methods
 
   # Attach to a pool based on the ID
   #  This will enable the consumption of repositories licensed
   #  through this pool.
   def create
-    subscription_manager('attach','--pool',@resource[:id])
+    subscription_manager('attach', '--pool', @resource[:id])
   end
 
   # Detach from a pool
   #  Given the serial number of our registration, remove the license
   def destroy
-    subscription_manager('remove','--serial',@resource[:serial])
+    subscription_manager('remove', '--serial', @resource[:serial])
   end
 
   #  List the pools
   #    Given a valid registration exists, show all licensed pools
   def self.consumed_pools
-    Puppet::debug("called subscription_manager with list --consumed")
+    Puppet.debug('called subscription_manager with list --consumed')
     subscriptions = []
     subscription = {}
     keys =
-    'Subscription Name|Provides|SKU|Contract|Account|Serial|Pool ID|Active' +
-    '|Quantity Used|Service Level|Service Type|Status Details' +
-    '|Subscription Type|Starts|Ends|System Type'
-    subscription_manager('list','--consumed').each_line { |line|
-      if line =~ /^\s*Subscription Name:\s*([^:]+)$/
+      'Subscription Name|Provides|SKU|Contract|Account|Serial|Pool ID|Active' \
+      '|Quantity Used|Service Level|Service Type|Status Details' \
+      '|Subscription Type|Starts|Ends|System Type'
+    subscription_manager('list', '--consumed').each_line do |line|
+      m = %r{^\s*Subscription Name:\s*([^:]+)$}.match(line)
+      unless m.nil?
         # this is the first item output
-         subscription = {}
-         subscription.store(:subscription_name, $1.strip)
-         next
+        subscription = {} unless subscription == {}
+        subscription[:subscription_name] = m[1].strip
+        next
       end
-      if line =~ /^\s*(Starts|Ends):\s*([0-9\/]+)$/
-        key = $1.downcase.to_sym
-        date = Date.strptime($2, "%m/%d/%Y") # TODO: test if sm uses Locale
+      m = %r{^\s*(Starts|Ends):\s*([0-9\/]+)$}.match(line)
+      unless m.nil?
+        key = m[1].downcase.to_sym
+        date = Date.strptime(m[2], '%m/%d/%Y') # TODO: test if sm uses Locale
         # I hate date math, don't you?
         if date.year < 100 # and (DateTime.now.year / 100 > 0)
           # Congratulations, you've stripped out the century.
@@ -63,46 +67,50 @@ mk_resource_methods
           centuries = ((Time.now.year / 100) * 100)
           date = Date.new(date.year + centuries, date.month, date.day)
         end
-        subscription.store(key, date)
+        subscription[key] = date
         next
       end
-      if line =~ /^\s*(Quantity Used):\s*(\d+)$/
-        value = $2.to_i
-        key = $1.downcase.gsub(' ', '_').to_sym
-        subscription.store(key, value)
+      m = %r{^\s*(Quantity Used):\s*(\d+)$}.match(line)
+      unless m.nil?
+        value = m[2].to_i
+        key = m[1].downcase.tr(' ', '_').to_sym
+        subscription[key] = value
         next
       end
-      if line =~ /^\s*Pool ID:\s*([0-9a-fA-F]+)$/
-        value = $1.strip
-        subscription.store(:id, value)
-        subscription.store(:name, value)
+      m = %r{^\s*Pool ID:\s*([0-9a-fA-F]+)$}.match(line)
+      unless m.nil?
+        value = m[1].strip
+        subscription[:id] = value
+        subscription[:name] = value
         next
       end
-      if line =~ /^\s*Active:\s*(.+)$/
-        value = $1.strip.match(/yes|true/i) ? true : false
+      m = %r{^\s*Active:\s*(.+)$}.match(line)
+      unless m.nil?
+        value = m[1].strip.match?(%r{yes|true}i) ? true : false
         subscription.store(:active, value)
         next
       end
-      if line =~ /^\s*System Type:\s*([^:]+)$/
-        value = $1.strip.to_sym
+      m = %r{^\s*System Type:\s*([^:]+)$}.match(line)
+      unless m.nil?
+        value = m[1].strip.to_sym
         subscription.store(:system_type, value)
         # this is the last item output
         subscription.store(:provider, :subscription_manager)
         subscriptions << subscription
         next
       end
-      if line =~ /^\s*(#{keys}):\s*([^:]+)$/
-        value = $2.strip
-        key = $1.downcase.gsub(' ', '_').to_sym
-        subscription.store(key, value)
-        next
-      end
-    }
+      m = %r{^\s*(#{keys}):\s*([^:]+)$}.match(line)
+      next if m.nil?
+      value = m[2].strip
+      key = m[1].downcase.tr(' ', '_').to_sym
+      subscription.store(key, value)
+      next
+    end
     subscriptions
   end
 
   def self.instances
-    consumed_pools.collect do |pool|
+    consumed_pools.map do |pool|
       pool.store(:ensure, :present)
       new(pool)
     end
@@ -111,14 +119,12 @@ mk_resource_methods
   def self.prefetch(resources)
     pools = instances
     resources.keys.each do |name|
-      if provider = pools.find{ |pool| pool.name == name }
-        resources[name].provider = provider
-      end
+      provider = pools.find { |pool| pool.name == name }
+      resources[name].provider = provider unless provider.nil?
     end
   end
 
   def exists?
     @property_hash[:ensure] == :present
   end
-
 end
