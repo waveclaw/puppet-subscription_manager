@@ -11,7 +11,6 @@
 #
 require 'puppet/parameter/boolean'
 require 'puppet/type'
-require 'uri'
 
 Puppet::Type.newtype(:rhsm_register) do
   @doc = <<-EOD
