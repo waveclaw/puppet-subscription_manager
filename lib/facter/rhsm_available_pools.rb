@@ -1,4 +1,6 @@
 #!/usr/bin/ruby
+# frozen_string_literal: true
+
 #
 #  Report the pools (F/OSS repos) available to this system
 #  This will be empty if the registration is bad.
@@ -7,44 +9,54 @@
 #
 #   See LICENSE for licensing.
 #
+require 'English'
+
 begin
-    require 'facter/util/facter_cacheable'
-  rescue LoadError => e
-    Facter.debug("#{e.backtrace[0]}: #{$!}.")
+  require 'facter/util/facter_cacheable'
+rescue LoadError => e
+  Facter.debug("#{e.backtrace[0]}: #{$ERROR_INFO}.")
 end
 
-module Facter::Util::Rhsm_available_pools
-  @doc=<<EOF
+# Available Subscription Pools for this client.
+module Facter::Util::RhsmAvailablePools
+  @doc = <<EOF
   Available Subscription Pools for this client.
 EOF
-  CACHE_TTL = 86400 unless defined? CACHE_TTL # 24 * 60 * 60 seconds
+  CACHE_TTL = 86_400 unless defined? CACHE_TTL # 24 * 60 * 60 seconds
   CACHE_FILE = '/var/cache/rhsm/available_pools.yaml' unless defined? CACHE_FILE
-  extend self
+
+  module_function
+
   def get_output(input)
     lines = []
-    input.split("\n").each { |line|
-      if line =~ /Pool ID:\s+(.+)$/
-        lines.push($1.chomp)
+    input.split("\n").each do |line|
+      if line =~ %r{Pool ID:\s+(.+)$}
+        lines.push(Regexp.last_match(1).chomp)
         next
       end
-    }
+    end
     lines
   end
+
   def rhsm_available_pools
     value = []
     begin
-      available = Facter::Util::Resolution.exec(
-        '/usr/sbin/subscription-manager list --available')
+      available = Facter::Core::Execution.execute(
+        '/usr/sbin/subscription-manager list --available',
+        on_fail: :raise,
+      )
       value = get_output(available)
-    rescue Exception => e
-        Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
+    rescue UncaughtThrowError, Facter::Core::Execution::ExecutionFailure => e
+      if $ERROR_INFO !~ %r{This system is not yet registered}
+        Facter.debug("#{e.backtrace[0]}: #{$ERROR_INFO}.")
+      end
     end
     value
   end
 end
 
 if File.exist? '/usr/sbin/subscription-manager'
-  pools = Facter::Util::Rhsm_available_pools
+  pools = Facter::Util::RhsmAvailablePools
   if Puppet.features.facter_cacheable?
     Facter.add(:rhsm_available_pools) do
       setcode do
@@ -53,21 +65,20 @@ if File.exist? '/usr/sbin/subscription-manager'
         cache = Facter::Util::Facter_cacheable.cached?(
           :rhsm_available_pools,
           pools::CACHE_TTL,
-          pools::CACHE_FILE
-          )
-        if ! cache
-          pool = Facter::Util::Rhsm_available_pools.rhsm_available_pools
+          pools::CACHE_FILE,
+        )
+        if !cache
+          pool = Facter::Util::RhsmAvailablePools.rhsm_available_pools
           Facter::Util::Facter_cacheable.cache(
             :rhsm_available_pools,
             pool,
-            pools::CACHE_FILE)
+            pools::CACHE_FILE,
+          )
           pool
+        elsif cache.is_a? Array
+          cache
         else
-          if cache.is_a? Array
-            cache
-          else
-            cache["rhsm_available_pools"]
-          end
+          cache['rhsm_available_pools']
         end
       end
     end

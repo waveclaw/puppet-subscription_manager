@@ -13,7 +13,7 @@ require 'spec_helper'
 require 'pool_tests'
 require 'facter/rhsm_disabled_pools'
 
-describe Facter::Util::Rhsm_disabled_pools, type: :fact do
+describe Facter::Util::RhsmDisabledPools, type: :fact do
   context 'on a supported platform' do
     before :each do
       Facter::Util::Loader.stubs(:load_all)
@@ -21,7 +21,7 @@ describe Facter::Util::Rhsm_disabled_pools, type: :fact do
       Facter.clear_messages
     end
     it_behaves_like 'consumed pools',
-                    Facter::Util::Rhsm_disabled_pools, 'rhsm_disabled_pools', :disabled
+                    Facter::Util::RhsmDisabledPools, 'rhsm_disabled_pools', :disabled
   end
 
   context 'on an unsupported platform' do
@@ -35,13 +35,13 @@ describe Facter::Util::Rhsm_disabled_pools, type: :fact do
       allow(Puppet.features).to receive(:facter_cacheable?).and_return(false)
     end
     it 'returns nothing' do
-      expect(Facter::Util::Rhsm_disabled_pools.rhsm_disabled_pools).to eq([])
+      expect(Facter::Util::RhsmDisabledPools.rhsm_disabled_pools).to eq([])
     end
   end
 
   context 'when caching' do
     it_behaves_like 'cached pools',
-                    Facter::Util::Rhsm_disabled_pools,
+                    Facter::Util::RhsmDisabledPools,
                     'rhsm_disabled_pools',
                     :rhsm_disabled_pools,
                     '/var/cache/rhsm/disabled_pools.yaml'

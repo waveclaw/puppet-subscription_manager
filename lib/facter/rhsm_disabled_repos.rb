@@ -14,7 +14,7 @@ require 'English'
 begin
   require 'facter/util/facter_cacheable'
 rescue LoadError => e
-  #Facter.debug("#{e.backtrace[0]}: #{$ERROR_INFO}.")
+  Facter.debug("#{e.backtrace[0]}: #{$ERROR_INFO}.")
 end
 
 # Disabled RHSM repos for this client.

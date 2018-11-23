@@ -82,7 +82,7 @@ available_cases = {
   }
 }
 
-describe Facter::Util::Rhsm_available_pools, type: :fact do
+describe Facter::Util::RhsmAvailablePools, type: :fact do
   context 'on a supported platform' do
     before :each do
       Facter::Util::Loader.stubs(:load_all)
@@ -95,34 +95,35 @@ describe Facter::Util::Rhsm_available_pools, type: :fact do
       allow(Facter::Util::Facter_cacheable).to receive(:cached?).and_return(false)
     end
     it 'returns nothing when there is an error with subscription' do
-      expect(Facter::Util::Resolution).to receive(:exec).with(
+      expect(Facter::Core::Execution).to receive(:execute).with(
         '/usr/sbin/subscription-manager list --available',
-      ) { throw Error }
+        on_fail: :raise,
+      ) { throw Facter::Core::Execution::ExecutionFailure }
       expect(Facter).to receive(:debug)
-      expect(Facter::Util::Rhsm_available_pools.rhsm_available_pools).to eq([])
+      expect(Facter::Util::RhsmAvailablePools.rhsm_available_pools).to eq([])
     end
     it 'returns nothing when there is an error with output' do
-      expect(Facter::Util::Resolution).to receive(:exec).with(
+      expect(Facter::Core::Execution).to receive(:execute).with(
         '/usr/sbin/subscription-manager list --available',
+        on_fail: :raise,
       ).and_return(nil)
-      expect(Facter::Util::Rhsm_available_pools).to receive(:get_output) { throw Error }
+      expect(Facter::Util::RhsmAvailablePools).to receive(:get_output) { throw Facter::Core::Execution::ExecutionFailure }
       expect(Facter).to receive(:debug)
-      expect(Facter::Util::Rhsm_available_pools.rhsm_available_pools).to eq([])
+      expect(Facter::Util::RhsmAvailablePools.rhsm_available_pools).to eq([])
     end
     available_cases.keys.each do |key|
       desc = available_cases[key][:desc]
       it "should process with get_input #{desc}" do
-        expect(Facter::Util::Rhsm_available_pools.get_output(available_cases[key][:data])).to eq(
+        expect(Facter::Util::RhsmAvailablePools.get_output(available_cases[key][:data])).to eq(
           available_cases[key][:expected],
         )
       end
       it "should return results for #{desc}" do
-        expect(Facter::Util::Resolution).to receive(:exec).with(
+        expect(Facter::Core::Execution).to receive(:execute).with(
           '/usr/sbin/subscription-manager list --available',
-        ) {
-                                              available_cases[key][:data]
-                                            }
-        expect(Facter::Util::Rhsm_available_pools.rhsm_available_pools).to eq(
+          on_fail: :raise,
+        ).and_return(available_cases[key][:data])
+        expect(Facter::Util::RhsmAvailablePools.rhsm_available_pools).to eq(
           available_cases[key][:expected],
         )
       end
@@ -140,25 +141,25 @@ describe Facter::Util::Rhsm_available_pools, type: :fact do
       allow(Puppet.features).to receive(:facter_cacheable?).and_return(false)
     end
     it 'returns nothing when there is an error' do
-      expect(Facter::Util::Resolution).to receive(:exec).with(
+      expect(Facter::Core::Execution).to receive(:execute).with(
         '/usr/sbin/subscription-manager list --available',
-      ) { throw Error }
-      expect(Facter::Util::Rhsm_available_pools.rhsm_available_pools).to eq([])
+        on_fail: :raise,
+      ) { throw Facter::Core::Execution::ExecutionFailure }
+      expect(Facter::Util::RhsmAvailablePools.rhsm_available_pools).to eq([])
     end
     available_cases.keys.each do |key|
       desc = available_cases[key][:desc]
       it "should process with get_input #{desc}" do
-        expect(Facter::Util::Rhsm_available_pools.get_output(available_cases[key][:data])).to eq(
+        expect(Facter::Util::RhsmAvailablePools.get_output(available_cases[key][:data])).to eq(
           available_cases[key][:expected],
         )
       end
       it "should return results for #{desc}" do
-        expect(Facter::Util::Resolution).to receive(:exec).with(
+        expect(Facter::Core::Execution).to receive(:execute).with(
           '/usr/sbin/subscription-manager list --available',
-        ) {
-                                              available_cases[key][:data]
-                                            }
-        expect(Facter::Util::Rhsm_available_pools.rhsm_available_pools).to eq(
+          on_fail: :raise,
+        ).and_return(available_cases[key][:data])
+        expect(Facter::Util::RhsmAvailablePools.rhsm_available_pools).to eq(
           available_cases[key][:expected],
         )
       end
@@ -175,13 +176,13 @@ describe Facter::Util::Rhsm_available_pools, type: :fact do
       ).and_return(false)
     end
     it 'returns nothing' do
-      expect(Facter::Util::Rhsm_available_pools.rhsm_available_pools).to eq([])
+      expect(Facter::Util::RhsmAvailablePools.rhsm_available_pools).to eq([])
     end
   end
 
   context 'when caching' do
     it_behaves_like 'cached pools',
-                    Facter::Util::Rhsm_available_pools,
+                    Facter::Util::RhsmAvailablePools,
                     'rhsm_available_pools',
                     :rhsm_available_pools,
                     '/var/cache/rhsm/available_pools.yaml'

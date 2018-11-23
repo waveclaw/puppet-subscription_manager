@@ -1,4 +1,6 @@
 #!/usr/bin/ruby
+# frozen_string_literal: true
+
 #
 #  Report the name of the Katello Certificate Authority.
 #  This will be the Candlepin instance for the server the agent registered to.
@@ -7,42 +9,46 @@
 #
 #   See LICENSE for licensing.
 #
+require 'English'
 require 'openssl'
 
-module Facter::Util::Rhsm_ca_name
-  @doc=<<EOF
+# Client Identity from the SSL certificate
+module Facter::Util::RhsmCaName
+  @doc = <<EOF
   Identity for this client.
 EOF
-  extend self
+
+  module_function
+
   def rhsm_ca_name(cafile)
     ca = nil
-    if File.exists?(cafile)
+    if File.exist?(cafile)
       begin
-        cert = OpenSSL::X509::Certificate.new(File.open(cafile).read)
-        if cert.subject.to_s =~ /.+CN=(.+)/
-          ca = $1.chomp
+        cert = OpenSSL::X509::Certificate.new(File.open(cafile, 'r').read)
+        if cert.subject.to_s =~ %r{.+CN=(.+)}
+          ca = Regexp.last_match(1).chomp
         end
-      rescue Exception => e
-        Facter.debug("#{e.backtrace[0]}: #{$!}.") unless $! =~ /This system is not yet registered/
+      rescue StandardError => e
+        Facter.debug("#{e.backtrace[0]}: #{$ERROR_INFO}.") unless $ERROR_INFO.nil?
       end
-      ca
     end
+    ca
   end
 end
 
 cafile = nil
-if File.exists?('/etc/rhsm/ca/katello-default-ca.pem')
+if File.exist?('/etc/rhsm/ca/katello-default-ca.pem')
   # Katello or Satellite with custom CA cert
   cafile = '/etc/rhsm/ca/katello-default-ca.pem'
-elsif File.exists?('/etc/rhsm/ca/katello-server-ca.pem')
+elsif File.exist?('/etc/rhsm/ca/katello-server-ca.pem')
   # Katello or Satellite
   cafile = '/etc/rhsm/ca/katello-server-ca.pem'
-elsif File.exists?('/etc/rhsm/ca/candlepin-local.pem')
+elsif File.exist?('/etc/rhsm/ca/candlepin-local.pem')
   # RedHat SAM
   cafile = '/etc/rhsm/ca/candlepin-local.pem'
 end
-if !(cafile.nil?)
-    Facter.add(:rhsm_ca_name) do
-      setcode { Facter::Util::Rhsm_ca_name.rhsm_ca_name(cafile) }
-    end
+unless cafile.nil?
+  Facter.add(:rhsm_ca_name) do
+    setcode { Facter::Util::RhsmCaName.rhsm_ca_name(cafile) }
+  end
 end

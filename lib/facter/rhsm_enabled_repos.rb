@@ -35,7 +35,7 @@ EOF
         '/usr/sbin/subscription-manager repos',
         on_fail: :raise,
       )
-      unless output.nil? or !output.is_a? String
+      unless output.nil? || !output.is_a?(String)
         output.split("\n").each do |line|
           if line =~ %r{Repo ID:\s+(\S+)}
             reponame = Regexp.last_match(1).chomp
