@@ -1,0 +1,7 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "description": "Completely wipe the RHSM configuration of a node",
+  "parameters": {
+  }
+}
