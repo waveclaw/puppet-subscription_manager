@@ -1,4 +1,6 @@
 #!/usr/bin/ruby
+# frozen_string_literal: true
+
 #
 # Include a json implementation in Puppet
 #
@@ -12,4 +14,4 @@
 #
 require 'puppet/util/feature'
 
-Puppet.features.add(:json, :libs => ["json"])
+Puppet.features.add(:json, libs: ['json'])
