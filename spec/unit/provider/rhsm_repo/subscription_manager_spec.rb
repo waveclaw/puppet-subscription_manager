@@ -1,7 +1,6 @@
 #!/usr/bin/ruby -S rspec
 # frozen_string_literal: true
 
-#
 #  Test the subscrption_manager provider for rhsm_repo
 #
 #   Copyright 2016 WaveClaw <waveclaw@hotmail.com>
