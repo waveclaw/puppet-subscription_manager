@@ -55,7 +55,7 @@ EOD
         raise('Repoistory URL is missing host') if test.host.nil?
         raise('Repository URL is missing a scheme') if test.scheme.nil?
       rescue URI::InvalidURIError => e
-        raise('Repository URL must be a valid url: #{e}')
+        raise("Repository URL must be a valid url: #{e}")
       end
     end
   end
