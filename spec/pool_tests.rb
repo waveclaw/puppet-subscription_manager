@@ -217,7 +217,7 @@ shared_examples_for 'consumed pools' do |mod, function, label|
       expect(Facter::Core::Execution).to receive(:execute).with(
         '/usr/sbin/subscription-manager list --consumed',
         on_fail: :raise,
-      ).and_return( consumed_cases[key][:data] )
+      ).and_return(consumed_cases[key][:data])
       expect(mod.send(function)).to eq(
         consumed_cases[key][:expected][label],
       )

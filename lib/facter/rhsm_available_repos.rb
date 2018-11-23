@@ -18,7 +18,7 @@ rescue LoadError => e
 end
 
 # Available RHSM repos for this client.
-module Facter::Util::RhsmAvailalbeRepos
+module Facter::Util::RhsmAvailableRepos
   @doc = <<EOF
   Available RHSM repos for this client.
 EOF
@@ -52,7 +52,7 @@ end
 
 # TODO: massive refactoring opportunity with facter_cacheable
 if File.exist? '/usr/sbin/subscription-manager'
-  repos = Facter::Util::RhsmAvailalbeRepos
+  repos = Facter::Util::RhsmAvailableRepos
   if Puppet.features.facter_cacheable?
     Facter.add(:rhsm_available_repos) do
       setcode do
