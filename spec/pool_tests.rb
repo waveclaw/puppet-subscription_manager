@@ -10,7 +10,7 @@
 #
 
 # stub facter_cacheable
-module Facter::Util::Facter_cacheable
+module Facter::Util::FacterCacheable
   class <<self
     def cached?; end
   end
@@ -188,7 +188,7 @@ shared_examples_for 'consumed pools' do |mod, function, label|
     allow(File).to receive(:exist?).with(
       '/usr/sbin/subscription-manager',
     ).and_return(true)
-    allow(Facter::Util::Facter_cacheable).to receive(:cached?).and_return(false)
+    allow(Facter::Util::FacterCacheable).to receive(:cached?).and_return(false)
   end
   it 'returns nothing when there is an error' do
     expect(Facter::Core::Execution).to receive(:execute).with(
@@ -253,16 +253,16 @@ shared_examples_for 'cached pools' do |mod, _function, label, source|
   end
   it 'returns and save a computed value with an empty cache' do
     option = options[label]
-    stub_const('Facter::Util::Facter_cacheable', fake_class)
+    stub_const('Facter::Util::FacterCacheable', fake_class)
     expect(results[label][label.to_s]).not_to eq(nil)
-    expect(Facter::Util::Facter_cacheable).to receive(:cached?).with(
+    expect(Facter::Util::FacterCacheable).to receive(:cached?).with(
       label, mod::CACHE_TTL, source
     ).and_return(nil)
     expect(Facter::Core::Execution).to receive(:execute).with(
       "/usr/sbin/subscription-manager list #{option}",
       on_fail: :raise,
     ).and_return(data[label])
-    expect(Facter::Util::Facter_cacheable).to receive(:cache).with(
+    expect(Facter::Util::FacterCacheable).to receive(:cache).with(
       label,
       results[label][label.to_s],
       source,
@@ -270,8 +270,8 @@ shared_examples_for 'cached pools' do |mod, _function, label, source|
     expect(Facter.value(label)).to eq(results[label][label.to_s])
   end
   it 'returns a cached value with a full cache' do
-    stub_const('Facter::Util::Facter_cacheable', fake_class)
-    expect(Facter::Util::Facter_cacheable).to receive(:cached?).with(
+    stub_const('Facter::Util::FacterCacheable', fake_class)
+    expect(Facter::Util::FacterCacheable).to receive(:cached?).with(
       label, mod::CACHE_TTL, mod::CACHE_FILE
     ).and_return(results[label])
     expect(mod).not_to receive(label)
@@ -282,8 +282,8 @@ shared_examples_for 'cached pools' do |mod, _function, label, source|
   #  This is actually a problem since Facter 2.0
   #
   it 'returns a cached value with a full cache when cache is not a hash' do
-    stub_const('Facter::Util::Facter_cacheable', fake_class)
-    expect(Facter::Util::Facter_cacheable).to receive(:cached?).with(
+    stub_const('Facter::Util::FacterCacheable', fake_class)
+    expect(Facter::Util::FacterCacheable).to receive(:cached?).with(
       label, mod::CACHE_TTL, mod::CACHE_FILE
     ).and_return(results[label][label.to_s])
     expect(mod).not_to receive(label)

@@ -13,6 +13,7 @@ or RedHat Satellite 6.
 > You cannot use this module to switch between SAM and other products or
 > to SAM from a different product because of the changes in the internal name
 > for the CA certificates.
+>
 
 This module is a fork of the [puppet-subscription_manager](https://github.com/jlaska/puppet-subscription_manager)
 module by James Laska that was in turn derived from [puppet-rhnreg_ks module](https://github.com/strider/puppet-rhnreg_ks)
@@ -20,6 +21,10 @@ module by James Laska that was in turn derived from [puppet-rhnreg_ks module](ht
  resource and separates repository management from control of the Yum overrides.
 
 ## Notice
+
+This module is not for direct use with RedHat Network.  For that, either use the
+provided resource types directly or see the Ansible playbooks available directly
+from RedHat.
 
 Due to various terminology differences between RHN Satellite, the upstream
 Katello project and the further upstream component projects of Candlepin, The
@@ -30,7 +35,7 @@ confusing.
 * Satellite, unlike Katello, will require attachment to subscriptions
   whenever paid-for RedHat Network Channels are made available through a
   repository view.   This module does not manage those certificates.
-* RedHat SAM is an installable RedHat supported version of the Candlepin service
+* RedHat SAM is an install-able RedHat supported version of the Candlepin service
   which uses "candlepin-cert-consumer-" package name instead of of the package
   name "katello-ca-consumer-".  Options are provided to select this.
 
@@ -216,6 +221,7 @@ register.  Both cannot be provided and will cause an error.
 - **lifecycleenv**: which lifecycle environment to join at registration time (incompatible with using activation keys)
 - **autosubscribe**: Enable automatic subscription to repositories based on default Pool settings. Must be false when using an activation key unless specifying a service level.
 - **servicelevel**: provide automatic attachment to a service level in Satellite. Not applicable to katello installations.
+- **release**: The release command sets a sticky OS version to use when installing or updating packages. This sets a preference for the minor version of the OS, such as 6.2 or 6.3. This can prevent unplanned or unsupported operating system version upgrades when an IT environment must maintain a certified configuration.  
 - **force**: Should the registration be forced. Use this option with caution, setting it true will cause the system to be unregistered before running 'subscription-manager register'. Default value `false`.
 
 ### rhsm_register Examples

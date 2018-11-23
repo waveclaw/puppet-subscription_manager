@@ -1,4 +1,3 @@
-#!/usr/bin/ruby -S rspec
 # frozen_string_literal: true
 
 #

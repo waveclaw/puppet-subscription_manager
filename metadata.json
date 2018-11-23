@@ -1,6 +1,6 @@
 {
   "name": "waveclaw-subscription_manager",
-  "version": "4.1.0",
+  "version": "4.5.0",
   "author": "JD Powell <waveclaw@hotmail.com>",
   "summary": "Manage Katello or Satellite registrations.",
   "license": "Apache-2.0",
@@ -18,7 +18,7 @@
     },
     {
       "name": "waveclaw/facter_cacheable",
-      "version_requirement": ">= 0.2.2 < 1.0.0"
+      "version_requirement": ">= 1.0.1 < 2.0.0"
     }
   ],
   "operatingsystem_support": [

@@ -10,7 +10,7 @@
 #
 
 # stub facter_cacheable
-module Facter::Util::Facter_cacheable
+module Facter::Util::FacterCacheable
   class <<self
     def cached?; end
   end
@@ -109,7 +109,7 @@ shared_examples_for 'rhsm repo command' do |mod, function, label|
     allow(File).to receive(:exist?).with(
       '/usr/sbin/subscription-manager',
     ).and_return(true)
-    allow(Facter::Util::Facter_cacheable).to receive(:cached?).and_return(false)
+    allow(Facter::Util::FacterCacheable).to receive(:cached?).and_return(false)
   end
   it 'returns nothing when there is an error' do
     expect(Facter::Core::Execution).to receive(:execute).with(
@@ -154,22 +154,22 @@ shared_examples_for 'cached rhsm repo command' do |mod, function, label, _source
     Facter.clear
   end
   it 'returns and save a computed value with an empty cache' do
-    stub_const('Facter::Util::Facter_cacheable', fake_class)
-    expect(Facter::Util::Facter_cacheable).to receive(:cached?).with(
+    stub_const('Facter::Util::FacterCacheable', fake_class)
+    expect(Facter::Util::FacterCacheable).to receive(:cached?).with(
       label, mod::CACHE_TTL, mod::CACHE_FILE
     ).and_return(nil)
     expect(Facter::Core::Execution).to receive(:execute).with(
       '/usr/sbin/subscription-manager repos',
       on_fail: :raise,
     ).and_return(data[label])
-    expect(Facter::Util::Facter_cacheable).to receive(:cache).with(
+    expect(Facter::Util::FacterCacheable).to receive(:cache).with(
       label, results[label][function], mod::CACHE_FILE
     ).and_return(nil)
     expect(Facter.value(label)).to eq(results[label][function])
   end
   it 'returns a cached value with a full cache' do
-    stub_const('Facter::Util::Facter_cacheable', fake_class)
-    expect(Facter::Util::Facter_cacheable).to receive(:cached?).with(
+    stub_const('Facter::Util::FacterCacheable', fake_class)
+    expect(Facter::Util::FacterCacheable).to receive(:cached?).with(
       label, mod::CACHE_TTL, mod::CACHE_FILE
     ).and_return(results[label])
     expect(mod).not_to receive(label)

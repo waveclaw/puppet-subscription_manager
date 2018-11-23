@@ -58,12 +58,12 @@ if File.exist? '/usr/sbin/subscription-manager'
       setcode do
         # TODO: use another fact to set the TTL in userspace
         # right now this can be done by removing the cache files
-        cache = Facter::Util::Facter_cacheable.cached?(
+        cache = Facter::Util::FacterCacheable.cached?(
           :rhsm_identity, identities::CACHE_TTL, identities::CACHE_FILE
         )
         if !cache
           identity = identities.rhsm_identity
-          Facter::Util::Facter_cacheable.cache(
+          Facter::Util::FacterCacheable.cache(
             :rhsm_identity, identity, identities::CACHE_FILE
           )
           identity
