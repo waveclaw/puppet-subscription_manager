@@ -98,17 +98,17 @@ EOT
 
   describe 'read_cache' do
     it 'returns just two repos for a double input' do
-      expect(provider.class).to receive(:get_cache).and_return(two_data)
+      expect(provider.class).to receive(:content_overrides).and_return(two_data)
       repos = provider.class.read_cache
       expect(repos.size).to eq(2)
     end
     it 'returns just one repo for a single input' do
-      expect(provider.class).to receive(:get_cache).and_return(one_data)
+      expect(provider.class).to receive(:content_overrides).and_return(one_data)
       repos = provider.class.read_cache
       expect(repos.size).to eq(1)
     end
     it 'returns nothing for an empty list' do
-      expect(provider.class).to receive(:get_cache).and_return('[]')
+      expect(provider.class).to receive(:content_overrides).and_return('[]')
       repos = provider.class.read_cache
       expect(repos.size).to eq(0)
     end
