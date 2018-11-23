@@ -50,7 +50,13 @@ EOD
   newproperty(:url) do
     desc 'The yum repo url.'
     validate do |value|
-      raise('Must be a valid url') if URI.parse(value)
+      begin
+        test = URI.parse(value)
+        raise('Repoistory URL is missing host') if test.host.nil?
+        raise('Repository URL is missing a scheme') if test.scheme.nil?
+      rescue URI::InvalidURIError => e
+        raise('Repository URL must be a valid url: #{e}')
+      end
     end
   end
 
