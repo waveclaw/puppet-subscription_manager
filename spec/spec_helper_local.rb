@@ -11,5 +11,5 @@ end
 
 RSpec.configure do |c|
   c.mock_with :rspec
-  c.pattern += ',spec/facter/**/*_spec.rb'
+  # c.pattern += ',spec/facter/**/*_spec.rb'
 end
