@@ -92,7 +92,7 @@ describe Facter::Util::RhsmAvailablePools, type: :fact do
         '/usr/sbin/subscription-manager',
       ).and_return(true)
       allow(Puppet.features).to receive(:facter_cacheable?).and_return(true)
-      allow(Facter::Util::Facter_cacheable).to receive(:cached?).and_return(false)
+      allow(Facter::Util::FacterCacheable).to receive(:cached?).and_return(false)
     end
     it 'returns nothing when there is an error with subscription' do
       expect(Facter::Core::Execution).to receive(:execute).with(
