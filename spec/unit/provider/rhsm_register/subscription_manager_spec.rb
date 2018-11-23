@@ -141,7 +141,7 @@ describe provider_class, '#rhsm_register.provider' do
   describe 'self.prefetch' do
     it { expect(provider.class).to respond_to(:prefetch) }
     it 'can be called on the provider' do
-      expect(provider.class).to receive(:get_registration).and_return(parameters)
+      expect(provider.class).to receive(:registration_settings).and_return(parameters)
       provider.class.prefetch(title => resource)
       expect(resource.provider).to eq(provider)
     end
@@ -191,7 +191,7 @@ describe provider_class, '#rhsm_register.provider' do
         provider: :subscription_manager,
       )
       expect { res.provider.build_register_parameters }.to raise_error(
-        Puppet::Error, %r{.*org.*}
+        RuntimeError, %r{.*org.*}
       )
     end
     it 'fails with an activation key and username + password' do
@@ -204,7 +204,7 @@ describe provider_class, '#rhsm_register.provider' do
         provider: :subscription_manager,
       )
       expect { res.provider.build_register_parameters }.to raise_error(
-        Puppet::Error, %r{.*activation key or username.+password.*}
+        RuntimeError, %r{.*activation key or username.+password.*}
       )
     end
     it 'builds a command with a username and password' do
@@ -355,7 +355,7 @@ describe provider_class, '#rhsm_register.provider' do
       )
       allow(provider).to receive(:exists?).and_return(true)
       expect(provider).to receive(:identity).and_return(fake_id)
-      expect { provider.flush }.to raise_error(Puppet::Error, %r{.*force.*})
+      expect { provider.flush }.to raise_error(RuntimeError, %r{.*force.*})
     end
     it 're-registers when changing servers' do
       expect(provider).to receive(:identity).and_return(fake_id)
