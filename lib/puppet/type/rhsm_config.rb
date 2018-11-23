@@ -182,7 +182,13 @@ EOD
   newproperty(:rhsm_baseurl) do
     desc 'The content server.  Usually a full URL of the Pulp service endpoint.'
     validate do |value|
-      raise("Require a proper url to the Pulp instance.  Was given #{value}.") unless URI.parse(value)
+      begin
+        test = URI.parse(value)
+        raise('Base URL for the Pulp instance is missing a host') if test.host.nil?
+        raise('Base URL for the Pulp instance is missing a scheme') if test.scheme.nil?
+      rescue URI::InvalidURIError => e
+        raise("Require a proper url to the Pulp instance.  Was given #{value}: #{e}.")
+      end
     end
   end
 
