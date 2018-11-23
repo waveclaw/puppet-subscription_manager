@@ -1,4 +1,6 @@
 #!/usr/bin/ruby
+# frozen_string_literal: true
+
 #
 # Descript a subscription pool through a subscrition taken from it.
 #
@@ -41,132 +43,130 @@ rhsm_pool { '1a2b3c4d5e6f1234567890abcdef12345':
 }
 EOD
 
-ensurable do
+  ensurable do
+    newvalue(:present) do
+      provider.create
+    end
 
-  newvalue(:present) do
-    provider.create
+    newvalue(:absent) do
+      provider.destroy
+    end
+
+    #  def insync?(is)
+    #    @should.each { |should|
+    #      case should
+    #      when :present
+    #        return true if is == :present
+    #      when :absent
+    #        return true if is == :absent
+    #      end
+    #    }
+    #    return false
+    #  end
+    #  defaultto :present
   end
 
-  newvalue(:absent) do
-    provider.destroy
-  end
-
-  #  def insync?(is)
-  #    @should.each { |should|
-  #      case should
-  #      when :present
-  #        return true if is == :present
-  #      when :absent
-  #        return true if is == :absent
-  #      end
-  #    }
-  #    return false
-  #  end
-  #  defaultto :present
-end
-
-  newparam(:id, :namevar => true) do
-    desc "An Entitlement Pool to which the server is subscribed (Pool ID)"
+  newparam(:id, namevar: true) do
+    desc 'An Entitlement Pool to which the server is subscribed (Pool ID)'
     validate do |value|
-     raise fail("Pool ID must be a hex number, was given #{value}") unless value =~ /^[0-9a-fA-F]+$/
+      raise raise("Pool ID must be a hex number, was given #{value}") unless value.match?(%r{^[0-9a-fA-F]+$})
     end
   end
 
   newproperty(:provides) do
-    desc "What does this pool provide?"
-    end
+    desc 'What does this pool provide?'
+  end
 
   newproperty(:sku) do
-    desc "Stockkeeping Unit identification for this item?"
-# real SKUs can be strange
-#    validate do |value|
-#     raise fail("SKU must be an number, was given #{value}") unless value.is_a? Numeric
-#    end
+    desc 'Stockkeeping Unit identification for this item?'
+    # real SKUs can be strange
+    #    validate do |value|
+    #     raise fail("SKU must be an number, was given #{value}") unless value.is_a? Numeric
+    #    end
   end
 
   newproperty(:contract) do
-    desc "Identification of the contract for the subscription to this pool"
+    desc 'Identification of the contract for the subscription to this pool'
   end
 
   newproperty(:account) do
-    desc "Identification of the account for the subscription to this pool"
+    desc 'Identification of the account for the subscription to this pool'
   end
 
   newproperty(:serial) do
-    desc "Serial number on the server for this pool"
-# not all NO. are numbers
-#    validate do |value|
-#     raise fail("Serial number must be an number, was given #{value}") unless value.is_a? Numeric
-#    end
+    desc 'Serial number on the server for this pool'
+    # not all NO. are numbers
+    #    validate do |value|
+    #     raise fail("Serial number must be an number, was given #{value}") unless value.is_a? Numeric
+    #    end
   end
 
   newproperty(:subscription_name) do
-    desc "A locally unique idenification for this pool"
+    desc 'A locally unique idenification for this pool'
   end
 
   newproperty(:active) do
-    desc "Is this pool active or inactive for this system"
+    desc 'Is this pool active or inactive for this system'
     newvalues(true, false)
     munge do |value|
       case value
-        when "True", "true", "Yes", "yes", true
-          return true
-        else
-         return false
+      when 'True', 'true', 'Yes', 'yes', true
+        return true
+      else
+        return false
       end
     end
   end
 
   newproperty(:quantity_used) do
-    desc "How many subscriptions are used for this pool (e.g. Sockets for per CPU licenses)"
+    desc 'How many subscriptions are used for this pool (e.g. Sockets for per CPU licenses)'
     validate do |value|
-     raise fail("Quantity Used must be an number, was given #{value}") unless value.is_a? Numeric
+      raise raise("Quantity Used must be an number, was given #{value}") unless value.is_a? Numeric
     end
   end
 
   newproperty(:service_level) do
-    desc "The service level for this subscription to the pool"
+    desc 'The service level for this subscription to the pool'
   end
 
-   newproperty(:service_type) do
-    desc "The type of service provided"
-   end
+  newproperty(:service_type) do
+    desc 'The type of service provided'
+  end
 
   newproperty(:status_details) do
-    desc "Freeform details about the status of the pool subscription"
+    desc 'Freeform details about the status of the pool subscription'
   end
 
   newproperty(:subscription_type) do
-    desc "The type of subscription to this pool the server has"
+    desc 'The type of subscription to this pool the server has'
   end
 
   newproperty(:starts) do
-    desc "When does this subscription to the pool start?"
+    desc 'When does this subscription to the pool start?'
     munge do |value|
-      if ! value.is_a? Date
-        parseddate = Date.parse(value)
-      else
-        parseddate = value
-      end
+      parseddate = if !value.is_a? Date
+                     Date.parse(value)
+                   else
+                     value
+                   end
       parseddate
     end
   end
 
   newproperty(:ends) do
-    desc "When does this subscription to the pool end?"
+    desc 'When does this subscription to the pool end?'
     munge do |value|
-      if ! value.is_a? Date
-        parseddate = Date.parse(value)
-      else
-        parseddate = value
-      end
+      parseddate = if !value.is_a? Date
+                     Date.parse(value)
+                   else
+                     value
+                   end
       parseddate
     end
   end
 
   newproperty(:system_type) do
-    desc "Is this a physcial, virtual or container system"
+    desc 'Is this a physcial, virtual or container system'
     newvalues('Physical', 'Virtual', 'Container')
   end
-
 end

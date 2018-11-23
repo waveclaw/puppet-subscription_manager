@@ -1,4 +1,6 @@
 #!/usr/bin/ruby
+# frozen_string_literal: true
+
 #
 # Control enablement of specific repositories.
 #
@@ -9,7 +11,6 @@
 require 'puppet/property/boolean'
 require 'puppet/type'
 require 'uri'
-
 
 Puppet::Type.newtype(:rhsm_repo) do
   @doc = <<-EOD
@@ -30,41 +31,40 @@ rhsm_repo { 'rhel-6-server-java-rpms':
 
 EOD
 
-  ensurable  # provides for the enable property
+  ensurable # provides for the enable property
 
-  newparam(:id, :namevar => true) do
-    desc "The rhsm channel subscribed to via the server."
+  newparam(:id, namevar: true) do
+    desc 'The rhsm channel subscribed to via the server.'
     validate do |value|
-     fail("ID should be a string.  Given #{value}") unless value.is_a? String
+      raise("ID should be a string.  Given #{value}") unless value.is_a? String
     end
   end
 
-  newproperty(:repo_name, :namevar => false) do
-    desc "The human readable name of the repository."
+  newproperty(:repo_name, namevar: false) do
+    desc 'The human readable name of the repository.'
     validate do |value|
-     fail("Updated should be a string.  Given #{value}") unless value.is_a? String
+      raise("Updated should be a string.  Given #{value}") unless value.is_a? String
     end
   end
 
   newproperty(:url) do
-    desc "The yum repo url."
+    desc 'The yum repo url.'
     validate do |value|
-      fail("Must be a valid url") unless !!URI.parse(value)
+      raise('Must be a valid url') if URI.parse(value)
     end
   end
 
-  newparam(:repo_type) do 
-    desc "What kind of repostiory is this"
+  newparam(:repo_type) do
+    desc 'What kind of repostiory is this'
     validate do |value|
-     fail("Updated should be a string.  Given #{value}") unless value.is_a? String
+      raise("Updated should be a string.  Given #{value}") unless value.is_a? String
     end
   end
 
   newparam(:content_label) do
-    desc "Label, usually identital to ID"
+    desc 'Label, usually identital to ID'
     validate do |value|
-     fail("Updated should be a string.  Given #{value}") unless value.is_a? String
+      raise("Updated should be a string.  Given #{value}") unless value.is_a? String
     end
   end
-
 end

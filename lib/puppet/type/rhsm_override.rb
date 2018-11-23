@@ -1,4 +1,6 @@
 #!/usr/bin/ruby
+# frozen_string_literal: true
+
 #
 #  Describe the yum repository over-ride cach for RedHat Subscription Manager.
 #
@@ -24,28 +26,26 @@ Puppet::Type.newtype(:rhsm_override) do
 
 EOD
 
-  ensurable  # provides for the enable property
+  ensurable # provides for the enable property
 
-  newparam(:content_label, :namevar => true) do
-    desc "The rhsm channel override."
+  newparam(:content_label, namevar: true) do
+    desc 'The rhsm channel override.'
     validate do |value|
-     fail("Updated should be a string.  Given #{value}") unless value.is_a? String
+      raise("Updated should be a string.  Given #{value}") unless value.is_a? String
     end
   end
 
-
   newproperty(:updated) do
-    desc "The last time this repostory was updated."
+    desc 'The last time this repostory was updated.'
     validate do |value|
-     fail("Updated should be a date.  Given #{value}") unless value.is_a? Date
+      raise("Updated should be a date.  Given #{value}") unless value.is_a? Date
     end
   end
 
   newproperty(:created) do
-    desc "The time when this repostory was created."
+    desc 'The time when this repostory was created.'
     validate do |value|
-     fail("Created should be a date.  Given #{value}") unless value.is_a? Date
+      raise("Created should be a date.  Given #{value}") unless value.is_a? Date
     end
   end
-
 end

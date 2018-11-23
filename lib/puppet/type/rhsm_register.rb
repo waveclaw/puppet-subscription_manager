@@ -1,4 +1,6 @@
 #!/usr/bin/ruby
+# frozen_string_literal: true
+
 #
 #  Register or unreister a system to Katello or Satellite 6 servers using
 #  the RedHat Subscription Manager.
@@ -26,78 +28,77 @@ Puppet::Type.newtype(:rhsm_register) do
 EOD
   ensurable
 
-  newparam(:name, :namevar => true) do
-    desc "The rhsm server hostname."
+  newparam(:name, namevar: true) do
+    desc 'The rhsm server hostname.'
     validate do |value|
-      fail("Require a valid hostname. Received #{value} instead") unless value =~ /^[.a-zA-Z\-\_0-9]+$/
+      raise("Require a valid hostname. Received #{value} instead") unless value.match?(%r{^[.a-zA-Z\-\_0-9]+$})
     end
     munge do |value|
-      value.downcase unless (value == :absent or value == :undef or value.nil?)
+      value.downcase unless value == :absent || value == :undef || value.nil?
     end
   end
 
   newproperty(:identity) do
-    desc "The identity from the sever"
+    desc 'The identity from the sever'
   end
 
   # Note the warning from upstream The Forman project on bug #10208
   #  When Auto Attach is enabled, registering systems will be attached to all
   #  associated __custom products__ and __only__ associated RedHat subscriptions
   #  required to satisfy the system's installed products.
-  newparam(:autosubscribe, :boolean => true, :parent => Puppet::Parameter::Boolean) do
-    desc "Automatically attach this system to compatible subscriptions."
+  newparam(:autosubscribe, boolean: true, parent: Puppet::Parameter::Boolean) do
+    desc 'Automatically attach this system to compatible subscriptions.'
     defaultto false
-#    munge do |value|
-#       @resource.munge_boolean(value)
-#     end
+    #    munge do |value|
+    #       @resource.munge_boolean(value)
+    #     end
   end
 
-  newparam(:force, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+  newparam(:force, boolean: true, parent: Puppet::Parameter::Boolean) do
     desc "Should the registration be forced. Use this option with caution,
           setting it true will cause the subscription-manager command to be run
           every time runs."
     defaultto false
-#    munge do |value|
-#       @resource.munge_boolean(value)
-#     end
+    #    munge do |value|
+    #       @resource.munge_boolean(value)
+    #     end
   end
 
   newparam(:username) do
-    desc "The username to use when registering the system"
+    desc 'The username to use when registering the system'
   end
 
   newparam(:password) do
-    desc "The password to use when registering the system"
+    desc 'The password to use when registering the system'
   end
 
   newparam(:activationkey) do
-    desc "The activation key to use when registering the system (cannot be used with username and password)"
+    desc 'The activation key to use when registering the system (cannot be used with username and password)'
   end
 
   newparam(:pool) do
-    desc "The license pool to attach to after registering the system"
+    desc 'The license pool to attach to after registering the system'
   end
 
   newparam(:lifecycleenv) do
-    desc "The lifecyle environment to subscribe to in the case of using katello."
+    desc 'The lifecyle environment to subscribe to in the case of using katello.'
   end
 
   newparam(:servicelevel) do
-    desc "A service level for automatic attachement with Satellite servers."
+    desc 'A service level for automatic attachement with Satellite servers.'
   end
 
   newparam(:release) do
-    desc "The release command sets a sticky OS version to use when installing or updating packages."
+    desc 'The release command sets a sticky OS version to use when installing or updating packages.'
   end
 
   newparam(:org) do
-    desc "The organization the system should be assigned to."
+    desc 'The organization the system should be assigned to.'
     validate do |value|
       if value.empty?
         raise ArgumentError,
-          "org paramater may not be empty"
+              'org paramater may not be empty'
       end
     end
   end
-
 end

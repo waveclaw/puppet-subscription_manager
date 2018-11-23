@@ -1,4 +1,6 @@
 #!/usr/bin/ruby
+# frozen_string_literal: true
+
 #
 #  Describe a client configuration for katello or Satellite 6.
 #
@@ -11,7 +13,6 @@
 require 'puppet/parameter/boolean'
 require 'puppet/type'
 require 'uri'
-
 
 Puppet::Type.newtype(:rhsm_config) do
   @doc = <<-EOD
@@ -41,218 +42,215 @@ Puppet::Type.newtype(:rhsm_config) do
 
 EOD
 
-ensurable
+  ensurable
 
-# This type simulates a file but accesses it through an OS command
-$default_filename = '/etc/rhsm/rhsm.conf'
+  # This type simulates a file but accesses it through an OS command
+  default_filename = '/etc/rhsm/rhsm.conf'
 
-def self.text_options
-  {
-  :server_hostname => 'server.hostname',
-  :server_prefix => 'server.prefix',
-  :server_port => 'server.port',
-  :server_server_timeout => 'server.server_timeout',
-  :server_ssl_verify_depth => 'server.ssl_verify_depth',
-  :server_proxy_hostname => 'server.proxy_hostname',
-  :server_proxy_port => 'server.proxy_port',
-  :server_proxy_user => 'server.proxy_user',
-  :server_proxy_password => 'server.proxy_password',
-  :server_no_proxy => 'server.no_proxy',
-  :rhsm_baseurl => 'rhsm.baseurl',
-  :rhsm_ca_cert_dir => 'rhsm.ca_cert_dir',
-  :rhsm_repo_ca_cert => 'rhsm.repo_ca_cert',
-  :rhsm_productcertdir => 'rhsm.productcertdir',
-  :rhsm_entitlementcertdir => 'rhsm.entitlementcertdir',
-  :rhsm_consumercertdir => 'rhsm.consumercertdir',
-  :rhsm_pluginconfdir => 'rhsm.pluginconfdir',
-  :rhsm_plugindir => 'rhsm.plugindir',
-  :rhsmcertd_certcheckinterval => 'rhsmcertd.certcheckinterval',
-  :rhsmcertd_autoattachinterval => 'rhsmcertd.autoattachinterval',
-  :logging_default_log_level => 'logging.default_log_level',
-  :logging_subscription_manager => 'logging.subscription_manager',
-  :logging_rhsm => 'logging.rhsm',
-  :logging_rhsm_app => 'logging.rhsm-app'
-  }
-end
+  def self.text_options
+    {
+      server_hostname: 'server.hostname',
+      server_prefix: 'server.prefix',
+      server_port: 'server.port',
+      server_server_timeout: 'server.server_timeout',
+      server_ssl_verify_depth: 'server.ssl_verify_depth',
+      server_proxy_hostname: 'server.proxy_hostname',
+      server_proxy_port: 'server.proxy_port',
+      server_proxy_user: 'server.proxy_user',
+      server_proxy_password: 'server.proxy_password',
+      server_no_proxy: 'server.no_proxy',
+      rhsm_baseurl: 'rhsm.baseurl',
+      rhsm_ca_cert_dir: 'rhsm.ca_cert_dir',
+      rhsm_repo_ca_cert: 'rhsm.repo_ca_cert',
+      rhsm_productcertdir: 'rhsm.productcertdir',
+      rhsm_entitlementcertdir: 'rhsm.entitlementcertdir',
+      rhsm_consumercertdir: 'rhsm.consumercertdir',
+      rhsm_pluginconfdir: 'rhsm.pluginconfdir',
+      rhsm_plugindir: 'rhsm.plugindir',
+      rhsmcertd_certcheckinterval: 'rhsmcertd.certcheckinterval',
+      rhsmcertd_autoattachinterval: 'rhsmcertd.autoattachinterval',
+      logging_default_log_level: 'logging.default_log_level',
+      logging_subscription_manager: 'logging.subscription_manager',
+      logging_rhsm: 'logging.rhsm',
+      logging_rhsm_app: 'logging.rhsm-app'
+    }
+  end
 
-def self.binary_options
-  {
-  :server_insecure => 'server.insecure',
-  :rhsm_manage_repos => 'rhsm.manage_repos',
-  :rhsm_full_refresh_on_yum => 'rhsm.full_refresh_on_yum',
-  :rhsm_report_package_profile => 'rhsm.report_package_profile'
-  }
-end
+  def self.binary_options
+    {
+      server_insecure: 'server.insecure',
+      rhsm_manage_repos: 'rhsm.manage_repos',
+      rhsm_full_refresh_on_yum: 'rhsm.full_refresh_on_yum',
+      rhsm_report_package_profile: 'rhsm.report_package_profile'
+    }
+  end
 
-  newparam(:name, :namevar => true) do
-    desc "The configuration file"
-    defaultto $default_filename
+  newparam(:name, namevar: true) do
+    desc 'The configuration file'
+    defaultto default_filename
     validate do |value|
-      unless (value == File.expand_path(value) and
-             value =~ /^\/.*/ and
-             value.length > 1 and
-             !File.directory?(value))
-        fail("Require an absolute path ending in a filename.  Was given #{value} for name.")
+      unless value == File.expand_path(value) &&
+             value.match?(%r{^\/.*}) &&
+             value.length > 1 &&
+             !File.directory?(value)
+        raise("Require an absolute path ending in a filename.  Was given #{value} for name.")
       end
     end
   end
 
   newproperty(:server_hostname) do
-    desc "The rhsm server hostname."
+    desc 'The rhsm server hostname.'
     validate do |value|
-      fail("Require a valid hostname. Received #{value} instead") unless value =~ /^[.a-zA-Z\-\_0-9]+$/
+      raise("Require a valid hostname. Received #{value} instead") unless value.match?(%r{^[.a-zA-Z\-\_0-9]+$})
     end
     munge do |value|
-      value.downcase unless (value == :absent or value == :undef)
+      value.downcase unless [:absent, :undef].include?(value)
     end
   end
 
   newproperty(:server_proxy_hostname) do
-    desc "The name of the proxy to connect through to reach the server."
+    desc 'The name of the proxy to connect through to reach the server.'
     validate do |value|
-      fail("Require a valid hostname. Received #{value} instead") unless value.nil? or value == '' or  value =~ /^\[?[.a-zA-Z\-\_0-9]*$\]?/
+      raise("Require a valid hostname. Received #{value} instead") unless value.nil? || value == '' || value =~ %r{^\[?[.a-zA-Z\-\_0-9]*$\]?}
     end
     munge do |value|
-      value.downcase unless (value == :absent or value == :undef or value.nil?)
+      value.downcase unless value.nil? || [:absent, :undef].include?(value)
     end
-
   end
 
   newproperty(:server_proxy_user) do
-    desc "Proxy username"
+    desc 'Proxy username'
   end
 
   newproperty(:server_ssl_verify_depth) do
-    desc "How far up an intermediate chain should we check for SSL certificate signatures?"
+    desc 'How far up an intermediate chain should we check for SSL certificate signatures?'
     validate do |value|
-      fail("Require a small positive number. Was given #{value}.") unless value.nil? or ( value.to_i and (value.to_i >= 0))
+      raise("Require a small positive number. Was given #{value}.") unless value.nil? || (value.to_i && (value.to_i >= 0))
     end
   end
 
   newproperty(:server_proxy_password) do
-    desc "Password for the proxy."
+    desc 'Password for the proxy.'
   end
 
   newproperty(:server_proxy_port) do
-    desc "Proxy port to connect to"
+    desc 'Proxy port to connect to'
     validate do |value|
-      fail("Require a small positive number. Was given #{value}.") unless value.nil? or ( value.to_i and (value.to_i >= 0))
+      raise("Require a small positive number. Was given #{value}.") unless value.nil? || (value.to_i && (value.to_i >= 0))
     end
   end
-  
+
   newproperty(:server_no_proxy) do
-    desc "Proxy exception list"
+    desc 'Proxy exception list'
   end
 
   newproperty(:server_prefix) do
-    desc "Path on the server for the Candlepin service."
+    desc 'Path on the server for the Candlepin service.'
     validate do |value|
-      fail("Require a url-valid path.  Was given #{value}.") unless value =~ /^\/[_\-0-9a-zA-Z.\/]+/
+      raise("Require a url-valid path.  Was given #{value}.") unless value.match?(%r{^\/[_\-0-9a-zA-Z.\/]+})
     end
   end
 
   newproperty(:server_port) do
-    desc "Port on the server for the RHSM service."
+    desc 'Port on the server for the RHSM service.'
     validate do |value|
-      fail("Require a small positive number. Was given #{value}.") unless value.to_i and (value.to_i >= 0)
+      raise("Require a small positive number. Was given #{value}.") unless value.to_i && (value.to_i >= 0)
     end
   end
 
   newproperty(:server_server_timeout) do
-    desc "Server Timeout"
+    desc 'Server Timeout'
     validate do |value|
-      fail("Require a small positive number. Was given #{value}.") unless value.to_i and (value.to_i >= 0)
+      raise("Require a small positive number. Was given #{value}.") unless value.to_i && (value.to_i >= 0)
     end
   end
 
   newproperty(:rhsm_entitlementcertdir) do
-    desc "The certificate directory of the RHSM entitlements."
+    desc 'The certificate directory of the RHSM entitlements.'
     validate do |value|
-      fail("Require a valid aboslute UNIX path.  Was given #{value}.") unless value =~ /^\/[\/_\-0-9a-zA-Z.]*$/ or value =~ /.*\.\..*/
+      raise("Require a valid aboslute UNIX path.  Was given #{value}.") unless value.match?(%r{^\/[\/_\-0-9a-zA-Z.]*$}) || value.match?(%r{.*\.\..*})
     end
   end
 
   newproperty(:rhsm_pluginconfdir) do
-    desc "The RHN Plugin configuration directory."
+    desc 'The RHN Plugin configuration directory.'
     validate do |value|
-      fail("Require a valid aboslute UNIX path.  Was given #{value}.") unless value =~ /^\/[\/_\-0-9a-zA-Z.]*$/ or value =~ /.*\.\..*/
+      raise("Require a valid aboslute UNIX path.  Was given #{value}.") unless value.match?(%r{^\/[\/_\-0-9a-zA-Z.]*$}) || value.match?(%r{.*\.\..*})
     end
   end
 
   newproperty(:rhsm_baseurl) do
-    desc "The content server.  Usually a full URL of the Pulp service endpoint."
+    desc 'The content server.  Usually a full URL of the Pulp service endpoint.'
     validate do |value|
-      fail("Require a proper url to the Pulp instance.  Was given #{value}.") unless !!URI.parse(value)
+      raise("Require a proper url to the Pulp instance.  Was given #{value}.") unless URI.parse(value)
     end
   end
 
   newproperty(:rhsm_plugindir) do
-    desc "The RHN Plugin directory."
+    desc 'The RHN Plugin directory.'
     validate do |value|
-      fail("Require a valid aboslute UNIX path.  Was given #{value}.") unless value =~ /^\/[\/_\-0-9a-zA-Z.]*$/ or value =~ /.*\.\..*/
+      raise("Require a valid aboslute UNIX path.  Was given #{value}.") unless value.match?(%r{^\/[\/_\-0-9a-zA-Z.]*$}) || value.match?(%r{.*\.\..*})
     end
   end
 
   newproperty(:rhsm_ca_cert_dir) do
-    desc "The CA certificate directory."
+    desc 'The CA certificate directory.'
     validate do |value|
-      fail("Require a valid aboslute UNIX path.  Was given #{value}.") unless value =~ /^\/[\/_\-0-9a-zA-Z.]*$/ or value =~ /.*\.\..*/
+      raise("Require a valid aboslute UNIX path.  Was given #{value}.") unless value.match?(%r{^\/[\/_\-0-9a-zA-Z.]*$}) || value.match?(%r{.*\.\..*})
     end
   end
 
   newproperty(:rhsm_productcertdir) do
-    desc "The certificate directory of the RHSM Products."
+    desc 'The certificate directory of the RHSM Products.'
     validate do |value|
-      fail("Require a valid aboslute UNIX path.  Was given #{value}.") unless value =~ /^\/[\/_\-0-9a-zA-Z.]*$/ or value =~ /.*\.\..*/
+      raise("Require a valid aboslute UNIX path.  Was given #{value}.") unless value.match?(%r{^\/[\/_\-0-9a-zA-Z.]*$}) || value.match?(%r{.*\.\..*})
     end
   end
 
   newproperty(:rhsm_consumercertdir) do
-    desc "The Consumer certificate directory."
+    desc 'The Consumer certificate directory.'
     validate do |value|
-      fail("Require a valid aboslute UNIX path.  Was given #{value}.") unless value =~ /^\/[\/_\-0-9a-zA-Z.]*$/ or value =~ /.*\.\..*/
+      raise("Require a valid aboslute UNIX path.  Was given #{value}.") unless value.match?(%r{^\/[\/_\-0-9a-zA-Z.]*$}) || value.match?(%r{.*\.\..*})
     end
   end
 
   newproperty(:logging_default_log_level) do
-    desc "The default log level for all loggers."
+    desc 'The default log level for all loggers.'
     validate do |value|
-      fail("Require a valid log level (DEBUG, INFO, WARNING, ERROR, or CRITICAL).  Was given #{value}.") unless value =~ /(DEBUG|INFO|WARNING|ERROR|CRITICAL)/
+      raise("Require a valid log level (DEBUG, INFO, WARNING, ERROR, or CRITICAL).  Was given #{value}.") unless value.match?(%r{(DEBUG|INFO|WARNING|ERROR|CRITICAL)})
     end
   end
-
 
   newproperty(:logging_subscription_manager) do
-    desc "The  log level for all subscription_manager modules. Not that sub-modules are not configurable by this."
+    desc 'The  log level for all subscription_manager modules. Not that sub-modules are not configurable by this.'
     validate do |value|
-      fail("Require a valid log level (DEBUG, INFO, WARNING, ERROR, or CRITICAL).  Was given #{value}.") unless value =~ /(DEBUG|INFO|WARNING|ERROR|CRITICAL)/
+      raise("Require a valid log level (DEBUG, INFO, WARNING, ERROR, or CRITICAL).  Was given #{value}.") unless value.match?(%r{(DEBUG|INFO|WARNING|ERROR|CRITICAL)})
     end
   end
 
-
   newproperty(:logging_rhsm) do
-    desc "The log level for rhsm itself."
+    desc 'The log level for rhsm itself.'
     validate do |value|
-      fail("Require a valid log level (DEBUG, INFO, WARNING, ERROR, or CRITICAL).  Was given #{value}.") unless value =~ /(DEBUG|INFO|WARNING|ERROR|CRITICAL)/
+      raise("Require a valid log level (DEBUG, INFO, WARNING, ERROR, or CRITICAL).  Was given #{value}.") unless value.match?(%r{(DEBUG|INFO|WARNING|ERROR|CRITICAL)})
     end
   end
 
   newproperty(:logging_rhsm_app) do
     desc "The log level for the rhsm-app 'application.'"
     validate do |value|
-      fail("Require a valid log level (DEBUG, INFO, WARNING, ERROR, or CRITICAL).  Was given #{value}.") unless value =~ /(DEBUG|INFO|WARNING|ERROR|CRITICAL)/
+      raise("Require a valid log level (DEBUG, INFO, WARNING, ERROR, or CRITICAL).  Was given #{value}.") unless value.match?(%r{(DEBUG|INFO|WARNING|ERROR|CRITICAL)})
     end
   end
 
-  newproperty(:server_insecure,  :boolean => true) do
-    desc "Either use HTTP or do not verify the SSL ceriticate for HTTPS"
+  newproperty(:server_insecure, boolean: true) do
+    desc 'Either use HTTP or do not verify the SSL ceriticate for HTTPS'
     defaultto false
     newvalues(true, false)
     munge do |value|
       case value
-      when /yes/i, /true/i, '1', 1, true, :true, :yes
+      when %r{yes}i, %r{true}i, '1', 1, true, :true, :yes
         true
-      when /no/i, /false/i, '0', 0, false, :false, :no
+      when %r{no}i, %r{false}i, '0', 0, false, :false, :no
         false
       else
         nil
@@ -260,15 +258,15 @@ end
     end
   end
 
-  newproperty(:rhsm_manage_repos,  :boolean => true) do
-    desc "Create and use a redhat.repo yum file?"
+  newproperty(:rhsm_manage_repos, boolean: true) do
+    desc 'Create and use a redhat.repo yum file?'
     defaultto true
     newvalues(true, false)
     munge do |value|
       case value
-      when /yes/i, /true/i, '1', 1, true, :true, :yes
+      when %r{yes}i, %r{true}i, '1', 1, true, :true, :yes
         true
-      when /no/i, /false/i, '0', 0, false, :false, :no
+      when %r{no}i, %r{false}i, '0', 0, false, :false, :no
         false
       else
         nil
@@ -276,15 +274,15 @@ end
     end
   end
 
-  newproperty(:rhsm_full_refresh_on_yum, :boolean => true) do
-    desc "Force a Full refresh when yum is run?"
+  newproperty(:rhsm_full_refresh_on_yum, boolean: true) do
+    desc 'Force a Full refresh when yum is run?'
     defaultto false
     newvalues(true, false)
     munge do |value|
       case value
-      when /yes/i, /true/i, '1', 1, true, :true, :yes
+      when %r{yes}i, %r{true}i, '1', 1, true, :true, :yes
         true
-      when /no/i, /false/i, '0', 0, false, :false, :no
+      when %r{no}i, %r{false}i, '0', 0, false, :false, :no
         false
       else
         nil
@@ -292,15 +290,15 @@ end
     end
   end
 
-  newproperty(:rhsm_report_package_profile,  :boolean => true) do
-    desc "Should the package profile be reported?"
+  newproperty(:rhsm_report_package_profile, boolean: true) do
+    desc 'Should the package profile be reported?'
     defaultto true
     newvalues(true, false)
     munge do |value|
       case value
-      when /yes/i, /true/i, '1', 1, true, :true, :yes
+      when %r{yes}i, %r{true}i, '1', 1, true, :true, :yes
         true
-      when /no/i, /false/i, '0', 0, false, :false, :no
+      when %r{no}i, %r{false}i, '0', 0, false, :false, :no
         false
       else
         nil
@@ -309,21 +307,20 @@ end
   end
 
   newproperty(:rhsm_repo_ca_cert) do
-    desc "Path to Repository CA certificates."
+    desc 'Path to Repository CA certificates.'
   end
 
   newproperty(:rhsmcertd_certcheckinterval) do
-    desc "Minutes for rhsmcertd to wait between checking the certificates."
+    desc 'Minutes for rhsmcertd to wait between checking the certificates.'
     validate do |value|
-      fail("Require a small positive number. Was given #{value}.") unless value.to_i and (value.to_i >= 0)
+      raise("Require a small positive number. Was given #{value}.") unless value.to_i && (value.to_i >= 0)
     end
   end
 
   newproperty(:rhsmcertd_autoattachinterval) do
-    desc "How long in minutes should rhsmcertd wait between checking for subscriptions to re-attach? 0 implies the default frequency of daily (1440 minutes)."
+    desc 'How long in minutes should rhsmcertd wait between checking for subscriptions to re-attach? 0 implies the default frequency of daily (1440 minutes).'
     validate do |value|
-      fail("Require a small positive number. Was given #{value}.") unless value.to_i and (value.to_i >= 0)
+      raise("Require a small positive number. Was given #{value}.") unless value.to_i && (value.to_i >= 0)
     end
   end
-
 end
