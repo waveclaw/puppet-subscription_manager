@@ -129,6 +129,23 @@ describe 'subscription_manager' do
         it { is_expected.to contain_rhsm_config('/etc/rhsm/rhsm.conf') }
         it { is_expected.to contain_transition('purge-bad-rhsm_ca-package') }
       end
+      describe "subscription_manager class without ca_package on #{os}" do
+        let(:facts) do
+          facts.merge({
+            :rhsm_ca_name => 'foo',
+            :rhsm_identity => ''# no rhsm_register without force if identity is valid
+          })
+        end
+        let(:params) {{
+          :activationkey => 'foo-bar',
+          :server_hostname => 'foo',
+          :ca_package => false,
+        }}
+        it { is_expected.to compile.with_all_deps }
+        it_behaves_like 'a supported operating system'
+        it { is_expected.to_not contain_package('katello-ca-consumer-foo') }
+        it { is_expected.to_not contain_transition('purge-bad-rhsm_ca-package') }
+      end
       describe "subscription_manager class with an identity on #{os}" do
         let(:facts) do
           facts.merge(rhsm_ca_name: 'subscription.rhn.redhat.com',

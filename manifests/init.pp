@@ -121,6 +121,7 @@
 #
 class subscription_manager (
   Array[String] $package_names = ['subscription-manager'],
+  Boolean $ca_package = true,
   String $ca_package_prefix = 'katello-ca-consumer-',
   String $service_name = 'goferd',
   Enum['running','stopped', 'disabled', 'enabled'] $service_status = 'running',
