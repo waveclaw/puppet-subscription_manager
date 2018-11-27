@@ -24,7 +24,8 @@ module by James Laska that was in turn derived from [puppet-rhnreg_ks module](ht
 
 This module is not for direct use with RedHat Network.  For that, either use the
 provided resource types directly or see the Ansible playbooks available directly
-from RedHat.
+from RedHat.  If you really want to talk to RHN directly, see the
+`subscription_manager::ca_package` parameter for how.
 
 Due to various terminology differences between RHN Satellite, the upstream
 Katello project and the further upstream component projects of Candlepin, The
@@ -129,6 +130,9 @@ class { 'subscription_manager':
 Register a RedHat Enterprise 7 or CentOS 7 node to the RedHat Network with
 Satellite 6 using a password and username.
 
+Note that you have to stop managing the ca_package as you get that from RedHat
+as part of the OS installation.
+
 ```puppet
 class { 'subscription_manager':
    org           => 'My_Company_Org_in_RHN',
@@ -136,6 +140,7 @@ class { 'subscription_manager':
    password      => 'password123',
    autosubscribe => true,
    servicelevel  => 'STANDARD',
+   ca_package    => false,
 }
 
 Putting the explicit password in the code is a *bad* idea. Using hiera-gpg or
