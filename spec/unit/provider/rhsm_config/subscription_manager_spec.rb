@@ -299,7 +299,7 @@ EOD
       expect(provider.class.repo_cert('foo')).to eq(nil)
     end
     it 'returns a reopsitory certificate' do
-      expect(File).to receive(:open).with('foo').and_return(raw_data)
+      expect(File).to receive(:open).with('foo').and_return(StringIO.new(raw_data))
       expect(provider.class.repo_cert('foo')).to eq('/etc/rhsm/ca/')
     end
   end
