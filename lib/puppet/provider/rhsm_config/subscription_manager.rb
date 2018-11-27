@@ -119,7 +119,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     value = nil
     begin
       on_disk = File.open(configname)
-      on_disk.split("\n").each do |line|
+      on_disk.readlines.each do |line|
         m = line.match(%r{[^#]*repo_ca_cert = (.+)})
         unless m.nil?
           value = m[1].strip
