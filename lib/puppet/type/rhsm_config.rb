@@ -62,6 +62,7 @@ EOD
       rhsm_baseurl: 'rhsm.baseurl',
       rhsm_ca_cert_dir: 'rhsm.ca_cert_dir',
       rhsm_repo_ca_cert: 'rhsm.repo_ca_cert',
+      rhsm_repomd_gpg_url: 'rhsm.repomd_gpg_url',
       rhsm_productcertdir: 'rhsm.productcertdir',
       rhsm_entitlementcertdir: 'rhsm.entitlementcertdir',
       rhsm_consumercertdir: 'rhsm.consumercertdir',
@@ -329,4 +330,9 @@ EOD
       raise("Require a small positive number. Was given #{value}.") unless value.to_i && (value.to_i >= 0)
     end
   end
+
+  newproperty(:rhsm_repomd_gpg_url) do
+    desc "URL for the repository GPG key"
+  end
+
 end

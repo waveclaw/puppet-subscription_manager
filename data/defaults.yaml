@@ -22,6 +22,7 @@ subscription_manager::config_hash:
     rhsm_manage_repos: true
     rhsmcertd_certcheckinterval: 240
     rhsmcertd_autoattachinterval: 1440
+    rhsm_repomd_gpg_url: ''
 # also, proxy settings
 #    server_proxy_hostname: ''
 #    server_proxy_port: ''
