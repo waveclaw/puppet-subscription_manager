@@ -81,6 +81,7 @@ Puppet::Type.type(:rhsm_pool).provide(:subscription_manager) do
       unless m.nil?
         value = m[1].strip
         subscription[:id] = value
+        # this creates a 'fake' name resource to deal with the missing name parameter
         subscription[:name] = value
         next
       end

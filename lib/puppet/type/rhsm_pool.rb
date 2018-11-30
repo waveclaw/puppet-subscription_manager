@@ -23,14 +23,14 @@ created inside the server.
 Example: an entitlement to access the EPEL repositories on the current server.
 
 rhsm_pool { '1a2b3c4d5e6f1234567890abcdef12345':
-  name              => 'Extra Packages for Enterprise Linux',
+  subscription_name => 'Extra Packages for Enterprise Linux',
   ensure            => present,
   provides          => 'EPEL',
   sku               => 1234536789012,
   contract          => 'Fancy Widgets, LTD',
   account           => '1234-12-3456-0001',
   serial            => 1234567890123456789,
-  id                => 1a2b3c4d5e6f1234567890abcdef12345,
+  id                => '1a2b3c4d5e6f1234567890abcdef12345',
   active            => true,
   quantity_used     => 1,
   service_level     => 'STANDARD',
@@ -66,10 +66,11 @@ EOD
     #  defaultto :present
   end
 
-  newparam(:id, namevar: true) do
+  # Note that this shows up as the 'name' field due to a peculiarity of the resource API
+  newproperty(:id, namevar: true) do
     desc 'An Entitlement Pool to which the server is subscribed (Pool ID)'
     validate do |value|
-      raise raise("Pool ID must be a hex number, was given #{value}") unless value.match?(%r{^[0-9a-fA-F]+$})
+      raise("Pool ID must be a hex number, was given #{value}") unless value.match?(%r{^[0-9a-fA-F]+$})
     end
   end
 
@@ -121,7 +122,7 @@ EOD
   newproperty(:quantity_used) do
     desc 'How many subscriptions are used for this pool (e.g. Sockets for per CPU licenses)'
     validate do |value|
-      raise raise("Quantity Used must be an number, was given #{value}") unless value.is_a? Numeric
+      raise("Quantity Used must be an number, was given #{value}") unless value.is_a? Numeric
     end
   end
 

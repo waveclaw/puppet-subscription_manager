@@ -406,7 +406,7 @@ While this type is mostly useful for exporting the registration information in d
 it can also be used to force switch registrations for selected clients.
 
 ### rhsm\_pool Parameters
-- **name**: Unique Textual description of the Pool
+- **subscription\_name**: Unique Textual description of the Pool
 - **ensure**: Is this pool absent or present?
 - **provides**: Textual information about the Pool, usually same as the name.
 - **sku**: Stock Keeping Unit, usually for inventory tracking
@@ -429,7 +429,7 @@ is it possible for a single server to consume several subscriptions.
 
 ```puppet
 rhsm_pool { '1a2b3c4d5e6f1234567890abcdef12345':
-  name              => 'Extra Packages for Enterprise Linux',
+  subscription_name => 'Extra Packages for Enterprise Linux',
   ensure            => present,
   provides          => 'EPEL',
   sku               => 1234536789012,
@@ -448,6 +448,13 @@ rhsm_pool { '1a2b3c4d5e6f1234567890abcdef12345':
   system_type       => physical,
 }
 ```
+Note of caution:
+* A "name" parameter may get created by Puppet's resource abstraction API for
+Pools.
+* The "name" parameter is an alias for the ID value. So this must match the field
+`id` in value.
+* The name of a Pool should always match the `id`.  That is used for managing
+the pool.  The human-friendly "name" is ignored.
 
 ## Installing
 
