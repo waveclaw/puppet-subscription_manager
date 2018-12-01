@@ -79,9 +79,9 @@ EOD
     }
   end
 
-
   # These are 'binary' options that map to 1 or 0 in the rhsm.conf file
   # they are NOT booleans beacause of PUP-2368 (see PDK-919 for workarounds)
+
   def self.binary_options
     {
       server_insecure: 'server.insecure',
