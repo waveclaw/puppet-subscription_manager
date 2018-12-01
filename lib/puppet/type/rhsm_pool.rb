@@ -67,7 +67,7 @@ EOD
   end
 
   # Note that this shows up as the 'name' field due to a peculiarity of the resource API
-  newproperty(:id, namevar: true) do
+  newparam(:id, namevar: true) do
     desc 'An Entitlement Pool to which the server is subscribed (Pool ID)'
     validate do |value|
       raise("Pool ID must be a hex number, was given #{value}") unless value.match?(%r{^[0-9a-fA-F]+$})

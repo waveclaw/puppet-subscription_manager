@@ -36,7 +36,12 @@ Ends:              05/24/38
 System Type:       Physical
 EOD
 
+
+title1 = '1a2b3c4d5e6f1234567890abcdef12345'
+title2 = '1234abc'
+
 properties = {
+  id: '1a2b3c4d5e6f1234567890abcdef12345',
   subscription_name: 'Extra Packages for Enterprise Linux',
   ensure: :present,
   provides: 'Extra Packages for Enterprise Linux',
@@ -44,8 +49,6 @@ properties = {
   contract: 'Fancy Widgets, LTD',
   account: '1234-12-3456-0001',
   serial: '1234567890123456789',
-  id: '1a2b3c4d5e6f1234567890abcdef12345',
-  name: '1a2b3c4d5e6f1234567890abcdef12345',
   active: true,
   quantity_used: 1,
   service_level: 'STANDARD',
@@ -58,8 +61,6 @@ properties = {
   provider: :subscription_manager
 }
 
-title1 = '1a2b3c4d5e6f1234567890abcdef12345'
-title2 = '1234abc'
 
 provider_class = Puppet::Type.type(:rhsm_pool).provider(:subscrption_manager)
 
@@ -130,9 +131,9 @@ describe provider_class, '#rhsm_pool.provider' do
       pools = provider.class.instances
       expect(pools.size).to eq(2)
       expect(pools[0]).to      be_exists
-      expect(pools[0].name).to eq(title1)
+      expect(pools[0].id).to eq(title1)
       expect(pools[1]).to      be_exists
-      expect(pools[1].name).to eq(title2)
+      expect(pools[1].id).to eq(title2)
     end
     context 'should parse the expected values for properties' do
       properties.keys.each do |key|

@@ -82,7 +82,6 @@ Puppet::Type.type(:rhsm_pool).provide(:subscription_manager) do
         value = m[1].strip
         subscription[:id] = value
         # this creates a 'fake' name resource to deal with the missing name parameter
-        subscription[:name] = value
         next
       end
       m = %r{^\s*Active:\s*(.+)$}.match(line)
@@ -119,9 +118,9 @@ Puppet::Type.type(:rhsm_pool).provide(:subscription_manager) do
 
   def self.prefetch(resources)
     pools = instances
-    resources.keys.each do |name|
-      provider = pools.find { |pool| pool.name == name }
-      resources[name].provider = provider unless provider.nil?
+    resources.keys.each do |id|
+      provider = pools.find { |pool| pool.id == id }
+      resources[id].provider = provider unless provider.nil?
     end
   end
 
