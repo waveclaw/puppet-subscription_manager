@@ -47,6 +47,8 @@ EOD
   # This type simulates a file but accesses it through an OS command
   default_filename = '/etc/rhsm/rhsm.conf'
 
+  loglevels = %r{^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$}
+
   def self.text_options
     {
       server_hostname: 'server.hostname',
@@ -224,28 +226,28 @@ EOD
   newproperty(:logging_default_log_level) do
     desc 'The default log level for all loggers.'
     validate do |value|
-      raise("Require a valid log level (DEBUG, INFO, WARNING, ERROR, or CRITICAL).  Was given #{value}.") unless value.match?(%r{(DEBUG|INFO|WARNING|ERROR|CRITICAL)})
+      raise("Require a valid log level (DEBUG, INFO, WARNING, ERROR, or CRITICAL).  Was given #{value}.") unless value.match?(loglevels)
     end
   end
 
   newproperty(:logging_subscription_manager) do
     desc 'The  log level for all subscription_manager modules. Not that sub-modules are not configurable by this.'
     validate do |value|
-      raise("Require a valid log level (DEBUG, INFO, WARNING, ERROR, or CRITICAL).  Was given #{value}.") unless value.match?(%r{(DEBUG|INFO|WARNING|ERROR|CRITICAL)})
+      raise("Require a valid log level (DEBUG, INFO, WARNING, ERROR, or CRITICAL).  Was given #{value}.") unless value.match?(loglevels)
     end
   end
 
   newproperty(:logging_rhsm) do
     desc 'The log level for rhsm itself.'
     validate do |value|
-      raise("Require a valid log level (DEBUG, INFO, WARNING, ERROR, or CRITICAL).  Was given #{value}.") unless value.match?(%r{(DEBUG|INFO|WARNING|ERROR|CRITICAL)})
+      raise("Require a valid log level (DEBUG, INFO, WARNING, ERROR, or CRITICAL).  Was given #{value}.") unless value.match?(loglevels)
     end
   end
 
   newproperty(:logging_rhsm_app) do
     desc "The log level for the rhsm-app 'application.'"
     validate do |value|
-      raise("Require a valid log level (DEBUG, INFO, WARNING, ERROR, or CRITICAL).  Was given #{value}.") unless value.match?(%r{(DEBUG|INFO|WARNING|ERROR|CRITICAL)})
+      raise("Require a valid log level (DEBUG, INFO, WARNING, ERROR, or CRITICAL).  Was given #{value}.") unless value.match?(loglevels)
     end
   end
 
