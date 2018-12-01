@@ -43,7 +43,8 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     if (cmds[:apply]).nil?
       Puppet.debug('rhsm.flush: given nothing to configure.')
     else
-      subscription_manager(*cmds[:apply])
+      apply = cmds[:apply]
+      subscription_manager(['config', apply].flatten)
     end
     @property_hash = self.class.on_disk_configuration
   end
@@ -107,6 +108,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
       conf[:ensure] = :present
       conf[:rhsm_repo_ca_cert] = repo_cert(conf[:name])
     end
+    Puppet.debug("Config was #{conf}")
     conf
   end
 
@@ -212,42 +214,86 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
         output["#{section}_#{title}".to_sym] = value
       end
       next
-    end
+    end unless input.nil? or input == ''
     # Puppet.debug("Parsed out #{output.size} lines of data")
     output
   end
 
   # Build a config option string
+  # @param removal Symbol :remove if to remove things
   # @return [Hash(Array(String))] the options for a config command
   #  split into :apply array of setter options and :remove array of removals
   # @api private
-  def build_config_parameters(config)
-    setparams = ['config']
-    removeparams = []
-    # only set non-empty non-equal values
-    @property_hash.keys.each do |key|
-      # skip meta parameters and default values
-      next if [:ensure, :title, :tags, :name, :provider].include?(key) ||
-              (!@defaults_to.nil? && @defaults_to.include?(key))
-      section = key.to_s.sub('_', '.')
-      if config == :remove ||
-         (@property_hash[key] == '' && @property_hash[key] != (@resource[key])) ||
-         (@property_hash[key].nil? && @property_hash[key] != (@resource[key]))
-        removeparams << "--remove=#{section}"
-      elsif config == :apply && (@property_hash[key] != '')
-        setparams << "--#{section}"
+  def build_config_parameters(removal)
+   setparams = []
+   removeparams = []
+   options =  Puppet::Type.type(:rhsm_config).binary_options.merge(
+     Puppet::Type.type(:rhsm_config).text_options)
+   # filter out praramters from properties, excluding any defaults
+   arguments = @property_hash.select do |opt, value|
+     if @defaults_to.nil?
+       options.keys.include?(opt)
+     else
+       options.keys.include?(opt) && !@defaults_to.include?(opt)
+     end
+   end
+   Puppet.debug("Updates to subscription configuration are '#{arguments}'")
+   arguments.each do |opt, value|
+     section = options[opt]
+     param = resolve_value(removal, opt, value)
+     if param.nil?
+       removeparams.push("--remove=#{section}")
+     else
+       setparams.push("--#{section}=#{param}")
+     end
+   end
+   setparams = nil if setparams == []
+   removeparams = nil if removeparams == []
+   { apply: setparams, remove: removeparams }
+ end
+
+  # Convert a value to nil if to remove, 1 or 0 or "string" if to set
+  # @param config symbol state of the resource
+  # @param opt symbol the current value's associated parameter
+  # @param value String the parameter's value
+  # @return String the option for a config command
+  # raises Puppet:Error if the opt is not a valid resource paramter!
+  # @api private
+  def resolve_value(removal, opt, value)
+      if removal == :remove
+        # don't care, we are removing the entire configuration
+        nil
+      elsif @property_hash[opt] != @resource[opt] #@resource.should(opt)
+        # resource and properties do not match for this setting, so update it
+        if @property_hash[opt].nil? or value == ''
+          # remove it
+          nil
+        elsif Puppet::Type.type(:rhsm_config).binary_options.key?(opt)
+          # set it to a binary value
+          convert_to_binary(value)
+        elsif Puppet::Type.type(:rhsm_config).text_options.key?(opt)
+          # set it to a textual value
+           ['"', value, '"'].join('')
+        else
+           # pass value through
+           value
+        end
+      else
+        # we are setting a non-default value to the existing value, pass it
+        value
       end
-      value = if @resource.class.binary_options.key?(key) && @property_hash[key] != ''
-                (@property_hash[key] == true) ? 1 : 0
-              else
-                @property_hash[key]
-              end
-      unless config == :remove || @property_hash[key] == '' || value == '' || value.nil?
-        setparams << value.to_s
-      end
-    end
-    setparams = nil if setparams == ['config']
-    removeparams = nil if removeparams == []
-    { apply: setparams, remove: removeparams }
   end
+
+  # Return 1 for true, 0 for everything else
+  # @param value String the value to evaluate per Ruby Boolean rules
+  # @return Int if true then 1 else 0
+  # @api private
+  def convert_to_binary(value)
+    if [ 'true', 'True', true, 1 ].include? value
+      1
+    else
+      0
+    end
+  end
+
 end
