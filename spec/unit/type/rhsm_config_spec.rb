@@ -102,11 +102,11 @@ describe described_class, '#rhsm_config.type' do
         resource = described_class.new(
           :name => '/foo/x.conf', boolean_property => true,
         )
-        expect(resource[boolean_property]).to eq(true)
+        expect(resource[boolean_property]).to eq(:true)
         resource = described_class.new(
           :name => '/foo/x.conf', boolean_property => false,
         )
-        expect(resource[boolean_property]).to eq(false)
+        expect(resource[boolean_property]).to eq(:false)
       end
       it 'rejects non-boolean values' do
         expect {

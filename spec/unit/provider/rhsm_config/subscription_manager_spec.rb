@@ -224,7 +224,7 @@ EOD
       res.provider.set(server_insecure: false)
       res.provider.set(server_port: 443)
       expect(res.provider).to receive(:build_config_parameters).with(:apply).and_return(apply: ['foo'], remove: nil)
-      expect(res.provider).to receive(:subscription_manager).with(['config','foo'])
+      expect(res.provider).to receive(:subscription_manager).with(['config', 'foo'])
       expect(res.provider.class).to receive(:subscription_manager).with(['config', '--list']).and_return(nil)
       allow(res.provider).to receive(:exists?).and_return(true)
       res.provider.flush
@@ -252,7 +252,6 @@ EOD
   #
   # Test the helper methods
   #
-
   describe 'on_disk_configuration' do
     it 'returns nothing for an empty configuration' do
       expect(provider.class).to receive(:subscription_manager).with(['config', '--list']).and_return('')
@@ -273,6 +272,7 @@ EOD
       expect(config[:name]).to eq('/etc/rhsm/rhsm.conf')
       expect(config[:server_hostname]).to eq('katello.example.com')
       expect(config[:server_proxy_hostname]).to eq('proxy.example.com')
+      expect(config[:server_insecure]).to eq(false)
       expect(config[:provider]).to eq(:subscription_manager)
       expect(config[:rhsm_repo_ca_cert]).to eq('/etc/rhsm/ca/')
     end
@@ -364,78 +364,87 @@ EOD
     #    'foo', 'bar') }.to raise_error(Puppet::Error)
     # end
     it 'returns original value when we did not have a any resource param' do
-     resource = Puppet::Type.type(:rhsm_config).new(
-      provider: provider, name: title,
-    )
-     expect(resource.provider.resolve_value(:not_remove, :rhsm_repo_ca_cert,
-       'bar')).to eq('bar')
-       expect(resource.provider.resolve_value(:not_remove, :rhsm_repo_ca_cert,
-         1)).to eq(1)
-         expect(resource.provider.resolve_value(:not_remove, :rhsm_repo_ca_cert,
-           false)).to eq(false)
+      resource = Puppet::Type.type(:rhsm_config).new(
+        provider: provider, name: title,
+      )
+      expect(resource.provider.resolve_value(:not_remove, :rhsm_repo_ca_cert,
+                                             'bar')).to eq('bar')
+      expect(resource.provider.resolve_value(:not_remove, :rhsm_repo_ca_cert,
+                                             1)).to eq(1)
+      expect(resource.provider.resolve_value(:not_remove, :rhsm_repo_ca_cert,
+                                             false)).to eq(false)
     end
     it 'returns same value when we did not have a difference in string param' do
-     resource = Puppet::Type.type(:rhsm_config).new(
-      provider: provider, name: title,
-    )
-    resource.provider.set(rhsm_repo_ca_cert: '/bin/foo')
-    resource[:rhsm_repo_ca_cert] = '/bin/foo'
-     expect(resource.provider.resolve_value(:not_remove, :rhsm_repo_ca_cert,
-       'bar')).to eq('bar')
-    expect(resource.provider.resolve_value(:not_remove, :rhsm_repo_ca_cert,
-         1)).to eq(1)
-    expect(resource.provider.resolve_value(:not_remove, :rhsm_repo_ca_cert,
-           false)).to eq(false)
+      resource = Puppet::Type.type(:rhsm_config).new(
+        provider: provider, name: title,
+      )
+      resource.provider.set(rhsm_repo_ca_cert: '/bin/foo')
+      resource[:rhsm_repo_ca_cert] = '/bin/foo'
+      expect(resource.provider.resolve_value(:not_remove, :rhsm_repo_ca_cert,
+                                             'bar')).to eq('bar')
+      expect(resource.provider.resolve_value(:not_remove, :rhsm_repo_ca_cert,
+                                             1)).to eq(1)
+      expect(resource.provider.resolve_value(:not_remove, :rhsm_repo_ca_cert,
+                                             false)).to eq(false)
     end
     it 'returns int value when we did not have a difference in boolean param' do
-     resource = Puppet::Type.type(:rhsm_config).new(
-      provider: provider, name: title,
-    )
-    resource.provider.set(server_insecure: 'true')
-    resource[:server_insecure] = 'true'
-    expect(resource.provider.resolve_value(:not_remove, :server_insecure,
-       true)).to eq(1)
-    expect(resource.provider.resolve_value(:not_remove, :server_insecure,
-         1)).to eq(1)
-    expect(resource.provider.resolve_value(:not_remove, :server_insecure,
-           false)).to eq(0)
+      resource = Puppet::Type.type(:rhsm_config).new(
+        provider: provider, name: title,
+      )
+      resource.provider.set(server_insecure: 'true')
+      resource[:server_insecure] = 'true'
+      expect(resource.provider.resolve_value(:not_remove, :server_insecure,
+                                             true)).to eq(1)
+      expect(resource.provider.resolve_value(:not_remove, :server_insecure,
+                                             1)).to eq(1)
+      expect(resource.provider.resolve_value(:not_remove, :server_insecure,
+                                             false)).to eq(0)
     end
     it 'returns String value when we did have a differing text resource param' do
-     resource = Puppet::Type.type(:rhsm_config).new(
-      provider: provider, name: title,
-    )
-    resource.provider.set(rhsm_repo_ca_cert: '')
-    resource[:rhsm_repo_ca_cert] = '/bin/foo'
-     expect(resource.provider.resolve_value(:not_remove, :rhsm_repo_ca_cert,
-       'bar')).to eq('"bar"')
+      resource = Puppet::Type.type(:rhsm_config).new(
+        provider: provider, name: title,
+      )
+      resource.provider.set(rhsm_repo_ca_cert: '')
+      resource[:rhsm_repo_ca_cert] = '/bin/foo'
+      expect(resource.provider.resolve_value(:not_remove, :rhsm_repo_ca_cert,
+                                             'bar')).to eq('bar')
     end
     it 'returns int value when we did have a difference in boolean param' do
-       resource = Puppet::Type.type(:rhsm_config).new(
+      resource = Puppet::Type.type(:rhsm_config).new(
         provider: provider, name: title,
       )
       resource.provider.set(server_insecure: 'true')
       resource[:server_insecure] = 'false'
       expect(resource.provider).to receive(:convert_to_binary).with(false).and_return(0)
       expect(resource.provider.resolve_value(:not_remove, :server_insecure,
-         false)).to eq(0)
+                                             false)).to eq(0)
     end
     it 'returns quoted numeric value when we did have a differing text resource param' do
-     resource = Puppet::Type.type(:rhsm_config).new(
-      provider: provider, name: title,
-    )
-    resource.provider.set(server_proxy_port: 42)
-    resource[:server_proxy_port] = 12346
-     expect(resource.provider.resolve_value(:not_remove, :server_proxy_port,
-       69)).to eq('"69"')
+      resource = Puppet::Type.type(:rhsm_config).new(
+        provider: provider, name: title,
+      )
+      resource.provider.set(server_proxy_port: 42)
+      resource[:server_proxy_port] = 12_346
+      expect(resource.provider.resolve_value(:not_remove, :server_proxy_port,
+                                             69)).to eq(69)
     end
     it 'returns 1 for true boolean parameters' do
-     resource = Puppet::Type.type(:rhsm_config).new(
-      provider: provider, name: title,
-    )
-    resource.provider.set(rhsm_full_refresh_on_yum: false)
-    resource[:rhsm_full_refresh_on_yum] = true
-     expect(resource.provider.resolve_value(:not_remove, :rhsm_full_refresh_on_yum,
-       false)).to eq(0)
+      resource = Puppet::Type.type(:rhsm_config).new(
+        provider: provider, name: title,
+      )
+      resource.provider.set(rhsm_full_refresh_on_yum: true)
+      resource[:rhsm_full_refresh_on_yum] = false
+      expect(resource.provider.resolve_value(:not_remove, :rhsm_full_refresh_on_yum,
+                                             true)).to eq(1)
+    end
+    it 'returns 0 for false boolean parameters' do
+      resource = Puppet::Type.type(:rhsm_config).new(
+        provider: provider, name: title,
+      )
+      resource.provider.set(rhsm_full_refresh_on_yum: false)
+      resource[:rhsm_full_refresh_on_yum] = true
+      expect(resource.provider.resolve_value(:not_remove, :rhsm_full_refresh_on_yum,
+                                             false)).to eq(0)
     end
   end
 
@@ -463,7 +472,7 @@ EOD
       expect(resource.provider).to receive(:resolve_value).with(:remove, :rhsm_ca_cert_dir, '').and_return(nil)
       result = resource.provider.build_config_parameters(:remove)
       expect(result).not_to eq(nil)
-      expect(result.keys.sort).to eq([ :apply, :remove ])
+      expect(result.keys.sort).to eq([:apply, :remove])
       expect(result[:remove]).not_to eq(nil)
       expect(result[:remove].sort).to eq(
         ['--remove=server.insecure', '--remove=server.port', '--remove=rhsm.ca_cert_dir'].sort,
@@ -485,15 +494,15 @@ EOD
           value = (properties[key] == true) ? 1 : 0
           expect(resource.provider).to receive(:resolve_value).and_return(value)
           expect(resource.provider.build_config_parameters(:apply)[:apply]).to eq([
-             "--#{binary_opt}=#{value}"
-            ])
+                                                                                    "--#{binary_opt}=#{value}"
+                                                                                  ])
           expect(resource.provider).to receive(:resolve_value).and_return(nil)
           expect(resource.provider.build_config_parameters(:remove)[:remove]).to eq(["--remove=#{binary_opt}"])
         else
           text_opt = resource.class.text_options[key]
           value = properties[key].to_s
           expect(resource.provider).to receive(:resolve_value).and_call_original
-          expect(resource.provider.build_config_parameters(:apply)[:apply]).to eq(["--#{text_opt}=\"#{value}\""])
+          expect(resource.provider.build_config_parameters(:apply)[:apply]).to eq(["--#{text_opt}=#{value}"])
           expect(resource.provider).to receive(:resolve_value).and_return(nil)
           expect(resource.provider.build_config_parameters(:remove)[:remove]).to eq(["--remove=#{text_opt}"])
         end
@@ -505,10 +514,11 @@ EOD
         rhsm_ca_cert_dir: '/foo'
       )
       resource.provider.set(server_insecure: false)
+      resource[:server_insecure] = 'true'
       resource.provider.set(server_port: nil)
       resource.provider.set(rhsm_ca_cert_dir: '/etc/rhsm/ca/')
       combo = resource.provider.build_config_parameters(:apply)
-      apply_expected = [ '--rhsm.ca_cert_dir="/etc/rhsm/ca/"',
+      apply_expected = ['--rhsm.ca_cert_dir=/etc/rhsm/ca/',
                         '--server.insecure=0'].sort
       remove_expected = ['--remove=server.port']
       expect((combo[:apply]).sort!).to eq(apply_expected)
@@ -523,7 +533,7 @@ EOD
       resource.provider.set(rhsm_ca_cert_dir: '/etc/rhsm/ca/')
       apply = resource.provider.build_config_parameters(:apply)
       expect(apply[:apply].sort!).to eq([
-        '--server.port="443"', '--rhsm.ca_cert_dir="/etc/rhsm/ca/"', '--server.insecure=0'
+        '--server.port=443', '--rhsm.ca_cert_dir=/etc/rhsm/ca/', '--server.insecure=0'
       ].sort!)
       expect(apply[:remove]).to eq(nil)
       remove = resource.provider.build_config_parameters(:remove)
@@ -532,7 +542,7 @@ EOD
         '--remove=server.port', '--remove=rhsm.ca_cert_dir', '--remove=server.insecure'
       ].sort!)
     end
-    it 'skips default options' do
+    it 'does not skip default options' do
       resource = Puppet::Type.type(:rhsm_config).new(
         provider: provider, name: title,
       )
@@ -540,8 +550,8 @@ EOD
       resource.provider.set(server_port: 443)
       resource.provider.set(rhsm_ca_cert_dir: '/etc/rhsm/ca/')
       resource.provider.class.defaults_to = [:server_port]
-      apply = resource.provider.build_config_parameters(:apply)
-      expect(apply).not_to include(:server_port)
+      apply = resource.provider.build_config_parameters(:apply)[:apply]
+      expect(apply).to include('--server.insecure=0')
     end
   end
 end

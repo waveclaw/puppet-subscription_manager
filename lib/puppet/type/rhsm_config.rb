@@ -79,6 +79,9 @@ EOD
     }
   end
 
+
+  # These are 'binary' options that map to 1 or 0 in the rhsm.conf file
+  # they are NOT booleans beacause of PUP-2368 (see PDK-919 for workarounds)
   def self.binary_options
     {
       server_insecure: 'server.insecure',
@@ -251,64 +254,64 @@ EOD
     end
   end
 
-  newproperty(:server_insecure, boolean: true) do
+  newproperty(:server_insecure) do
     desc 'Either use HTTP or do not verify the SSL ceriticate for HTTPS'
-    defaultto false
-    newvalues(true, false)
+    defaultto :false
+    newvalues(:true, :false)
     munge do |value|
       case value
       when %r{yes}i, %r{true}i, '1', 1, true, :true, :yes
-        true
+        :true
       when %r{no}i, %r{false}i, '0', 0, false, :false, :no
-        false
+        :false
       else
         nil
       end
     end
   end
 
-  newproperty(:rhsm_manage_repos, boolean: true) do
+  newproperty(:rhsm_manage_repos) do
     desc 'Create and use a redhat.repo yum file?'
-    defaultto true
-    newvalues(true, false)
+    defaultto :true
+    newvalues(:true, :false)
     munge do |value|
       case value
       when %r{yes}i, %r{true}i, '1', 1, true, :true, :yes
-        true
+        :true
       when %r{no}i, %r{false}i, '0', 0, false, :false, :no
-        false
+        :false
       else
         nil
       end
     end
   end
 
-  newproperty(:rhsm_full_refresh_on_yum, boolean: true) do
+  newproperty(:rhsm_full_refresh_on_yum) do
     desc 'Force a Full refresh when yum is run?'
-    defaultto false
-    newvalues(true, false)
+    defaultto :false
+    newvalues(:true, :false)
     munge do |value|
       case value
       when %r{yes}i, %r{true}i, '1', 1, true, :true, :yes
-        true
+        :true
       when %r{no}i, %r{false}i, '0', 0, false, :false, :no
-        false
+        :false
       else
         nil
       end
     end
   end
 
-  newproperty(:rhsm_report_package_profile, boolean: true) do
+  newproperty(:rhsm_report_package_profile) do
     desc 'Should the package profile be reported?'
-    defaultto true
-    newvalues(true, false)
+    defaultto :true
+    newvalues(:true, :false)
     munge do |value|
       case value
       when %r{yes}i, %r{true}i, '1', 1, true, :true, :yes
-        true
+        :true
       when %r{no}i, %r{false}i, '0', 0, false, :false, :no
-        false
+        :false
       else
         nil
       end
@@ -334,7 +337,6 @@ EOD
   end
 
   newproperty(:rhsm_repomd_gpg_url) do
-    desc "URL for the repository GPG key"
+    desc 'URL for the repository GPG key'
   end
-
 end
