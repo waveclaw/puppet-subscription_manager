@@ -98,7 +98,7 @@ describe described_class, '#rhsm_config.type' do
         expect(described_class.attrclass(binary_property).doc.strip)
           .not_to be_empty
       end
-      it 'accepts boolean values' do
+      it 'accepts boolean values and turns them into binary' do
         resource = described_class.new(
           :name => '/foo/x.conf', binary_property => :true,
         )
@@ -108,7 +108,7 @@ describe described_class, '#rhsm_config.type' do
         )
         expect(resource[binary_property]).to eq(0)
       end
-      it 'rejects non-boolean values' do
+      it 'rejects non-boolean / non-binary values' do
         expect {
           described_class.new(
             :name => '/foo/x.conf', binary_property => 'bad date',

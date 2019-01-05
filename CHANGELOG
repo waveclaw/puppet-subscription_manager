@@ -1,3 +1,6 @@
+2019-01-03 5.0.1
+- kern binary values to 0 or 1 even if set to true or false
+
 2017-11-23 4.5.0
 - Update for PDK 1.7.1 and Rubocop clean
 - New Facter_cacheable => FacterCacheable rename for rubocop
