@@ -256,14 +256,14 @@ EOD
 
   newproperty(:server_insecure) do
     desc 'Either use HTTP or do not verify the SSL ceriticate for HTTPS'
-    defaultto :false
-    newvalues(:true, :false)
+    defaultto 0
+    newvalues(:true, :false, 0, 1)
     munge do |value|
       case value
       when %r{yes}i, %r{true}i, '1', 1, true, :true, :yes
-        :true
+        1
       when %r{no}i, %r{false}i, '0', 0, false, :false, :no
-        :false
+        0
       else
         nil
       end
@@ -272,14 +272,14 @@ EOD
 
   newproperty(:rhsm_manage_repos) do
     desc 'Create and use a redhat.repo yum file?'
-    defaultto :true
-    newvalues(:true, :false)
+    defaultto 1
+    newvalues(:true, :false, 0, 1)
     munge do |value|
       case value
       when %r{yes}i, %r{true}i, '1', 1, true, :true, :yes
-        :true
+        1
       when %r{no}i, %r{false}i, '0', 0, false, :false, :no
-        :false
+        0
       else
         nil
       end
@@ -288,14 +288,14 @@ EOD
 
   newproperty(:rhsm_full_refresh_on_yum) do
     desc 'Force a Full refresh when yum is run?'
-    defaultto :false
-    newvalues(:true, :false)
+    defaultto 0
+    newvalues(:true, :false, 0, 1)
     munge do |value|
       case value
       when %r{yes}i, %r{true}i, '1', 1, true, :true, :yes
-        :true
+        1
       when %r{no}i, %r{false}i, '0', 0, false, :false, :no
-        :false
+        0
       else
         nil
       end
@@ -304,14 +304,14 @@ EOD
 
   newproperty(:rhsm_report_package_profile) do
     desc 'Should the package profile be reported?'
-    defaultto :true
-    newvalues(:true, :false)
+    defaultto 1
+    newvalues(:true, :false, 0, 1)
     munge do |value|
       case value
       when %r{yes}i, %r{true}i, '1', 1, true, :true, :yes
-        :true
+        1
       when %r{no}i, %r{false}i, '0', 0, false, :false, :no
-        :false
+        0
       else
         nil
       end

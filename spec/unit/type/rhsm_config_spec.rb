@@ -83,35 +83,35 @@ describe described_class, '#rhsm_config.type' do
     end
   end
 
-  described_class.binary_options.keys.each do |boolean_property|
-    context "for #{boolean_property}" do
+  described_class.binary_options.keys.each do |binary_property|
+    context "for #{binary_property}" do
       it 'is a property' do
-        expect(described_class.attrtype(boolean_property)).to eq(:property)
-        expect(described_class.attrclass(boolean_property).ancestors)
-          .to include(Puppet::Property)
+        expect(described_class.attrtype(binary_property)).to eq(:property)
+        #expect(described_class.attrclass(binary_property).ancestors)
+        #  .to include(Puppet::Property)
       end
       #      it "should have boolean class" do
-      #        expect(described_class.attrclass(boolean_property).ancestors).
+      #        expect(described_class.attrclass(binary_property).ancestors).
       #          to include(Puppet::Property::Boolean)
       #      end
       it 'has documentation' do
-        expect(described_class.attrclass(boolean_property).doc.strip)
+        expect(described_class.attrclass(binary_property).doc.strip)
           .not_to be_empty
       end
       it 'accepts boolean values' do
         resource = described_class.new(
-          :name => '/foo/x.conf', boolean_property => true,
+          :name => '/foo/x.conf', binary_property => :true,
         )
-        expect(resource[boolean_property]).to eq(:true)
+        expect(resource[binary_property]).to eq(1)
         resource = described_class.new(
-          :name => '/foo/x.conf', boolean_property => false,
+          :name => '/foo/x.conf', binary_property => :false,
         )
-        expect(resource[boolean_property]).to eq(:false)
+        expect(resource[binary_property]).to eq(0)
       end
       it 'rejects non-boolean values' do
         expect {
           described_class.new(
-            :name => '/foo/x.conf', boolean_property => 'bad date',
+            :name => '/foo/x.conf', binary_property => 'bad date',
           )
         }.to raise_error(
           Puppet::ResourceError, %r{.*}
