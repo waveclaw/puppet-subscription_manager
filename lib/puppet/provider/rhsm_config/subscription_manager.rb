@@ -143,7 +143,8 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   # @api private
   def self.parse_digit(section, title, digit)
     value = if Puppet::Type.type(:rhsm_config).binary_options.key? "#{section}_#{title}".to_sym
-              (digit == '1') ? true : false
+              #let the type API kern this to 0 or 1
+              (digit == '1') ? 1 : 0
             else
               digit.to_i
             end

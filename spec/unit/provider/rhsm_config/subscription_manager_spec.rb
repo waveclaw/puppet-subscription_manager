@@ -31,13 +31,13 @@ describe  provider_class, '#rhsm_config.provider' do
     rhsm_ca_cert_dir: '/etc/rhsm/ca/',
     rhsm_consumercertdir: '/etc/pki/consumer',
     rhsm_entitlementcertdir: '/etc/pki/entitlement',
-    rhsm_full_refresh_on_yum: true,
-    rhsm_manage_repos: true,
+    rhsm_full_refresh_on_yum: 1,
+    rhsm_manage_repos: 1,
     rhsm_pluginconfdir: '/etc/rhsm/pluginconf.d',
     rhsm_plugindir: '/usr/share/rhsm-plugins',
     rhsm_productcertdir: '/etc/pki/product',
     rhsm_repo_ca_cert: '/etc/rhsm/ca/',
-    rhsm_report_package_profile: true,
+    rhsm_report_package_profile: 1,
     rhsmcertd_autoattachinterval: 1440,
     server_proxy_hostname: 'proxy.example.com',
     server_proxy_user: 'proxy_user',
@@ -80,7 +80,7 @@ EOD
 
   raw_values = {
     server_hostname: 'katello.example.com',
-    server_insecure: false,
+    server_insecure: 0,
     server_port: 443,
     server_prefix: '/rhsm',
     server_proxy_hostname: 'proxy.example.com',
@@ -92,13 +92,13 @@ EOD
     rhsm_ca_cert_dir: '/etc/rhsm/ca/',
     rhsm_consumercertdir: '/etc/pki/consumer',
     rhsm_entitlementcertdir: '/etc/pki/entitlement',
-    rhsm_full_refresh_on_yum: true,
-    rhsm_manage_repos: true,
+    rhsm_full_refresh_on_yum: 1,
+    rhsm_manage_repos: 1,
     rhsm_pluginconfdir: '/etc/rhsm/pluginconf.d',
     rhsm_plugindir: '/usr/share/rhsm-plugins',
     rhsm_productcertdir: '/etc/pki/product',
     rhsm_repo_ca_cert: '/etc/rhsm/ca/',
-    rhsm_report_package_profile: true,
+    rhsm_report_package_profile: 1,
     rhsmcertd_autoattachinterval: 1440
   }
 
@@ -272,7 +272,7 @@ EOD
       expect(config[:name]).to eq('/etc/rhsm/rhsm.conf')
       expect(config[:server_hostname]).to eq('katello.example.com')
       expect(config[:server_proxy_hostname]).to eq('proxy.example.com')
-      expect(config[:server_insecure]).to eq(false)
+      expect(config[:server_insecure]).to eq(0)
       expect(config[:provider]).to eq(:subscription_manager)
       expect(config[:rhsm_repo_ca_cert]).to eq('/etc/rhsm/ca/')
     end
