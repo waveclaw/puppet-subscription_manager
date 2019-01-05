@@ -87,7 +87,7 @@ describe described_class, '#rhsm_config.type' do
     context "for #{binary_property}" do
       it 'is a property' do
         expect(described_class.attrtype(binary_property)).to eq(:property)
-        #expect(described_class.attrclass(binary_property).ancestors)
+        # expect(described_class.attrclass(binary_property).ancestors)
         #  .to include(Puppet::Property)
       end
       #      it "should have boolean class" do
