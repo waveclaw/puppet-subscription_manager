@@ -130,8 +130,8 @@ class { 'subscription_manager':
 Register a RedHat Enterprise 7 or CentOS 7 node to the RedHat Network with
 Satellite 6 using a password and username.
 
-Note that you have to stop managing the ca_package as you get that from RedHat
-as part of the OS installation.
+> Note that you have to stop managing the `ca\_package` as you get that from RedHat
+> as part of the OS installation.
 
 ```puppet
 class { 'subscription_manager':
@@ -339,8 +339,8 @@ from any of the defaults which are used in the module.
 
 If you are using the resource you will have to provide everything you want to set.
 
-Un-setting a required default by providing a blank option will make the a
-subscription stop working.
+> Note: un-setting a required default by providing a blank option will make the
+> subscription stop working.
 
 The `default_log_level` and basic *module_name* logging settings are available.
 None of the sub-modules are available.  A suggestion for those would be to ship
