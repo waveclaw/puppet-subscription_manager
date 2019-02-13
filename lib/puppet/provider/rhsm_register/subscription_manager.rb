@@ -116,7 +116,10 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
 
   def self.prefetch(resources)
     resources.keys.each do |name|
-      resources[name].provider = instances.find { |instance| instance.name == name }
+      provider = instances.find { |instance| instance.name == name }
+      if provider
+        resources[name].provider = provider
+      end
     end
   end
 
