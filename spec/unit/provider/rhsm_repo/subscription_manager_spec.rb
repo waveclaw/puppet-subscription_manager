@@ -109,6 +109,12 @@ EOT
       repos = provider.class.instances
       expect(repos.size).to eq(0)
     end
+    it 'returns nothing for not subscribed' do
+      data = 'This system has no repositories available through subscriptions.'
+      expect(provider.class).to receive(:subscription_manager).with('repos').and_return(data)
+      repos = provider.class.instances
+      expect(repos.size).to eq(0)
+    end
   end
 
   describe 'self.prefetch' do
