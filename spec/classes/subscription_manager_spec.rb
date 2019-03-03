@@ -37,7 +37,7 @@ bados = {
   'Solaris'  => 'Nexenta',
   'Debian'   => 'Ubuntu',
   'openSuSE' => 'openSUSE',
-  'SLES'     => 'SLES'
+  'SLES'     => 'SLES',
 }
 badosfamily = bados.keys
 
@@ -53,7 +53,7 @@ describe 'subscription_manager' do
               family: os, description: bados[os]
             },
             rhsm_ca_name: 'subscription.rhn.redhat.com',
-            rhsm_identity: '1234567890'
+            rhsm_identity: '1234567890',
           }
         end
 
@@ -88,7 +88,7 @@ describe 'subscription_manager' do
         let(:params) do
           {
             activationkey: 'foo-bar',
-            server_hostname: 'foo'
+            server_hostname: 'foo',
           }
         end
 
@@ -118,7 +118,7 @@ describe 'subscription_manager' do
           {
             activationkey: 'foo-bar',
             server_hostname: 'foo',
-            ca_package_prefix: 'candlepin-cert-consumer-'
+            ca_package_prefix: 'candlepin-cert-consumer-',
           }
         end
 
@@ -140,7 +140,7 @@ describe 'subscription_manager' do
           {
             activationkey: 'foo-bar',
             server_hostname: 'foo',
-            ca_package: false
+            ca_package: false,
           }
         end
 
@@ -171,13 +171,13 @@ describe 'subscription_manager' do
       osfamily: 'RedHat', # required for broken service type
       os: { 'family' => 'RedHat' },
       rhsm_ca_name: 'subscription.rhn.redhat.com',
-      rhsm_identity: '12334567890'
+      rhsm_identity: '12334567890',
     }
     context 'when given a repo option' do
       let(:facts) { facts }
       let(:params) do
         {
-          repo: 'sm_repo'
+          repo: 'sm_repo',
         }
       end
       let(:pre_condition) do
@@ -195,7 +195,7 @@ describe 'subscription_manager' do
       let(:facts) { facts }
       let(:params) do
         {
-          service_status: 'disabled'
+          service_status: 'disabled',
         }
       end
 
@@ -209,7 +209,7 @@ describe 'subscription_manager' do
       end
       let(:params) do
         {
-          server_hostname: 'bar'
+          server_hostname: 'bar',
         }
       end
 
@@ -226,7 +226,7 @@ describe 'subscription_manager' do
       end
       let(:params) do
         {
-          server_hostname: 'foo'
+          server_hostname: 'foo',
         }
       end
 
@@ -243,7 +243,7 @@ describe 'subscription_manager' do
       let(:params) do
         {
           server_hostname: 'foo',
-          force: true
+          force: true,
         }
       end
 
@@ -260,7 +260,7 @@ describe 'subscription_manager' do
       let(:params) do
         {
           server_hostname: 'foo',
-          force: true
+          force: true,
         }
       end
 

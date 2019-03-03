@@ -57,7 +57,7 @@ properties = {
   starts: Date.strptime('06/01/2015', '%m/%d/%Y'), # US Locale?
   ends: Date.strptime('05/24/2038', '%m/%d/%Y'), # UNIX 2038?
   system_type: 'Physical',
-  provider: :subscription_manager
+  provider: :subscription_manager,
 }
 
 provider_class = Puppet::Type.type(:rhsm_pool).provider(:subscrption_manager)

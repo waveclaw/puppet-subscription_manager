@@ -29,7 +29,7 @@ describe provider_class, '#rhsm_register.provider' do
     autosubscribe: true,
     force: true,
     org: 'the cool organization',
-    servicelevel: 'STANDARD'
+    servicelevel: 'STANDARD',
   }
 
   title = 'example.com'

@@ -29,8 +29,8 @@ shared_examples_for 'rhsm repo command' do |mod, function, label|
       expected: {
         enabled: ['rhel-5-server-rpms'],
         disabled: [],
-        available: ['rhel-5-server-rpms']
-      }
+        available: ['rhel-5-server-rpms'],
+      },
     },
     two: {
       desc: 'a single disabled repostiory',
@@ -43,8 +43,8 @@ shared_examples_for 'rhsm repo command' do |mod, function, label|
       expected: {
         enabled: [],
         disabled: ['rhel-5-server-rpms'],
-        available: ['rhel-5-server-rpms']
-      }
+        available: ['rhel-5-server-rpms'],
+      },
     },
     three: {
       desc: 'two enabled repositories',
@@ -62,8 +62,8 @@ shared_examples_for 'rhsm repo command' do |mod, function, label|
       expected: {
         enabled: ['rhel-5-server-rpms', 'rhel-5-epel-rpms'],
         disabled: [],
-        available: ['rhel-5-server-rpms', 'rhel-5-epel-rpms']
-      }
+        available: ['rhel-5-server-rpms', 'rhel-5-epel-rpms'],
+      },
     },
     four: {
       desc: 'two repositories with one disabled',
@@ -81,8 +81,8 @@ shared_examples_for 'rhsm repo command' do |mod, function, label|
       expected: {
         enabled: ['rhel-5-epel-rpms'],
         disabled: ['rhel-5-server-rpms'],
-        available: ['rhel-5-server-rpms', 'rhel-5-epel-rpms']
-      }
+        available: ['rhel-5-server-rpms', 'rhel-5-epel-rpms'],
+      },
     },
     five: {
       desc: 'two repositories with both disabled',
@@ -100,9 +100,9 @@ shared_examples_for 'rhsm repo command' do |mod, function, label|
       expected: {
         enabled: [],
         disabled: ['rhel-5-server-rpms', 'rhel-5-epel-rpms'],
-        available: ['rhel-5-server-rpms', 'rhel-5-epel-rpms']
-      }
-    }
+        available: ['rhel-5-server-rpms', 'rhel-5-epel-rpms'],
+      },
+    },
   }
 
   before :each do
@@ -136,12 +136,12 @@ shared_examples_for 'cached rhsm repo command' do |mod, function, label, _source
   data = {
     rhsm_disabled_repos: "Repo ID: foo\nEnabled: 0",
     rhsm_available_repos: 'Repo ID: bar',
-    rhsm_enabled_repos: "Repo ID: baz\nEnabled: 1"
+    rhsm_enabled_repos: "Repo ID: baz\nEnabled: 1",
   }
   results = {
     rhsm_disabled_repos: { 'rhsm_disabled_repos' => ['foo'] },
     rhsm_available_repos: { 'rhsm_available_repos' => ['bar'] },
-    rhsm_enabled_repos: { 'rhsm_enabled_repos' => ['baz'] }
+    rhsm_enabled_repos: { 'rhsm_enabled_repos' => ['baz'] },
   }
   let(:fake_class) { Class.new }
 

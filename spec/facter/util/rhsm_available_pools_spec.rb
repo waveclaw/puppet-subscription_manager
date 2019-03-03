@@ -35,7 +35,7 @@ available_cases = {
     Ends:                02/28/2046
     System Type:         Physical
     ',
-    expected: ['402881af5354120801535494568c0003']
+    expected: ['402881af5354120801535494568c0003'],
   },
   two: {
     desc: 'two pools',
@@ -73,13 +73,14 @@ available_cases = {
     Ends:                03/26/2046
     System Type:         Physical
 ',
-    expected: ['402881af5354120801535494568c0003', '402881af53cc3cc00153d85560d4001a']
+    expected: ['402881af5354120801535494568c0003',
+               '402881af53cc3cc00153d85560d4001a'],
   },
   three: {
     desc: 'no subscription pools available',
     data: '',
-    expected: []
-  }
+    expected: [],
+  },
 }
 
 describe Facter::Util::RhsmAvailablePools, type: :fact do

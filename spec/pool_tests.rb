@@ -44,7 +44,7 @@ consumed_cases = {
 
 ',
     expected:      { enabled: ['402881af53cc3cc00153d85560d4001a'],
-                     disabled: [] }
+                     disabled: [] },
   },
   two: {
     desc: 'two active subscription pools',
@@ -86,13 +86,14 @@ consumed_cases = {
     Ends:                03/26/2046
     System Type:         Physical
 ',
-    expected: { enabled: ['402881af53cc3cc00153d85560d4001a', '402881af5354120801535494568c0003'],
-                disabled: [] }
+    expected: { enabled: ['402881af53cc3cc00153d85560d4001a',
+                          '402881af5354120801535494568c0003'],
+                disabled: [] },
   },
   three: {
     desc: 'no subscription pools available',
     data: '',
-    expected: { enabled: [], disabled: [] }
+    expected: { enabled: [], disabled: [] },
 
   },
   four: {
@@ -136,7 +137,7 @@ consumed_cases = {
     System Type:         Physical
 ',
     expected: { disabled: ['402881af5354120801535494568c0003'],
-                enabled: ['402881af53cc3cc00153d85560d4001a'] }
+                enabled: ['402881af53cc3cc00153d85560d4001a'] },
   },
   five: {
     desc: 'two subscription pools available, both inactive',
@@ -179,8 +180,9 @@ consumed_cases = {
     System Type:         Physical
 ',
     expected: { enabled: [],
-                disabled: ['402881af53cc3cc00153d85560d4001a', '402881af5354120801535494568c0003'] }
-  }
+                disabled: ['402881af53cc3cc00153d85560d4001a',
+                           '402881af5354120801535494568c0003'] },
+  },
 }
 
 shared_examples_for 'consumed pools' do |mod, function, label|
@@ -229,17 +231,17 @@ shared_examples_for 'cached pools' do |mod, _function, label, source|
   options = {
     rhsm_disabled_pools: '--consumed',
     rhsm_enabled_pools: '--consumed',
-    rhsm_available_pools: '--available'
+    rhsm_available_pools: '--available',
   }
   data = {
     rhsm_disabled_pools: "Pool ID: 402881af5354120801535494568c0003\nActive: False",
     rhsm_enabled_pools: "Pool ID: 402881af5354120801535494568c0003\nActive: True",
-    rhsm_available_pools: "Pool ID: 402881af5354120801535494568c0003\n"
+    rhsm_available_pools: "Pool ID: 402881af5354120801535494568c0003\n",
   }
   results = {
     rhsm_disabled_pools: { 'rhsm_disabled_pools' => ['402881af5354120801535494568c0003'] },
     rhsm_enabled_pools: { 'rhsm_enabled_pools' => ['402881af5354120801535494568c0003'] },
-    rhsm_available_pools: { 'rhsm_available_pools' => ['402881af5354120801535494568c0003'] }
+    rhsm_available_pools: { 'rhsm_available_pools' => ['402881af5354120801535494568c0003'] },
   }
   let(:fake_class) { Class.new }
 

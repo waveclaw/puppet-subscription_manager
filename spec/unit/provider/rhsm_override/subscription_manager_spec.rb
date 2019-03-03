@@ -45,7 +45,7 @@ EOT
     created: Date.parse('2015-07-17T14:26:35.064+0000'),
     content_label: 'rhel-server6-epel',
     name: 'rhel-server6-epel',
-    provider: :subscription_manager
+    provider: :subscription_manager,
   }
 
   let(:resource) do

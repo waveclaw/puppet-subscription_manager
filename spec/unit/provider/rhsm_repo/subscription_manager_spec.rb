@@ -48,7 +48,7 @@ EOT
     name: title1,
     repo_name: 'RedHat Enterprise Linux 5 Server (RPMs)',
     url: 'https://katello.example.com/pulp/repos/myorg/production/myview/content/dist/rhel/server/5/5Server/$basearch/rhel/os',
-    provider: :subscription_manager
+    provider: :subscription_manager,
   }
 
   let(:resource) do

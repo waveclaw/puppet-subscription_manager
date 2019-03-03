@@ -75,7 +75,7 @@ EOD
       logging_default_log_level: 'logging.default_log_level',
       logging_subscription_manager: 'logging.subscription_manager',
       logging_rhsm: 'logging.rhsm',
-      logging_rhsm_app: 'logging.rhsm-app'
+      logging_rhsm_app: 'logging.rhsm-app',
     }
   end
 
@@ -87,7 +87,7 @@ EOD
       server_insecure: 'server.insecure',
       rhsm_manage_repos: 'rhsm.manage_repos',
       rhsm_full_refresh_on_yum: 'rhsm.full_refresh_on_yum',
-      rhsm_report_package_profile: 'rhsm.report_package_profile'
+      rhsm_report_package_profile: 'rhsm.report_package_profile',
     }
   end
 

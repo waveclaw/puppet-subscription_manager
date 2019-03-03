@@ -15,7 +15,7 @@ require 'facter/rhsm_ca_name'
 cafiles = {
   'katellodefault' => '/etc/rhsm/ca/katello-default-ca.pem',
   'katello' => '/etc/rhsm/ca/katello-server-ca.pem',
-  'sam' => '/etc/rhsm/ca/candlepin-local.pem'
+  'sam' => '/etc/rhsm/ca/candlepin-local.pem',
 }
 
 # create fake intermediary objects to get detailed testing in each case

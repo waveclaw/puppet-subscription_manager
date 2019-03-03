@@ -42,7 +42,7 @@ describe  provider_class, '#rhsm_config.provider' do
     server_proxy_hostname: 'proxy.example.com',
     server_proxy_user: 'proxy_user',
     server_proxy_password: 'proxy_password',
-    server_proxy_port: 4443
+    server_proxy_port: 4443,
   }
 
   # config_file is '/etc/rhsm/rhsm.conf'
@@ -99,7 +99,7 @@ EOD
     rhsm_productcertdir: '/etc/pki/product',
     rhsm_repo_ca_cert: '/etc/rhsm/ca/',
     rhsm_report_package_profile: 1,
-    rhsmcertd_autoattachinterval: 1440
+    rhsmcertd_autoattachinterval: 1440,
   }
 
   raw_hostname01_data = <<-EOD
@@ -135,7 +135,7 @@ EOD
 
   raw_hostname01_values = {
     server_hostname: 'katello01.example.com',
-    rhsm_baseurl: 'https://katello01.example.com/pulp/repos'
+    rhsm_baseurl: 'https://katello01.example.com/pulp/repos',
   }
 
   let(:resource) do
@@ -494,7 +494,7 @@ EOD
           value = (properties[key] == true) ? 1 : 0
           expect(resource.provider).to receive(:resolve_value).and_return(value)
           expect(resource.provider.build_config_parameters(:apply)[:apply]).to eq([
-                                                                                    "--#{binary_opt}=#{value}"
+                                                                                    "--#{binary_opt}=#{value}",
                                                                                   ])
           expect(resource.provider).to receive(:resolve_value).and_return(nil)
           expect(resource.provider.build_config_parameters(:remove)[:remove]).to eq(["--remove=#{binary_opt}"])
