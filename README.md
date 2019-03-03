@@ -45,7 +45,7 @@ confusing.
 Apache License, Version 2.0. Read the LICENSE file for details of the licensing.
 
 ## Requirements
-* puppet-boolean [on GitHub](https://github.com/adrienthebo/puppet-boolean)
+* [waveclaw-facter_cacheable](https://forge.puppet.com/waveclaw/facter_cacheable)
 * [puppetlabs-transition](https://forge.puppet.com/puppetlabs/transition) [on GitHub](https://github.com/puppetlabs/puppetlabs-transition)
 * A good source for subscription-manager and its dependencies like [EPEL](http://repos.fedorapeople.org/repos/candlepin/subscription-manager/epel-subscription-manager.repo).
 
@@ -467,7 +467,10 @@ Enterprise or r10k or Puppet Librarian.
 ```
   puppet module install waveclaw-subscription_manager
 ```
-This will install *adrian-boolean* and *puppetlabs-transition* as dependencies.
+This will install *waveclaw-facter_cacheable* and *puppetlabs-transition* as dependencies.
+
+Note that *facter_cacheable*, while optional, is highly recommended to reduce
+load on your Foreman or Katello server.
 
 ### Development Version
 
