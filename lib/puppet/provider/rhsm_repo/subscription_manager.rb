@@ -96,8 +96,13 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
   # @api private
   def self.read_repos
     repo_instances = []
-    repos = subscription_manager('repos')
-    unless repos.nil? || repos == "\n\n"
+    begin
+      repos = subscription_manager('repos')
+    rescue Error => e
+      puts "No repositories found #{e}"
+      repos = ''
+    end
+    unless repos.nil? || repos == "\n\n" || repos == ''
       repos.split("\n\n").each do |repo|
         repo_instances.push(parse_repos(repo))
       end
