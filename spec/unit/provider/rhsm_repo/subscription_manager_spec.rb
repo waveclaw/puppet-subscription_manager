@@ -142,6 +142,12 @@ EOT
       repos = provider.class.read_repos
       expect(repos.size).to eq(0)
     end
+    it 'returns nothing if the repo list fails' do
+      expect(provider.class).to receive(:subscription_manager).with('repos') { throw StandardError }
+      expect(Puppet).to receive(:debug).with('No repositories found (uncaught throw StandardError).')
+      repos = provider.class.read_repos
+      expect(repos.size).to eq(0)
+    end
   end
 
   context 'ensure' do

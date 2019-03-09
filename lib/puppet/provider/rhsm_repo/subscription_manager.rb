@@ -98,8 +98,8 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
     repo_instances = []
     begin
       repos = subscription_manager('repos')
-    rescue Error => e
-      puts "No repositories found #{e}"
+    rescue StandardError => e
+      Puppet.debug("No repositories found (#{e}).")
       repos = ''
     end
     unless repos.nil? || repos == "\n\n" || repos == ''
