@@ -1,5 +1,11 @@
+2019-03-03 5.2.0
+- Update for PDK 1.9.1
+- Include fixes for rubocop-caused failures
+- More careful logging for missing repositories
+- Require Puppet 4.10.12 or later
+
 2019-03-03 5.0.2
--  Update for PDK 1.9.0
+- Update for PDK 1.9.0
 
 2019-01-03 5.0.1
 - kern binary values to 0 or 1 even if set to true or false

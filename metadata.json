@@ -1,6 +1,6 @@
 {
   "name": "waveclaw-subscription_manager",
-  "version": "5.1.1",
+  "version": "5.2.0",
   "author": "JD Powell <waveclaw@hotmail.com>",
   "summary": "Manage Katello or Satellite registrations.",
   "license": "Apache-2.0",
@@ -46,7 +46,7 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 4.5.0"
+      "version_requirement": ">= 4.10.12"
     }
   ],
   "description": "Register CentOS or RHEL to Katello or Satellite 6.",
