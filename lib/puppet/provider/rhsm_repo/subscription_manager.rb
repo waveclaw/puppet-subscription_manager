@@ -37,8 +37,6 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
       []
     else
       repos.map do |repo|
-        next if repo.empty?
-        next unless repo[:name]
         new(repo)
       end
     end
@@ -108,7 +106,10 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
     end
     unless repos.nil? || repos == "\n\n" || repos == ''
       repos.split("\n\n").each do |repo|
-        repo_instances.push(parse_repos(repo))
+        parsed_repo = parse_repos(repo)
+        next if parsed_repo.empty?
+        next unless parsed_repo[:name]
+        repo_instances.push(parsed_repo)
       end
     end
     repo_instances
