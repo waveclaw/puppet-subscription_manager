@@ -88,6 +88,7 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
         new_repo[:ensure] = (value == 1) ? :present : :absent
       end
     end
+    Puppet.debug("PARSED REPO: #{new_repo}")
     new_repo
   end
 
@@ -98,13 +99,17 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
     repo_instances = []
     begin
       repos = subscription_manager('repos')
+      Puppet.debug("REPOS: #{repos}")
     rescue StandardError => e
       Puppet.debug("No repositories found (#{e}).")
       repos = ''
     end
     unless repos.nil? || repos == "\n\n" || repos == ''
       repos.split("\n\n").each do |repo|
-        repo_instances.push(parse_repos(repo))
+        parsed_repo = parse_repos(repo)
+        next if parsed_repo.empty?
+        next unless parsed_repo[:name]
+        repo_instances.push(parsed_repo)
       end
     end
     repo_instances
