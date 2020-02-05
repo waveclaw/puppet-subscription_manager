@@ -137,7 +137,7 @@ class subscription_manager (
   String $org = 'Default_Organization',
   Variant[String, Class] $repo = '',
   Hash $config_hash = {},
-  Optional[String] $servicelevel = undef,
+  Optional[String] $servicelevel = 'Standard',
 ) {
 
   # limit use to supported Operating Systems

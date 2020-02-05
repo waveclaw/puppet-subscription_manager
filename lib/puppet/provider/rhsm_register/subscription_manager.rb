@@ -34,7 +34,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
       begin
         params = []
         params << 'attach'
-        unless @resource[:servicelevel].nil?
+        unless @resource[:servicelevel].nil? || @resource[:servicelevel].empty?
           params << "--servicelevel=#{@resource[:servicelevel]}"
         end
         params << '--auto'
