@@ -28,7 +28,7 @@ EOF
   module_function
 
   def rhsm_enabled_repos
-    value = []
+    value = nil
     begin
       reponame = ''
       output = Facter::Core::Execution.execute(
@@ -71,7 +71,7 @@ if File.exist? '/usr/sbin/subscription-manager'
           repo = repos.rhsm_enabled_repos
           Facter::Util::FacterCacheable.cache(
             :rhsm_enabled_repos, repo, repos::CACHE_FILE
-          )
+          ) unless repo.nil?
           repo
         elsif cache.is_a? Array
           cache

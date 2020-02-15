@@ -39,7 +39,7 @@ EOF
   end
 
   def rhsm_available_pools
-    value = []
+    value = nil
     begin
       available = Facter::Core::Execution.execute(
         '/usr/sbin/subscription-manager list --available',
@@ -73,7 +73,7 @@ if File.exist? '/usr/sbin/subscription-manager'
             :rhsm_available_pools,
             pool,
             pools::CACHE_FILE,
-          )
+          ) unless pool.nil?
           pool
         elsif cache.is_a? Array
           cache

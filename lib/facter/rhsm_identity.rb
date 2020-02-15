@@ -3,7 +3,7 @@
 
 #
 #  Report the name of the client ID.
-#  This will be null if the reigstration is bad.
+#  This will be null if the registration is bad.
 #
 #   Copyright 2014-2015 Gaël Chamoulaud, James Laska
 #
@@ -65,7 +65,7 @@ if File.exist? '/usr/sbin/subscription-manager'
           identity = identities.rhsm_identity
           Facter::Util::FacterCacheable.cache(
             :rhsm_identity, identity, identities::CACHE_FILE
-          )
+          ) unless identity.nil?
           identity
         elsif cache.is_a? Array
           cache

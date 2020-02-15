@@ -48,7 +48,7 @@ EOF
   end
 
   def rhsm_disabled_pools
-    value = []
+    value = nil
     begin
       consumed = Facter::Core::Execution.execute(
         '/usr/sbin/subscription-manager list --consumed',
@@ -79,7 +79,7 @@ if File.exist? '/usr/sbin/subscription-manager'
           pool = pools.rhsm_disabled_pools
           Facter::Util::FacterCacheable.cache(
             :rhsm_disabled_pools, pool, pools::CACHE_FILE
-          )
+          ) unless pool.nil?
           pool
         elsif cache.is_a? Array
           cache

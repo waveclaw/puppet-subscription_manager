@@ -28,7 +28,7 @@ EOF
   module_function
 
   def rhsm_disabled_repos
-    value = []
+    value = nil
     begin
       reponame = ''
       output = Facter::Core::Execution.execute(
@@ -61,8 +61,6 @@ if File.exist? '/usr/sbin/subscription-manager'
   repos = Facter::Util::RhsmDisabledRepos
   if Puppet.features.facter_cacheable?
     Facter.add(:rhsm_disabled_repos) do
-      confine { File.exist? '/usr/sbin/subscription-manager' }
-      confine { Puppet.features.facter_cacheable? }
       setcode do
         # TODO: use another fact to set the TTL in userspace
         # right now this can be done by removing the cache files
@@ -73,7 +71,7 @@ if File.exist? '/usr/sbin/subscription-manager'
           repo = repos.rhsm_disabled_repos
           Facter::Util::FacterCacheable.cache(
             :rhsm_disabled_repos, repo, repos::CACHE_FILE
-          )
+          ) unless repo.nil?
           repo
         elsif cache.is_a? Array
           cache
