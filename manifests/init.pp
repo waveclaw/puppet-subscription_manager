@@ -129,7 +129,6 @@ class subscription_manager (
   String $username = '',
   String $password = '',
   String $activationkey = '',
-  String $release = '',
   String $pool = '',
   String $lifecycleenv = 'library',
   Variant[String, Boolean, Enum['yes','no']] $autosubscribe = false,
@@ -138,6 +137,7 @@ class subscription_manager (
   Variant[String, Class] $repo = '',
   Hash $config_hash = {},
   Optional[String] $servicelevel = 'Standard',
+  Optional[String] $release = undef,
 ) {
 
   # limit use to supported Operating Systems
