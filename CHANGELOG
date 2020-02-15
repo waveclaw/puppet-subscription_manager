@@ -1,3 +1,7 @@
+2019-12-09 5.2.1
+- Update for PDK 1.10.0
+- Include treydock patch for parser to skip empty repositories
+
 2019-03-03 5.2.0
 - Update for PDK 1.9.1
 - Include fixes for rubocop-caused failures
