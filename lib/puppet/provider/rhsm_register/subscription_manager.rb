@@ -192,7 +192,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
       params << '--environment' << @resource[:lifecycleenv]
     end
     params << '--org' << @resource[:org]
-    unless release.nil?
+    unless release.nil? || release.empty?
       params << '--release' << release
     end
     params
