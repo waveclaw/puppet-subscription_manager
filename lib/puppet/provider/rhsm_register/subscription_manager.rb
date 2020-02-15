@@ -29,11 +29,16 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   #  or subscriptions in the system.  If there are only custom ones, e.g. on a
   #  katello server there is no ability to define or use service levels.
   def subscription_attach
-    if @resource[:autosubscribe] && !@resource[:servicelevel].nil?
+    if @resource[:autosubscribe]
       Puppet.debug('This server will be attached to a service level')
       begin
-        subscription_manager(['attach',
-                              "--servicelevel=#{@resource[:servicelevel]}", '--auto'])
+        params = []
+        params << 'attach'
+        unless @resource[:servicelevel].nil? || @resource[:servicelevel].empty?
+          params << "--servicelevel=#{@resource[:servicelevel]}"
+        end
+        params << '--auto'
+        subscription_manager(params)
       rescue Puppet::ExecutionFailure => e
         Puppet.debug("Auto-attach returned: #{e}")
       end
