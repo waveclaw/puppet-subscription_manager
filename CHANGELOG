@@ -1,3 +1,7 @@
+2020-02-15 5.3.0
+- Ignore Broken Rubocop constant vs mutable checks on fact caching
+- Include new optionality for defaults rarely used
+
 2019-12-09 5.2.1
 - Update for PDK 1.10.0
 - Include treydock patch for parser to skip empty repositories
