@@ -71,7 +71,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   # trigger actions related to registration on update of the properties
   def flush
     if exists?
-      if identity.nil? || identity == :absent
+      if identity.nil? || identity == '' || identity == :absent
         # no valid registration
       elsif @property_hash[:name] && @property_hash[:name] != (@resource[:name])
         # changing servers
@@ -138,7 +138,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
       registration[:name] = ca_name
     end
     id = identity
-    if id
+    if !id.to_s.empty?
       # propertly registered
       registration[:identity] = id
       registration[:ensure] = :present

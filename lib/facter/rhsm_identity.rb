@@ -29,7 +29,7 @@ EOF
   module_function
 
   def rhsm_identity
-    value = nil
+    value = ''
     begin
       output = Facter::Core::Execution.execute(
         '/usr/sbin/subscription-manager identity',

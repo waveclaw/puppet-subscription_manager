@@ -46,17 +46,17 @@ describe Facter::Util::RhsmIdentity, type: :fact do
   end
   it 'returns the nothing for no data' do
     expect(Facter::Core::Execution).to receive(:execute).and_return('')
-    expect(Facter::Util::RhsmIdentity.rhsm_identity).to eq(nil)
+    expect(Facter::Util::RhsmIdentity.rhsm_identity).to eq('')
   end
   it 'returns the nothing for no command' do
     expect(Facter::Core::Execution).to receive(:execute).and_return(nil)
-    expect(Facter::Util::RhsmIdentity.rhsm_identity).to eq(nil)
+    expect(Facter::Util::RhsmIdentity.rhsm_identity).to eq('')
   end
   it 'returns the nothing for an error' do
     expect(Facter::Core::Execution).to receive(:execute) {
       throw Facter::Core::Execution::ExecutionFailure
     }
     expect(Facter).to receive(:debug)
-    expect(Facter::Util::RhsmIdentity.rhsm_identity).to eq(nil)
+    expect(Facter::Util::RhsmIdentity.rhsm_identity).to eq('')
   end
 end
