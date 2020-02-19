@@ -80,11 +80,12 @@ EOD
   end
 
   # These are 'binary' options that map to 1 or 0 in the rhsm.conf file
-  # they are NOT booleans beacause of PUP-2368 (see PDK-919 for workarounds)
+  # they are NOT booleans because of PUP-2368 (see PDK-919 for workarounds)
 
   def self.binary_options
     {
       server_insecure: 'server.insecure',
+      rhsm_auto_enable_yum_plugins: 'rhsm.auto_enable_yum_plugins',
       rhsm_manage_repos: 'rhsm.manage_repos',
       rhsm_full_refresh_on_yum: 'rhsm.full_refresh_on_yum',
       rhsm_report_package_profile: 'rhsm.report_package_profile',
@@ -257,6 +258,22 @@ EOD
   newproperty(:server_insecure) do
     desc 'Either use HTTP or do not verify the SSL ceriticate for HTTPS'
     defaultto 0
+    newvalues(:true, :false, 0, 1)
+    munge do |value|
+      case value
+      when %r{yes}i, %r{true}i, '1', 1, true, :true, :yes
+        1
+      when %r{no}i, %r{false}i, '0', 0, false, :false, :no
+        0
+      else
+        nil
+      end
+    end
+  end
+
+  newproperty(:rhsm_auto_enable_yum_plugins) do
+    desc 'Automatically enable subscription-manager and product-id?'
+    defaultto 1
     newvalues(:true, :false, 0, 1)
     munge do |value|
       case value
