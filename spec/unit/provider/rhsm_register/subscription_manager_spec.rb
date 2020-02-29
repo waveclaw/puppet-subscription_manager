@@ -53,6 +53,7 @@ describe provider_class, '#rhsm_register.provider' do
      ca_cert_dir = [/etc/rhsm/ca/]
      consumercertdir = [/etc/pki/consumer]
      entitlementcertdir = [/etc/pki/entitlement]
+     auto_enable_yum_plugins = 1
      full_refresh_on_yum = 1
      manage_repos = [1]
      pluginconfdir = [/etc/rhsm/pluginconf.d]
