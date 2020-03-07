@@ -53,30 +53,29 @@ end
 
 if File.exist? '/usr/sbin/subscription-manager'
   identities = Facter::Util::RhsmIdentity
+  cache = nil
   if Puppet.features.facter_cacheable?
-    Facter.add(:rhsm_identity) do
-      setcode do
-        # TODO: use another fact to set the TTL in userspace
-        # right now this can be done by removing the cache files
-        cache = Facter::Util::FacterCacheable.cached?(
-          :rhsm_identity, identities::CACHE_TTL, identities::CACHE_FILE
-        )
-        if !cache
-          identity = identities.rhsm_identity
+    cache = Facter::Util::FacterCacheable.cached?(
+      :rhsm_identity, identities::CACHE_TTL, identities::CACHE_FILE
+    )
+  end
+  Facter.add(:rhsm_identity) do
+    setcode do
+      if !cache
+        identity = identities.rhsm_identity
+        if !identity
+          nil
+        else
           Facter::Util::FacterCacheable.cache(
             :rhsm_identity, identity, identities::CACHE_FILE
           )
           identity
-        elsif cache.is_a? Array
-          cache
-        else
-          cache['rhsm_identity']
         end
+      elsif cache.is_a? Array
+        cache
+      else
+        cache['rhsm_identity']
       end
-    end
-  else
-    Facter.add(:rhsm_identity) do
-      setcode { identities.rhsm_identity }
     end
   end
 end
