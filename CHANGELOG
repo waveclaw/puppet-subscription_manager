@@ -1,3 +1,7 @@
+2020-04-28 5.4.2
+ - Modernize dependencies to current levels
+ - Test on EL 8
+
 2020-02-28 5.4.0
  - Add auto_enable_yum_plugins option
 

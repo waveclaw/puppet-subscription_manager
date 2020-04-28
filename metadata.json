@@ -1,6 +1,6 @@
 {
   "name": "waveclaw-subscription_manager",
-  "version": "5.4.1",
+  "version": "5.4.2",
   "author": "JD Powell <waveclaw@hotmail.com>",
   "summary": "Manage Katello or Satellite registrations.",
   "license": "Apache-2.0",
@@ -10,7 +10,11 @@
   "dependencies": [
     {
       "name": "puppetlabs/transition",
-      "version_requirement": ">= 0.1.0 < 1.0.0"
+      "version_requirement": ">= 0.1.1 < 1.0.0"
+    },
+    {
+      "name": "puppet/boolean",
+      "version_requirement": ">= 2.0.0 < 3.0.0"
     },
     {
       "name": "waveclaw/facter_cacheable",
@@ -23,7 +27,8 @@
       "operatingsystemrelease": [
         "5",
         "6",
-        "7"
+        "7",
+        "8"
       ]
     },
     {
@@ -31,7 +36,8 @@
       "operatingsystemrelease": [
         "5",
         "6",
-        "7"
+        "7",
+        "8"
       ]
     },
     {
