@@ -82,6 +82,7 @@ Puppet::Type.type(:rhsm_pool).provide(:subscription_manager) do
         value = m[1].strip
         subscription[:id] = value
         # this creates a 'fake' name resource to deal with the missing name parameter
+        subscription[:name] = value
         next
       end
       m = %r{^\s*Active:\s*(.+)$}.match(line)
