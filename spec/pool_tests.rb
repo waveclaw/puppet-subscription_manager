@@ -252,10 +252,10 @@ shared_examples_for 'cached pools' do |mod, _function, label, source|
     ).and_return(true)
     allow(Puppet.features).to receive(:facter_cacheable?).and_return(true)
     Facter.clear
-  end
-  it 'returns and save a computed value with an empty cache' do
-    option = options[label]
     stub_const('Facter::Util::FacterCacheable', fake_class)
+  end
+  it "returns and saves a computed value of #{label} with an empty cache" do
+    option = options[label]
     expect(results[label][label.to_s]).not_to eq(nil)
     expect(Facter::Util::FacterCacheable).to receive(:cached?).with(
       label, mod::CACHE_TTL, source
@@ -271,8 +271,7 @@ shared_examples_for 'cached pools' do |mod, _function, label, source|
     )
     expect(Facter.value(label)).to eq(results[label][label.to_s])
   end
-  it 'returns a cached value with a full cache' do
-    stub_const('Facter::Util::FacterCacheable', fake_class)
+  it "returns a cached value for #{label} with a full cache" do
     expect(Facter::Util::FacterCacheable).to receive(:cached?).with(
       label, mod::CACHE_TTL, mod::CACHE_FILE
     ).and_return(results[label])
@@ -283,8 +282,7 @@ shared_examples_for 'cached pools' do |mod, _function, label, source|
   #
   #  This is actually a problem since Facter 2.0
   #
-  it 'returns a cached value with a full cache when cache is not a hash' do
-    stub_const('Facter::Util::FacterCacheable', fake_class)
+  it "returns a cached value for #{label} with a full cache when cache is not a hash" do
     expect(Facter::Util::FacterCacheable).to receive(:cached?).with(
       label, mod::CACHE_TTL, mod::CACHE_FILE
     ).and_return(results[label][label.to_s])

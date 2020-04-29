@@ -152,9 +152,9 @@ shared_examples_for 'cached rhsm repo command' do |mod, function, label, _source
     ).and_return(true)
     allow(Puppet.features).to receive(:facter_cacheable?).and_return(true)
     Facter.clear
+    stub_const('Facter::Util::FacterCacheable', fake_class)
   end
   it 'returns and save a computed value with an empty cache' do
-    stub_const('Facter::Util::FacterCacheable', fake_class)
     expect(Facter::Util::FacterCacheable).to receive(:cached?).with(
       label, mod::CACHE_TTL, mod::CACHE_FILE
     ).and_return(nil)
@@ -168,7 +168,6 @@ shared_examples_for 'cached rhsm repo command' do |mod, function, label, _source
     expect(Facter.value(label)).to eq(results[label][function])
   end
   it 'returns a cached value with a full cache' do
-    stub_const('Facter::Util::FacterCacheable', fake_class)
     expect(Facter::Util::FacterCacheable).to receive(:cached?).with(
       label, mod::CACHE_TTL, mod::CACHE_FILE
     ).and_return(results[label])
