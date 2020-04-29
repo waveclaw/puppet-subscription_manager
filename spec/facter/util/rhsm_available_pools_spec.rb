@@ -86,9 +86,6 @@ available_cases = {
 describe Facter::Util::RhsmAvailablePools, type: :fact do
   context 'on a supported platform' do
     before :each do
-      Facter::Util::Loader.stubs(:load_all)
-      Facter.clear
-      Facter.clear_messages
       allow(File).to receive(:exist?).with(
         '/usr/sbin/subscription-manager',
       ).and_return(true)
@@ -133,9 +130,6 @@ describe Facter::Util::RhsmAvailablePools, type: :fact do
 
   context 'on a supported platform without caching' do
     before :each do
-      Facter::Util::Loader.stubs(:load_all)
-      Facter.clear
-      Facter.clear_messages
       allow(File).to receive(:exist?).with(
         '/usr/sbin/subscription-manager',
       ).and_return(true)
@@ -169,9 +163,6 @@ describe Facter::Util::RhsmAvailablePools, type: :fact do
 
   context 'on an unsupported platform' do
     before :each do
-      Facter::Util::Loader.stubs(:load_all)
-      Facter.clear
-      Facter.clear_messages
       allow(File).to receive(:exist?).with(
         '/usr/sbin/subscription-manager',
       ).and_return(false)

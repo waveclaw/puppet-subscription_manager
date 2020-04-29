@@ -30,9 +30,7 @@ EOD
 
 describe Facter::Util::RhsmIdentity, type: :fact do
   before :each do
-    Facter::Util::Loader.stubs(:load_all)
     Facter.clear
-    Facter.clear_messages
   end
   it 'returns the expected data for old style return' do
     expect(Facter::Core::Execution).to receive(:execute)

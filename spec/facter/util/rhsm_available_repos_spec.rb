@@ -16,9 +16,7 @@ require 'facter/rhsm_available_repos'
 describe Facter::Util::RhsmAvailableRepos, type: :puppet_function do
   context 'on a supported platform' do
     before :each do
-      Facter::Util::Loader.stubs(:load_all)
       Facter.clear
-      Facter.clear_messages
     end
     it_behaves_like 'rhsm repo command',
                     Facter::Util::RhsmAvailableRepos, 'rhsm_available_repos', :available
@@ -26,9 +24,6 @@ describe Facter::Util::RhsmAvailableRepos, type: :puppet_function do
 
   context 'on an unsupported platform' do
     before :each do
-      Facter::Util::Loader.stubs(:load_all)
-      Facter.clear
-      Facter.clear_messages
       allow(File).to receive(:exist?).with(
         '/usr/sbin/subscription-manager',
       ) { false }

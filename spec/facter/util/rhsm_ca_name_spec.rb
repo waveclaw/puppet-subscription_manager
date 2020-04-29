@@ -27,9 +27,6 @@ end
 describe Facter::Util::RhsmCaName, type: :fact do
   shared_examples_for 'on a supported os' do |cafile|
     before :each do
-      Facter::Util::Loader.stubs(:load_all)
-      Facter.clear
-      Facter.clear_messages
       allow(File).to receive(:exists?).and_return(false)
     end
     it 'returns nothing when there is an error' do
@@ -57,9 +54,6 @@ describe Facter::Util::RhsmCaName, type: :fact do
 
   shared_examples_for 'on an unsupported os' do |_cafile|
     before :each do
-      Facter::Util::Loader.stubs(:load_all)
-      Facter.clear
-      Facter.clear_messages
       allow(File).to receive(:exists?).and_return(false)
     end
     it 'returns nothing' do

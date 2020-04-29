@@ -16,9 +16,7 @@ require 'facter/rhsm_disabled_pools'
 describe Facter::Util::RhsmDisabledPools, type: :fact do
   context 'on a supported platform' do
     before :each do
-      Facter::Util::Loader.stubs(:load_all)
       Facter.clear
-      Facter.clear_messages
     end
     it_behaves_like 'consumed pools',
                     Facter::Util::RhsmDisabledPools, 'rhsm_disabled_pools', :disabled
@@ -26,9 +24,6 @@ describe Facter::Util::RhsmDisabledPools, type: :fact do
 
   context 'on an unsupported platform' do
     before :each do
-      Facter::Util::Loader.stubs(:load_all)
-      Facter.clear
-      Facter.clear_messages
       allow(File).to receive(:exist?).with(
         '/usr/sbin/subscription-manager',
       ).and_return(false)

@@ -1,9 +1,11 @@
+# This file can be used to install module depdencies for unit testing
+# See https://github.com/puppetlabs/puppetlabs_spec_helper#using-fixtures for details
+---
 fixtures:
-  repositories:
-#    stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
   forge_modules:
     transition: "puppetlabs/transition"
     facter_cacheable: "waveclaw/facter_cacheable"
     boolean: "puppet/boolean"
   symlinks:
     subscription_manager: "#{source_dir}"
+
