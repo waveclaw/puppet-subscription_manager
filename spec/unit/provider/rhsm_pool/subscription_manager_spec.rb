@@ -36,6 +36,8 @@ Ends:              05/24/38
 System Type:       Physical
 EOD
 
+entitlement_data = raw_data.sub('System Type','Entitlement Type')
+
 title1 = '1a2b3c4d5e6f1234567890abcdef12345'
 title2 = '1234abc'
 
@@ -59,6 +61,7 @@ properties = {
   system_type: 'Physical',
   provider: :subscription_manager,
 }
+
 
 provider_class = Puppet::Type.type(:rhsm_pool).provider(:subscrption_manager)
 
@@ -169,6 +172,18 @@ describe provider_class, '#rhsm_pool.provider' do
       expect(provider.class).to receive(:subscription_manager).with(
         'list', '--consumed'
       ).and_return(raw_data)
+      provider.class.prefetch(properties)
+    end
+  end
+
+  describe 'system_type on RHEL 7.8 as entitlement_type' do
+    it 'prefetches the data' do
+      expect(provider.class).to respond_to(:prefetch)
+    end
+    it 'but returns system_type instead for consistency with legacy' do
+      expect(provider.class).to receive(:subscription_manager).with(
+        'list', '--consumed'
+      ).and_return(entitlement_data)
       provider.class.prefetch(properties)
     end
   end
