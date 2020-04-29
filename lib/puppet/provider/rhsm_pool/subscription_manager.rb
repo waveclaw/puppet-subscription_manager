@@ -90,9 +90,9 @@ Puppet::Type.type(:rhsm_pool).provide(:subscription_manager) do
         subscription.store(:active, value)
         next
       end
-      m = %r{^\s*System Type:\s*([^:]+)$}.match(line)
+      m = %r{^\s*(System|Entitlement) Type:\s*([^:]+)$}.match(line)
       unless m.nil?
-        value = m[1].strip.to_sym
+        value = m[2].strip.to_sym
         subscription.store(:system_type, value)
         # this is the last item output
         subscription.store(:provider, :subscription_manager)
