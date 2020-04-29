@@ -199,6 +199,13 @@ EOD
     end
   end
 
+  newproperty(:rhsmd_processTimeout) do
+    desc 'Control how long to allow the rhsmd cron job to run'
+    validate do |value|
+      raise("Require a number.  Was given #{value}.") unless value.to_i and value.to_i >= 0
+    end
+  end
+
   newproperty(:rhsm_plugindir) do
     desc 'The RHN Plugin directory.'
     validate do |value|
