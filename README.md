@@ -494,6 +494,8 @@ target node to register has pluginsync enabled.  Run the agent on the target nod
 to cause the custom types to be synced to the local libdir
 (`puppet master --configprint libdir`).
 
+If you use the [Puppet Development Kit](https://puppet.com/docs/pdk/1.x/pdk.html), this module is PDK compatible.
+
 ### Deprication Warnings
 
 Support for Ruby 1.8.7 and older is ad-hoc at best. Modern `rake` and
