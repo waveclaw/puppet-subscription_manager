@@ -34,7 +34,7 @@ Puppet::Type.type(:rhsm_pool).provide(:subscription_manager) do
   # Detach from a pool
   #  Given the serial number of our registration, remove the license
   def destroy
-    subscription_manager('remove', '--serial', @resource[:serial])
+    subscription_manager('remove', '--serial', @property_hash[:serial])
   end
 
   #  List the pools
