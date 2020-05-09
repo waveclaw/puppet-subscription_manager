@@ -9,7 +9,6 @@ SimpleCov.start do
   add_filter '/.bundle/'
 end
 
-
 ARGV.clear
 
 require 'puppet'
@@ -21,7 +20,7 @@ require 'rspec/expectations'
 require 'puppetlabs_spec_helper/module_spec_helper'
 
 RSpec.configure do |config|
-  # FIXME REVISIT - We may want to delegate to Facter like we do in
+  # FIXME: We may want to delegate to Facter like we do in
   # Puppet::PuppetSpecInitializer.initialize_via_testhelper(config) because
   # this behavior is a duplication of the spec_helper in Facter.
   config.before :each do
@@ -31,7 +30,7 @@ RSpec.configure do |config|
     # Facter.collection.loader.load(:ipaddress)
     # Facter::Util::Loader.any_instance.stubs(:load_all) # removed in 3
     Facter.clear
-    #Facter.clear_messages # removed in facter 3
+    # Facter.clear_messages # removed in facter 3
   end
   # config.pattern += ',spec/facter/**/*_spec.rb'
   config.mock_with :rspec

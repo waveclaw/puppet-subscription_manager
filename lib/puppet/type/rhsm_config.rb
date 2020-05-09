@@ -72,6 +72,7 @@ EOD
       rhsm_plugindir: 'rhsm.plugindir',
       rhsmcertd_certcheckinterval: 'rhsmcertd.certcheckinterval',
       rhsmcertd_autoattachinterval: 'rhsmcertd.autoattachinterval',
+      rhsmd_processtimeout: 'rhsmd.processtimeout',
       logging_default_log_level: 'logging.default_log_level',
       logging_subscription_manager: 'logging.subscription_manager',
       logging_rhsm: 'logging.rhsm',
@@ -199,10 +200,10 @@ EOD
     end
   end
 
-  newproperty(:rhsmd_processTimeout) do
+  newproperty(:rhsmd_processtimeout) do
     desc 'Control how long to allow the rhsmd cron job to run'
     validate do |value|
-      raise("Require a number.  Was given #{value}.") unless value.to_i and value.to_i >= 0
+      raise("Require a number. Was given #{value}.") unless value.to_i && value.to_i >= 0
     end
   end
 

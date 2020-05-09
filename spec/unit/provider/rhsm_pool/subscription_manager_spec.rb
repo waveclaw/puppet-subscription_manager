@@ -36,7 +36,7 @@ Ends:              05/24/38
 System Type:       Physical
 EOD
 
-entitlement_data = raw_data.sub('System Type','Entitlement Type')
+entitlement_data = raw_data.sub('System Type', 'Entitlement Type')
 
 title1 = '1a2b3c4d5e6f1234567890abcdef12345'
 title2 = '1234abc'
@@ -61,7 +61,6 @@ properties = {
   system_type: 'Physical',
   provider: :subscription_manager,
 }
-
 
 provider_class = Puppet::Type.type(:rhsm_pool).provider(:subscrption_manager)
 
