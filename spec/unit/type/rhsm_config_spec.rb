@@ -28,7 +28,7 @@ require 'spec_helper'
 #   rhsm_repo_ca_cert           => '/etc/rhsm/ca/',
 #   rhsm_report_package_profile => 1,
 #   rhsmcertd_autoattachinterval => 1440,
-#   rhsm_processTimeout => 3600,
+#   rhsmd_processtimeout => 3600,
 # }
 
 described_class = Puppet::Type.type(:rhsm_config)
