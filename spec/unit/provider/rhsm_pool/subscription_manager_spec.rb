@@ -201,24 +201,24 @@ describe provider_class, '#rhsm_pool.provider' do
       expect(provider).to receive(:subscription_manager).with(
         'attach', '--pool', title1
       )
-      Puppet::Type.type(:rhsm_pool).new(name: title1,
+      Puppet::Type.type(:rhsm_pool).new(id: title1,
                                         ensure: :present, provider: provider)
       allow(provider).to receive(:exists?).and_return(true)
       provider.create
     end
     it "destroy should detach from a pool that shouldn't exist" do
       serial = '1234567890123456789'
-      expect(provider).to receive(:subscription_manager).with(
-        'remove', '--serial', serial
-      )
-      Puppet::Type.type(:rhsm_pool).new(
-        name: title1,
-        ensure: :absent,
-        serial: serial,
+      res = Puppet::Type.type(:rhsm_pool).new(
+        id: title1,
         provider: provider,
       )
-      allow(provider).to receive(:exists?).and_return(false)
-      provider.destroy
+      res.provider.set(ensure: :absent)
+      res.provider.set(serial: serial)
+      allow(res.provider).to receive(:exists?).and_return(false)
+      expect(res.provider).to receive(:subscription_manager).with(
+        'remove', '--serial', serial
+      )
+      res.provider.destroy
     end
   end
 end
