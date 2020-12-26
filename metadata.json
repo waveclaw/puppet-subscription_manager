@@ -52,7 +52,7 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 4.10.12"
+      "version_requirement": ">= 5.0.0"
     }
   ],
   "description": "Register CentOS or RHEL to Katello or Satellite 6.",
