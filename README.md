@@ -48,6 +48,7 @@ Apache License, Version 2.0. Read the LICENSE file for details of the licensing.
 * [waveclaw-facter_cacheable](https://forge.puppet.com/waveclaw/facter_cacheable)
 * [puppetlabs-transition](https://forge.puppet.com/puppetlabs/transition) [on GitHub](https://github.com/puppetlabs/puppetlabs-transition)
 * A good source for subscription-manager and its dependencies like [EPEL](http://repos.fedorapeople.org/repos/candlepin/subscription-manager/epel-subscription-manager.repo).
+* [python-syspurpose](https://ftp.riken.jp/Linux/cern/centos/7.4.1708/updates/x86_64/repoview/python-syspurpose.html) or python3-syspurpose for _optional_ reporting of system purpose text.
 
 ## Authors
 
@@ -71,6 +72,7 @@ state. These can return lists of data under facter 2.0.
 * rhsm\_available\_repos
 * rhsm\_disabled\_repos
 * rhsm\_enabled\_repos
+* rhsm\_syspurpose
 
 The repo facts make use of a simple caching mechanism using the facts.d
 directory to limit connections to the Katello or Satellite server.  Like the
