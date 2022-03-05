@@ -1,7 +1,10 @@
+2021-3-4 5.6.0
+ - Remove deprecated goferd service from automatic run
+
 2020-4-28 5.5.0
  - Support rhsmd.processtimeout in #97
  - Include masking of Entitlement type per MR in #99
- 
+
 2020-04-28 5.4.2
  - Modernize dependencies to current levels
  - Test on EL 8

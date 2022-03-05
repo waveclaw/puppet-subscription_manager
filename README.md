@@ -20,12 +20,23 @@ module by James Laska that was in turn derived from [puppet-rhnreg_ks module](ht
  by Gaël Chamoulaud.  This fork provides an incompatible dedicated rhsm\_config
  resource and separates repository management from control of the Yum overrides.
 
-## Notice
+## Notices
+
+### RHN
 
 This module is not for direct use with RedHat Network.  For that, either use the
 provided resource types directly or see the Ansible playbooks available directly
 from RedHat.  If you really want to talk to RHN directly, see the
 `subscription_manager::ca_package` parameter for how.
+
+### Services
+
+Since Satellite version 6.5, the goferd package has been deprecated.  It is not
+available in current version of satellite. To use this module beyond version 5.6
+with a older Satellite installation, you may want to include the service in your
+own Puppet code.  An example is provided for the `rhsmcertd` case bellow.
+
+### Terminology
 
 Due to various terminology differences between RHN Satellite, the upstream
 Katello project and the further upstream component projects of Candlepin, The
@@ -175,7 +186,9 @@ Register a RedHat Enterprise 7 or CentOS 7 node to Satellite 6 using an activati
 > registered to the correct server.
 
 
-Register to a local RedHat SAM server.
+Register to a local RedHat SAM server.  Note that rhsmcertd and goferd are
+optional.  You will have to perform the serivice management at the top level
+of your puppet code.
 
 ```puppet
   class { 'subscription_manager':
@@ -190,7 +203,7 @@ Register to a local RedHat SAM server.
      },
      service_name      =>'rhsmcertd',
      force             => true,
-  }
+  } ~> Service ['rhsmcertd']
 ```
 
 > For this example one can see that the `config_hash` only needs customized entries

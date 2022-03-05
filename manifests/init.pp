@@ -145,11 +145,13 @@ class subscription_manager (
     'RedHat', 'CentOS', 'Scientific', 'Fedora': {
       class { '::subscription_manager::install': }
       -> class { '::subscription_manager::config': }
-      ~> class { '::subscription_manager::service': }
       -> Class['::subscription_manager']
     }
     default: {
       notify { "${::facts['os']['description']} not supported by subscription_manager": }
     }
   }
+  # The goferd service was discontinued in Satellite 6.5
+  # users can require this class manually
+  #       ~> class { '::subscription_manager::service': }
 }
