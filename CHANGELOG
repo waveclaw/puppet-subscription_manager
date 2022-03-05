@@ -1,3 +1,6 @@
+2021-3-4 5.6.1
+ - Add an rhsm_environment fact
+
 2021-3-4 5.6.0
  - Remove deprecated goferd service from automatic run
 

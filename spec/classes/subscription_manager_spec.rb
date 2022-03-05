@@ -16,8 +16,9 @@ shared_examples_for 'a supported operating system' do
   # it { is_expected.to contain_class('subscription_manager::defaults') }
   it { is_expected.to contain_class('subscription_manager::install').that_comes_before('Class[subscription_manager::config]') }
   it { is_expected.to contain_class('subscription_manager::config') }
-  it { is_expected.to contain_class('subscription_manager::service').that_subscribes_to('Class[subscription_manager::config]') }
-  it { is_expected.to contain_service('goferd').with_ensure('running') }
+  # deprecated in Satellite 6.5. Include manually if you want this
+  #it { is_expected.to contain_class('subscription_manager::service').that_subscribes_to('Class[subscription_manager::config]') }
+  #it { is_expected.to contain_service('goferd').with_ensure('running') }
   it { is_expected.to contain_package('subscription-manager').with_ensure('present') }
   it { is_expected.to contain_file('/var/cache/rhsm').with_ensure('directory') }
 end
@@ -191,16 +192,19 @@ describe 'subscription_manager' do
       }
     end
 
-    context 'when told to disable the service' do
-      let(:facts) { facts }
-      let(:params) do
-        {
-          service_status: 'disabled',
-        }
-      end
-
-      it { is_expected.to contain_service('goferd').with_ensure('disabled') }
-    end
+#
+#  Support for the service is deprecated in Satellite 6.5.  Removed in 6.6.
+#
+#    context 'when told to disable the service' do
+#      let(:facts) { facts }
+#      let(:params) do
+#        {
+#          service_status: 'disabled',
+#        }
+#      end
+#
+#      it { is_expected.to contain_service('goferd').with_ensure('disabled') }
+#    end
 
     context 'when the rhsm_ca_name is different' do
       let(:facts) do
