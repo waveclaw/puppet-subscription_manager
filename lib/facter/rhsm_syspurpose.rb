@@ -18,6 +18,7 @@ rescue LoadError => e
   Facter.debug("#{e.backtrace[0]}: #{$ERROR_INFO}.")
 end
 
+# purpose of this server
 module Facter::Util::RhsmSyspurpose
   @doc = <<EOF
   RHSM defined syspurpose
