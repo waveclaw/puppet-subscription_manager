@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 #
-#  Report the name of the current envrionment.
+#  Report the name of the current environment.
 #  This will be null if the reigstration is bad.
 #
 #   Copyright 2014-2015 Gaël Chamoulaud, James Laska
@@ -18,10 +18,10 @@ rescue LoadError => e
   Facter.debug("#{e.backtrace[0]}: #{$ERROR_INFO}.")
 end
 
-# current envrionement
+# current environement
 module Facter::Util::RhsmEnvironment
   @doc = <<EOF
-  Current Lifecycle Envrionment for this client.
+  Current Lifecycle Environment for this client.
 EOF
   CACHE_TTL = 86_400 unless defined? CACHE_TTL # 24 * 60 * 60 seconds
   CACHE_FILE = '/var/cache/rhsm/environment.yaml' unless defined? CACHE_FILE
@@ -52,17 +52,17 @@ EOF
 end
 
 if File.exist? '/usr/sbin/subscription-manager'
-  envrionments = Facter::Util::RhsmEnvironment
+  environments = Facter::Util::RhsmEnvironment
   cache = nil
   if Puppet.features.facter_cacheable?
     cache = Facter::Util::FacterCacheable.cached?(
-      :rhsm_environment, environments::CACHE_TTL, envrionments::CACHE_FILE
+      :rhsm_environment, environments::CACHE_TTL, environments::CACHE_FILE
     )
   end
   Facter.add(:rhsm_identity) do
     setcode do
       if !cache
-        environment = envrionments.rhsm_environment
+        environment = environments.rhsm_environment
         if !environment
           nil
         else
