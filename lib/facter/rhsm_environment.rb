@@ -28,7 +28,7 @@ EOF
 
   module_function
 
-  def rhsm_identity
+  def rhsm_environment
     value = nil
     begin
       output = Facter::Core::Execution.execute(
@@ -59,7 +59,7 @@ if File.exist? '/usr/sbin/subscription-manager'
       :rhsm_environment, environments::CACHE_TTL, environments::CACHE_FILE
     )
   end
-  Facter.add(:rhsm_identity) do
+  Facter.add(:rhsm_environment) do
     setcode do
       if !cache
         environment = environments.rhsm_environment
