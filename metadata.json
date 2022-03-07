@@ -1,6 +1,6 @@
 {
   "name": "waveclaw-subscription_manager",
-  "version": "5.6.1",
+  "version": "5.6.2",
   "author": "JD Powell <waveclaw@hotmail.com>",
   "summary": "Manage Katello or Satellite registrations.",
   "license": "Apache-2.0",
