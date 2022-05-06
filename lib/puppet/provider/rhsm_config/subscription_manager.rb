@@ -223,6 +223,33 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     output
   end
 
+  # Obtain the list of parameters from the config help subcommand
+  # @return Array(String) the options you can set though the cmd
+  def config_help_options()
+    data = subscription_manager(['config', '--help'])
+    opts = conf_help_parse(data) unless data.nil?
+    unless opts.nil?
+     Puppet.debug("Valid config parameters were #{opts}")
+     opts
+   end
+  end
+
+  # Parse the output of a subscription_mnager config command
+  # @params data String the data from a command run
+  # @return Array(String) a list of section.option that can be set
+  def conf_help_parse(data)
+    opts = []
+    unless data.nil?
+      data.split("\n").each do |line|
+        m = line.match(%r{^\s+--([a-z_0-9]+\.[a-z_0-9]+) [A-Z]+.*})
+        unless m.nil?
+          opts.push m[1]
+        end
+      end
+    end
+    opts
+  end
+
   # Build a config option string
   # @param removal Symbol :remove if to remove things
   # @return [Hash(Array(String))] the options for a config command
@@ -231,16 +258,19 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   def build_config_parameters(removal)
     setparams = []
     removeparams = []
+    cmdparams = config_help_options()
+    # a map of parameter:section hence the 'reversed' nature of the bellow
     options = Puppet::Type.type(:rhsm_config).binary_options.merge(
       Puppet::Type.type(:rhsm_config).text_options,
     )
     # filter out praramters from properties
-    arguments = @property_hash.select do |opt, _value|
+    arguments = @property_hash.select do |opt, value|
       options.keys.include?(opt)
     end
     Puppet.debug("Updates to subscription configuration are '#{arguments}'")
     arguments.each do |opt, value|
       section = options[opt]
+      next unless cmdparams.include? section
       param = resolve_value(removal, opt, value)
       if param.nil?
         removeparams.push("--remove=#{section}")
