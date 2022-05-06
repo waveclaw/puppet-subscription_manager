@@ -285,6 +285,10 @@ rhsm_register { 'subscription.rhn.example.com':
 Please see man(5) RHSM.CONF for your locally supported options.  There are quite
  a few and they require specific inputs.
 
+rhsm_config cannot set values that are not available from the `subscription-manager config` sub-command.
+
+For the rhsm.conf options that are not supported directly, it is recommended to use either the puppetlabs-stdlib `file_line` or one of the many forge.puppet.com modules for managing ini-format files.
+
 ##### rhsm_config options
 
 See the documentation at [RedHat Support](https://access.redhat.com/documentation/en-US/Red_Hat_Subscription_Management/1/html/RHSM/rhsm-config.html#tab.rhsm.conf-parameters) for RedHat provided details on the `/etc/rhsm/rhsm.conf` file.
@@ -301,9 +305,13 @@ The most important settings are as follows.  Specific support is made for them.
 Other options can be rolled into a configuration hash and fed to the module as a
 whole. See init.pp and the following YAML example for details.
 
+Do know the supported options to the specific version of `subscription-manager config --help` on your platform.
+
+***Options that are not supported will be ignored!***
+
 ##### rhsm_config Examples
 
-As a resource.
+As a resource, the format of `[section]` and `section.key` is transformed into the puppet language compatible `section_key`.
 
 ```puppet
 rhsm_config { 'katello.example.com':
