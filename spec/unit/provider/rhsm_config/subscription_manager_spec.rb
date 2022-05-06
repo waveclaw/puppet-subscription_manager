@@ -142,6 +142,35 @@ EOD
     rhsm_baseurl: 'https://katello01.example.com/pulp/repos',
   }
 
+  raw_help_data = <<-EOH
+      usage: subscription-manager config [OPTIONS]
+
+List, set, or remove the configuration parameters in use by this system
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --list                list the configuration for this system
+  --remove REMOVE       remove configuration entry by section.name
+  --server.proxy_scheme SERVER.PROXY_SCHEME
+                        Section: server, Name: proxy_scheme
+  --server.server_timeout SERVER.SERVER_TIMEOUT
+                        Section: server, Name: server_timeout
+  --server.proxy_hostname SERVER.PROXY_HOSTNAME
+                        Section: server, Name: proxy_hostname
+  --server.no_proxy SERVER.NO_PROXY
+                        Section: server, Name: no_proxy
+  --server.insecure SERVER.INSECURE
+                        Section: server, Name: insecure
+  EOH
+
+ help_values = [
+  "server.proxy_scheme",
+   "server.server_timeout",
+   "server.proxy_hostname",
+   "server.no_proxy",
+   "server.insecure"
+ ]
+
   let(:resource) do
     Puppet::Type.type(:rhsm_config).new(properties)
   end
@@ -241,6 +270,9 @@ EOD
       res.provider.set(server_port: 443)
       res[:server_port] = 8080
       expect(res.provider).to receive(:exists?).and_call_original
+      expect(res.provider).to receive(:config_help_options).and_return([
+        'server.port','server.insecure'
+        ])
       expect(res.provider).to receive(:build_config_parameters).with(:remove).and_call_original
       expect(res.provider).to receive(:subscription_manager).with(
         'config', '--remove=server.insecure'
@@ -452,11 +484,53 @@ EOD
     end
   end
 
+  describe 'config_help_options' do
+    it 'returns nothing for an empty configuration' do
+      resource = Puppet::Type.type(:rhsm_config).new(
+        provider: provider, name: title,
+      )
+      expect(provider.class).to receive(:subscription_manager).with(['config', '--help']).and_return('')
+      expect(resource.provider.config_help_options()).to eq([])
+    end
+    it 'returns expected values for a given configuration' do
+      resource = Puppet::Type.type(:rhsm_config).new(
+        provider: provider, name: title,
+      )
+      expect(provider.class).to receive(:subscription_manager).with(['config', '--help']).and_return(raw_help_data)
+      expect(resource.provider).to receive(:conf_help_parse).and_return(help_values)
+      expect(resource.provider.config_help_options()).to eq(help_values)
+    end
+  end
+
+  describe 'conf_help_parse' do
+    it 'returns nothing for an empty configuration' do
+      resource = Puppet::Type.type(:rhsm_config).new(
+        provider: provider, name: title,
+      )
+      expect(resource.provider.conf_help_parse('')).to eq([])
+    end
+    it 'returns nothing for garbage' do
+      resource = Puppet::Type.type(:rhsm_config).new(
+        provider: provider, name: title,
+      )
+      expect(resource.provider.conf_help_parse('asdlk;j12349567[[]]')).to eq([])
+    end
+    help_values.each do |key|
+      it "parse the #{key} option" do
+        resource = Puppet::Type.type(:rhsm_config).new(
+          provider: provider, name: title,
+        )
+        expect(resource.provider.conf_help_parse(raw_help_data)).to include(key)
+      end
+    end
+  end
+
   describe 'build_config_parameters' do
     it 'returns nothing when provider or title are the only parameters' do
       resource = Puppet::Type.type(:rhsm_config).new(
         provider: provider, name: title,
       )
+      expect(resource.provider).to receive(:config_help_options).and_return(nil)
       expect(resource.provider.build_config_parameters(:apply)).to eq(
         apply: nil, remove: nil,
       )
@@ -474,6 +548,9 @@ EOD
       expect(resource.provider).to receive(:resolve_value).with(:remove, :server_insecure, '').and_return(nil)
       expect(resource.provider).to receive(:resolve_value).with(:remove, :server_port, '').and_return(nil)
       expect(resource.provider).to receive(:resolve_value).with(:remove, :rhsm_ca_cert_dir, '').and_return(nil)
+      expect(resource.provider).to receive(:config_help_options).and_return([
+        'server.insecure', 'server.port', 'rhsm.ca_cert_dir'
+        ])
       result = resource.provider.build_config_parameters(:remove)
       expect(result).not_to eq(nil)
       expect(result.keys.sort).to eq([:apply, :remove])
@@ -497,17 +574,21 @@ EOD
           binary_opt = Puppet::Type.type(:rhsm_config).binary_options[key]
           value = (properties[key] == true) ? 1 : 0
           expect(resource.provider).to receive(:resolve_value).and_return(value)
+          expect(resource.provider).to receive(:config_help_options).and_return([binary_opt])
           expect(resource.provider.build_config_parameters(:apply)[:apply]).to eq([
                                                                                     "--#{binary_opt}=#{value}",
                                                                                   ])
           expect(resource.provider).to receive(:resolve_value).and_return(nil)
+          expect(resource.provider).to receive(:config_help_options).and_return([binary_opt])
           expect(resource.provider.build_config_parameters(:remove)[:remove]).to eq(["--remove=#{binary_opt}"])
         else
           text_opt = resource.class.text_options[key]
           value = properties[key].to_s
           expect(resource.provider).to receive(:resolve_value).and_call_original
+          expect(resource.provider).to receive(:config_help_options).and_return([text_opt])
           expect(resource.provider.build_config_parameters(:apply)[:apply]).to eq(["--#{text_opt}=#{value}"])
           expect(resource.provider).to receive(:resolve_value).and_return(nil)
+          expect(resource.provider).to receive(:config_help_options).and_return([text_opt])
           expect(resource.provider.build_config_parameters(:remove)[:remove]).to eq(["--remove=#{text_opt}"])
         end
       end
@@ -521,6 +602,9 @@ EOD
       resource[:server_insecure] = 'true'
       resource.provider.set(server_port: nil)
       resource.provider.set(rhsm_ca_cert_dir: '/etc/rhsm/ca/')
+      expect(resource.provider).to receive(:config_help_options).and_return([
+        'rhsm.ca_cert_dir', 'server.insecure', 'server.port'
+         ])
       combo = resource.provider.build_config_parameters(:apply)
       apply_expected = ['--rhsm.ca_cert_dir=/etc/rhsm/ca/',
                         '--server.insecure=0'].sort
@@ -535,11 +619,17 @@ EOD
       resource.provider.set(server_insecure: false)
       resource.provider.set(server_port: 443)
       resource.provider.set(rhsm_ca_cert_dir: '/etc/rhsm/ca/')
+      expect(resource.provider).to receive(:config_help_options).and_return([
+        'server.port','rhsm.ca_cert_dir','server.insecure'
+        ])
       apply = resource.provider.build_config_parameters(:apply)
       expect(apply[:apply].sort!).to eq([
         '--server.port=443', '--rhsm.ca_cert_dir=/etc/rhsm/ca/', '--server.insecure=0'
       ].sort!)
       expect(apply[:remove]).to eq(nil)
+      expect(resource.provider).to receive(:config_help_options).and_return([
+        'server.port', 'rhsm.ca_cert_dir', 'server.insecure'
+        ])
       remove = resource.provider.build_config_parameters(:remove)
       expect(remove[:apply]).to eq(nil)
       expect(remove[:remove].sort!).to eq([
@@ -554,8 +644,21 @@ EOD
       resource.provider.set(server_port: 443)
       resource.provider.set(rhsm_ca_cert_dir: '/etc/rhsm/ca/')
       resource.provider.class.defaults_to = [:server_port]
+      expect(resource.provider).to receive(:config_help_options).and_return(['server.insecure'])
       apply = resource.provider.build_config_parameters(:apply)[:apply]
       expect(apply).to include('--server.insecure=0')
+    end
+    it 'does skip unsupported options' do
+      resource = Puppet::Type.type(:rhsm_config).new(
+        provider: provider, name: title,
+      )
+      resource.provider.set(server_insecure: false)
+      resource.provider.set(server_port: 443)
+      resource.provider.set(rhsm_ca_cert_dir: '/etc/rhsm/ca/')
+      resource.provider.class.defaults_to = [:server_port]
+      expect(resource.provider).to receive(:config_help_options).and_return([])
+      apply = resource.provider.build_config_parameters(:apply)[:apply]
+      expect(apply).to eq(nil)
     end
   end
 end
