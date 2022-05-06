@@ -36,6 +36,10 @@ available in current version of satellite. To use this module beyond version 5.6
 with a older Satellite installation, you may want to include the service in your
 own Puppet code.  An example is provided for the `rhsmcertd` case bellow.
 
+In Satellite 6.5.x and later, the remote command execution replaces this feature.
+This uses the ssh service as the remove agent and does require configuration of
+both the user and ssh configuration.  This is a topic well discussed [elsewhere](https://www.ssh.org).
+
 ### Terminology
 
 Due to various terminology differences between RHN Satellite, the upstream
