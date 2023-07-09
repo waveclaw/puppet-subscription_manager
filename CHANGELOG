@@ -1,3 +1,6 @@
+2023-07-8 5.7.1
+ - PDK 3.0 compatibility
+
 2021-3-4 5.6.1
  - Add an rhsm_environment fact
 

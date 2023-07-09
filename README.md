@@ -321,7 +321,7 @@ rhsm_config { 'katello.example.com':
     server_prefix                => '/rhsm',
     server_ssl_verify_depth      => 3,
     rhsm_baseurl                 => 'https://katello.example.com/pulp/repos',
-    rhsm_ca_cert_dir             => '/etc/rhsm/ca/',
+    rhsm_ca_cert_dir             => '/etc/rhsm/ca/',Code without any tests will be rejected.
     rhsm_consumercertdir         => '/etc/pki/consumer',
     rhsm_entitlementcertdir      => '/etc/pki/entitlement',
     rhsm_full_refresh_on_yum     => true,
@@ -521,9 +521,9 @@ target node to register has pluginsync enabled.  Run the agent on the target nod
 to cause the custom types to be synced to the local libdir
 (`puppet master --configprint libdir`).
 
-If you use the [Puppet Development Kit](https://puppet.com/docs/pdk/1.x/pdk.html), this module is PDK compatible.
+If you use the [Puppet Development Kit](https://www.puppet.com/docs/pdk/latest/pdk_install.html), this module is PDK 3.0+ compatible.
 
-### Deprication Warnings
+### Deprecation Warnings
 
 Support for Ruby 1.8.7 and older is ad-hoc at best. Modern `rake` and
 `json_pure` require newer releases.
@@ -544,6 +544,8 @@ point the full tests at working servers.  Otherwise some of the tests must fail.
 
 Please file any issues or suggestions on [on GitHub](https://github.com/waveclaw/puppet-subscription_manager/issues)
 
+Suggestions without code may be ignored. Code without any tests _will_ be rejected.
+
 ### Guidelines
 
 Please follow the example42 development guidelines.
@@ -552,12 +554,12 @@ Pull requests and bug reports via GitHub are welcomed.
 
 For Pull Requests please:
 
-* puppet-lint code
+* puppet-lint code (yes, some of the community standards are inane)
 * provide rSpec tests if possible: code that sets tests on fire won't be merged
 * Follow the module style naming standards
 * Add your name to CONTRIBUTORS if you are new
 
-For a bug report please include or link:
+For a bug report please include or link as much as you can:
 
 * Code that triggers the error
 * Output of ```facter -p``` from the system where the error occurs
@@ -568,7 +570,7 @@ For a bug report please include or link:
 - What actually happened?
 - When did it start happening?
 - Is it _still_ happening?
-- Does it happen all the time?
+- Does it happen all the time or randomly?
 * Any other information needed to understand the error
 
 None of this guarantees a solution. At the least a good bug report can warn others.
