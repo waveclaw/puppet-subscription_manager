@@ -40,6 +40,9 @@ In Satellite 6.5.x and later, the remote command execution replaces this feature
 This uses the ssh service as the remove agent and does require configuration of
 both the user and ssh configuration.  This is a topic well discussed [elsewhere](https://www.ssh.org).
 
+In Satellite 6.10.x and later, there is a 'Run Puppet Once' job.  This uses the
+Remote Execution feature, typically SSH as a special user plus sudo to root.
+
 ### Terminology
 
 Due to various terminology differences between RHN Satellite, the upstream
@@ -51,9 +54,14 @@ confusing.
 * Satellite, unlike Katello, will require attachment to subscriptions
   whenever paid-for RedHat Network Channels are made available through a
   repository view.   This module does not manage those certificates.
+* If you are using Simple Content Access to manage your RedHat subscriptions, most
+  of the attachment process will just be ignored.  You are managing your licenses
+  elsewhere so should not rely upon information from this module to track those.
+  Under Simple Content Access, this module will continue to use pools but they
+  really don't matter to you or your licensing scheme.
 * RedHat SAM is an install-able RedHat supported version of the Candlepin service
   which uses "candlepin-cert-consumer-" package name instead of of the package
-  name "katello-ca-consumer-".  Options are provided to select this.
+  name "katello-ca-consumer-".  Options are provided to select which you want.
 
 ## License
 
@@ -83,11 +91,23 @@ module will be interested in the native types for customization.
 Some custom facts are provided.
 
 A family of facts, similar to the rhsm\_repo type, summarize the subscription
-state. These can return lists of data under facter 2.0.
+state. See [Terminology](#Terminology) for caveats. These can return lists.
+
+Summary of Repository state
 * rhsm\_available\_repos
 * rhsm\_disabled\_repos
 * rhsm\_enabled\_repos
-* rhsm\_syspurpose
+
+Summary of licensing state
+* rhsm\_available\_pools
+* rhsm\_disabled\_pools
+* rhsm\_enabled\_pools
+
+Generic information about the subscription to Satellite
+* rhsm\_environment
+* rhsm\_syspurpose (optional)
+
+##### Notes on caching
 
 The repo facts make use of a simple caching mechanism using the facts.d
 directory to limit connections to the Katello or Satellite server.  Like the
@@ -100,6 +120,8 @@ The cache files should appear as normal YAML format external fact files. These
 facts may actually linger on after removing the rhsm module itself.  Beware that
 the location of external fact files is different between Puppet and facter for
 older versions of Puppet like 2 or 3 and facter 1.x.
+
+##### Advanced SSL/TLS
 
 The certificate authority is part of the rhsm_config type but is very useful for
 operations in involving subscription management.  This differs slightly between
