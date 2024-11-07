@@ -241,7 +241,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     opts = []
     unless data.nil?
       data.split("\n").each do |line|
-        m = line.match(%r{^\s+--([a-z_0-9]+\.[a-z_0-9]+) [A-Z]+.*})
+        m = line.match(%r{^\s+--([a-z_0-9]+\.[a-z_0-9]+)[=\s][A-Z]+.*})
         unless m.nil?
           opts.push m[1]
         end
