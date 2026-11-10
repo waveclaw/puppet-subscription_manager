@@ -16,11 +16,9 @@
 # Copyright 2016 JD Powell <waveclaw@waveclaw.net>
 #
 class subscription_manager::service {
-
-  service { $::subscription_manager::service_name:
-    ensure     => $::subscription_manager::service_status,
+  service { $subscription_manager::service_name:
+    ensure     => $subscription_manager::service_status,
     hasstatus  => true,
     hasrestart => true,
   }
-
 }

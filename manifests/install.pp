@@ -16,7 +16,6 @@
 # Copyright 2016 JD Powell <waveclaw@waveclaw.net>
 #
 class subscription_manager::install {
-
   # the files for the Facts
   $_file_defaults = {
     'owner' => 0,
@@ -33,24 +32,23 @@ class subscription_manager::install {
   }
 
   # any generic passed into the model
-  package { $::subscription_manager::package_names:
+  package { $subscription_manager::package_names:
     ensure => present,
   }
 
-
-  if $::subscription_manager::repo != '' and
-    $::subscription_manager::repo != undef {
-      contain $::subscription_manager::repo
-      Class[ $::subscription_manager::repo ]
-      -> Package[ $::subscription_manager::package_names ]
+  if $subscription_manager::repo != '' and
+  $subscription_manager::repo != undef {
+    contain $subscription_manager::repo
+    Class[$subscription_manager::repo]
+    -> Package[$subscription_manager::package_names]
   }
 
-  if $::subscription_manager::ca_package {
+  if $subscription_manager::ca_package {
     # shorten several really long names
     $_ca       = $::facts['rhsm_ca_name']
     $_id       = $::facts['rhsm_identity']
-    $_prefix   = $::subscription_manager::ca_package_prefix
-    $_hostname = $::subscription_manager::server_hostname
+    $_prefix   = $subscription_manager::ca_package_prefix
+    $_hostname = $subscription_manager::server_hostname
     $_pkg      = "${_prefix}${_hostname}" # 80-column puppet-lint limit workaround
 
     # four scenarios
@@ -61,8 +59,7 @@ class subscription_manager::install {
     package { $_pkg:
       ensure   => 'present',
       provider => 'rpm',
-      source   =>
-    "http://${_hostname}/pub/${_prefix}latest.noarch.rpm",
+      source   => "http://${_hostname}/pub/${_prefix}latest.noarch.rpm",
     }
 
     # II. registered to correct server
@@ -91,13 +88,13 @@ class subscription_manager::install {
     #  - reinstall (this requires a pupetlabs-transition)
     # This case is meant to prevent extra regitrations on pre-6.2 Satellite
     if ((($_id == '' or $_id == undef) and $_ca == $_hostname) or
-      ($_ca == $_hostname and $::subscription_manager::force == true )) {
+    ($_ca == $_hostname and $subscription_manager::force == true )) {
       $_attributes = {
         'ensure'          => 'absent',
         'provider'        => 'rpm',
-        'install_options' => [ '--force', '--nodeps' ],
+        'install_options' => ['--force', '--nodeps'],
       }
-      transition {'purge-bad-rhsm_ca-package':
+      transition { 'purge-bad-rhsm_ca-package':
         resource   => Package[$_pkg],
         attributes => $_attributes,
         prior_to   => Package[$_pkg],
