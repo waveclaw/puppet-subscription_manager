@@ -11,6 +11,10 @@
 #   Name of packages to install. Defaults to subscrition-manager to get minimal
 #   client support working.
 #
+# @param ca_package are you providing a certificate authority file
+# * `ca_package`
+#   Normally true for Katello or Satellite.  Set to false for RHN.
+#
 # @param ca_package_prefix prefix for the certname of the CA consumer
 # * `ca_package_prefix`
 #   Override the prefix of the package name for CA consumer. This is needed to
@@ -120,32 +124,31 @@
 # Copyright 2015 Gaël Chamoulaud <gchamoul@redhat.com>
 #
 class subscription_manager (
+  Variant[String, Class] $repo,
+  Optional[String] $username,
+  Optional[String] $password,
+  String $activationkey,
+  String $pool,
   Array[String] $package_names = ['subscription-manager'],
   Boolean $ca_package = true,
   String $ca_package_prefix = 'katello-ca-consumer-',
   String $service_name = 'goferd',
   Enum['running','stopped', 'disabled', 'enabled'] $service_status = 'running',
   String $server_hostname = 'subscription.rhn.redhat.com',
-  String $username = '',
-  String $password = '',
-  String $activationkey = '',
-  String $pool = '',
   String $lifecycleenv = 'library',
   Variant[String, Boolean, Enum['yes','no']] $autosubscribe = false,
   Variant[String, Boolean, Enum['yes','no']] $force = false,
   String $org = 'Default_Organization',
-  Variant[String, Class] $repo = '',
   Hash $config_hash = {},
-  Optional[String] $servicelevel = 'Standard',
-  Optional[String] $release = undef,
+  String $servicelevel = 'Standard',
+  String $release = Undef,
 ) {
-
   # limit use to supported Operating Systems
   case $::facts['os']['family'] {
-    'RedHat', 'CentOS', 'Scientific', 'Fedora': {
-      class { '::subscription_manager::install': }
-      -> class { '::subscription_manager::config': }
-      -> Class['::subscription_manager']
+    'RedHat', 'CentOS', 'Rocky', 'Scientific', 'Fedora': {
+      class { 'subscription_manager::install': }
+      -> class { 'subscription_manager::config': }
+      -> Class['subscription_manager']
     }
     default: {
       notify { "${::facts['os']['description']} not supported by subscription_manager": }
