@@ -69,7 +69,7 @@ Apache License, Version 2.0. Read the LICENSE file for details of the licensing.
 
 ## Requirements
 * [waveclaw-facter_cacheable](https://forge.puppet.com/waveclaw/facter_cacheable)
-* [puppetlabs-transition](https://forge.puppet.com/puppetlabs/transition) [on GitHub](https://github.com/puppetlabs/puppetlabs-transition)
+* [puppetlabs-transition](https://forge.puppet.com/puppetlabs/transition) like [on GitHub](https://github.com/puppetlabs/puppetlabs-transition)
 * A good source for subscription-manager and its dependencies like [EPEL](http://repos.fedorapeople.org/repos/candlepin/subscription-manager/epel-subscription-manager.repo).
 * [python-syspurpose](https://ftp.riken.jp/Linux/cern/centos/7.4.1708/updates/x86_64/repoview/python-syspurpose.html) or python3-syspurpose for _optional_ reporting of system purpose text.
 
