@@ -1,7 +1,9 @@
 ---
 require:
-- rubocop-performance
-- rubocop-rspec
+  - rubocop-rspec
+  - rubocop-performance
+  - rubocop-factory_bot
+  - rubocop-rspec_rails
 AllCops:
   NewCops: enable
   DisplayCopNames: true
@@ -116,10 +118,10 @@ Bundler/GemFilename:
   Enabled: false
 Bundler/InsecureProtocolSource:
   Enabled: false
-Capybara/CurrentPathExpectation:
-  Enabled: false
-Capybara/VisibilityMatcher:
-  Enabled: false
+#Capybara/CurrentPathExpectation:
+#  Enabled: false
+#Capybara/VisibilityMatcher:
+#  Enabled: false
 Gemspec/DuplicatedAssignment:
   Enabled: false
 Gemspec/OrderedDependencies:
@@ -294,7 +296,7 @@ Performance/UriDefaultParser:
   Enabled: false
 RSpec/Be:
   Enabled: false
-RSpec/Capybara/FeatureMethods:
+RSpec/Dialect:
   Enabled: false
 RSpec/ContainExactly:
   Enabled: false
@@ -490,16 +492,16 @@ Style/TrailingMethodEndStatement:
   Enabled: false
 Style/UnpackFirst:
   Enabled: false
-Capybara/MatchStyle:
-  Enabled: false
-Capybara/NegationMatcher:
-  Enabled: false
-Capybara/SpecificActions:
-  Enabled: false
-Capybara/SpecificFinders:
-  Enabled: false
-Capybara/SpecificMatcher:
-  Enabled: false
+#Capybara/MatchStyle:
+#  Enabled: false
+#Capybara/NegationMatcher:
+#  Enabled: false
+#Capybara/SpecificActions:
+#  Enabled: false
+#Capybara/SpecificFinders:
+#  Enabled: false
+#Capybara/SpecificMatcher:
+#  Enabled: false
 Gemspec/DeprecatedAttributeAssignment:
   Enabled: false
 Gemspec/DevelopmentDependencies:
