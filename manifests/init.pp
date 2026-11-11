@@ -14,6 +14,7 @@
 # @param ca_package are you providing a certificate authority file
 # * `ca_package`
 #   Normally true for Katello or Satellite.  Set to false for RHN.
+#   Causes the provider to ignore the custom Certificate Arthority package.
 #
 # @param ca_package_prefix prefix for the certname of the CA consumer
 # * `ca_package_prefix`
