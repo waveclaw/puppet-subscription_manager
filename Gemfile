@@ -30,23 +30,16 @@ group :development do
   gem "pry", '~> 0.10',                          require: false
   gem "simplecov-console", '~> 0.9',             require: false
   gem "puppet-debugger", '~> 1.0',               require: false
-  gem "rubocop", '~> 1.50.0',                    require: false
+  gem "rubocop", '> 1.50.0',                    require: false
   gem "rubocop-performance", '= 1.16.0',         require: false
-  gem "rubocop-rspec", '= 2.19.0',               require: false
+  gem "rubocop-rspec", '= 3.10.2',               require: false
+  gem "rubocop-capybara", ">=3.1.0",             require: false
+  gem 'rubocop-rspec_rails',                     require: false
+  gem 'rubocop-factory_bot',                     require: false
   gem "rb-readline", '= 0.5.5',                  require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "rexml", '>= 3.0.0', '< 3.2.7',            require: false
 end
-group :release_prep do
-  gem "puppet-strings", '~> 4.0',         require: false
-  gem "puppetlabs_spec_helper", '~> 7.0', require: false
-  gem 'guard-rake',               :require => false
-  gem 'overcommit', '>= 0.39.1',  :require => false
-  gem 'modulesync',               :require => false
-  gem 'rubocop',                  :require => false
-  gem 'rubocop-performance',      :require => false
-  gem 'rubocop-rspec_rails',      :require => false
-  gem 'rubocop-factory_bot',      :require => false
-end
+
 group :system_tests do
   gem "puppet_litmus", '~> 1.0',   require: false, platforms: [:ruby, :x64_mingw]
   gem "CFPropertyList", '< 3.0.7', require: false, platforms: [:mswin, :mingw, :x64_mingw]
@@ -83,3 +76,4 @@ extra_gemfiles.each do |gemfile|
   end
 end
 # vim: syntax=ruby
+
