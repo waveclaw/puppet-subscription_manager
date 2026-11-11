@@ -48,9 +48,7 @@ EOF
         end
       end
     rescue UncaughtThrowError, Facter::Core::Execution::ExecutionFailure => e
-      unless $ERROR_INFO.include?('This system is not yet registered')
-        Facter.debug("#{e.backtrace[0]}: #{$ERROR_INFO}.")
-      end
+      Facter.debug("#{e.backtrace[0]}: #{$ERROR_INFO}.")
     end
     value
   end

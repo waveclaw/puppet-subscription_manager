@@ -42,15 +42,14 @@ EOF
         end
       end
     rescue UncaughtThrowError, Facter::Core::Execution::ExecutionFailure => e
-      unless $ERROR_INFO.include?('This system is not yet registered')
-        Facter.debug("#{e.backtrace[0]}: #{$ERROR_INFO}.")
-      end
+      Facter.debug("#{e.backtrace[0]}: #{$ERROR_INFO}.")
     end
     value
   end
 end
 
 # TODO: massive refactoring opportunity with facter_cacheable
+# ALSO: confine { Facter::Core::Execution.which('/u/s/sub-mgr') }
 if File.exist? '/usr/sbin/subscription-manager'
   repos = Facter::Util::RhsmAvailableRepos
   if Puppet.features.facter_cacheable?
