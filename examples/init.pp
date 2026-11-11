@@ -9,4 +9,4 @@
 # Learn more about module testing here:
 # http://docs.puppetlabs.com/guides/tests_smoke.html
 #
-include ::subscription_manager
+include subscription_manager
