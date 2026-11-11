@@ -3,10 +3,10 @@
 require 'simplecov'
 
 SimpleCov.start do
-  add_filter '/spec/'
+  skip '/spec/'
   # Exclude bundled Gems in typical locations
-  add_filter '/.vendor/'
-  add_filter '/.bundle/'
+  skip '/.vendor/'
+  skip '/.bundle/'
 end
 
 ARGV.clear
