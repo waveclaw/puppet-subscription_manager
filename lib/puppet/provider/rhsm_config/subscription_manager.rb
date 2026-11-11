@@ -33,14 +33,14 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
       config = :remove
     end
     cmds = build_config_parameters(config)
-    if (cmds[:remove]).nil?
+    if cmds[:remove].nil?
       Puppet.debug('rhsm.flush: given nothing to remove.')
     else
       cmds[:remove].each do |parameter|
         subscription_manager('config', parameter)
       end
     end
-    if (cmds[:apply]).nil?
+    if cmds[:apply].nil?
       Puppet.debug('rhsm.flush: given nothing to configure.')
     else
       cmds[:apply].each do |cmd|
@@ -78,7 +78,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
 
   def self.instances
     config = on_disk_configuration
-    if config.nil? || config == ({})
+    if config.nil? || config == {}
       []
     else
       [new(config)]
@@ -87,7 +87,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
 
   def self.prefetch(resources)
     x = instances
-    resources.keys.each do |name|
+    resources.each_key do |name|
       provider = x.find { |i| i.name == name }
       resources[name].provider = provider unless provider.nil?
     end
@@ -103,7 +103,7 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     conf = {}
     data = subscription_manager(['config', '--list'])
     conf = ini_parse(data) unless data.nil?
-    unless conf.nil? || conf == ({}) || !conf.is_a?(Hash)
+    unless conf.nil? || conf == {} || !conf.is_a?(Hash)
       conf[:name] = '/etc/rhsm/rhsm.conf' # Puppet::Type.type(:rhsm_config).$default_filename
       conf[:provider] = :subscription_manager
       conf[:ensure] = :present
@@ -121,14 +121,14 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     # config --list command typically has a variable expansion for repo_ca_cert
     value = nil
     begin
-      on_disk = File.open(configname)
-      on_disk.readlines.each do |line|
-        m = line.match(%r{[^#]*repo_ca_cert = (.+)})
-        unless m.nil?
-          value = m[1].strip
+      File.open(configname) do |on_disk|
+        on_disk.readlines.each do |line|
+          m = line.match(%r{[^#]*repo_ca_cert = (.+)})
+          unless m.nil?
+            value = m[1].strip
+          end
         end
       end
-      on_disk.close
     rescue StandardError => e
       Puppet.debug("on_disk_configuration failed to parse repo_ca_cert: #{e}")
     end
@@ -225,13 +225,12 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
 
   # Obtain the list of parameters from the config help subcommand
   # @return Array(String) the options you can set though the cmd
-  def config_help_options()
+  def config_help_options
     data = subscription_manager(['config', '--help'])
     opts = conf_help_parse(data) unless data.nil?
-    unless opts.nil?
-     Puppet.debug("Valid config parameters were #{opts}")
-     opts
-   end
+    return if opts.nil?
+    Puppet.debug("Valid config parameters were #{opts}")
+    opts
   end
 
   # Parse the output of a subscription_mnager config command
@@ -239,12 +238,10 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   # @return Array(String) a list of section.option that can be set
   def conf_help_parse(data)
     opts = []
-    unless data.nil?
-      data.split("\n").each do |line|
-        m = line.match(%r{^\s+--([a-z_0-9]+\.[a-z_0-9]+) [A-Z]+.*})
-        unless m.nil?
-          opts.push m[1]
-        end
+    data&.split("\n")&.each do |line|
+      m = line.match(%r{^\s+--([a-z_0-9]+\.[a-z_0-9]+) [A-Z]+.*})
+      unless m.nil?
+        opts.push m[1]
       end
     end
     opts
@@ -258,15 +255,13 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
   def build_config_parameters(removal)
     setparams = []
     removeparams = []
-    cmdparams = config_help_options()
+    cmdparams = config_help_options
     # a map of parameter:section hence the 'reversed' nature of the bellow
     options = Puppet::Type.type(:rhsm_config).binary_options.merge(
       Puppet::Type.type(:rhsm_config).text_options,
     )
     # filter out praramters from properties
-    arguments = @property_hash.select do |opt, value|
-      options.keys.include?(opt)
-    end
+    arguments = @property_hash.slice(*options.keys)
     Puppet.debug("Updates to subscription configuration are '#{arguments}'")
     arguments.each do |opt, value|
       section = options[opt]

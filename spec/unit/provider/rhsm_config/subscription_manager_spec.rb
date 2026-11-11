@@ -163,13 +163,13 @@ optional arguments:
                         Section: server, Name: insecure
   EOH
 
- help_values = [
-  "server.proxy_scheme",
-   "server.server_timeout",
-   "server.proxy_hostname",
-   "server.no_proxy",
-   "server.insecure"
- ]
+  help_values = [
+    'server.proxy_scheme',
+    'server.server_timeout',
+    'server.proxy_hostname',
+    'server.no_proxy',
+    'server.insecure',
+  ]
 
   let(:resource) do
     Puppet::Type.type(:rhsm_config).new(properties)
@@ -196,7 +196,7 @@ optional arguments:
   end
 
   [:create, :destroy].each do |action|
-    it "should respond to #{action}" do
+    it "responds to #{action}" do
       expect(provider).to respond_to(action)
     end
   end
@@ -204,8 +204,8 @@ optional arguments:
   describe 'self.instances' do
     it { expect(provider.class).to respond_to(:instances) }
     context 'for expected values of properties' do
-      properties.keys.each do |key|
-        it "should be able to set the #{key} property" do
+      properties.each_key do |key|
+        it "is able to set the #{key} property" do
           expect(provider.class).to receive(:on_disk_configuration).and_return(
             name: title, provider: provider, ensure: :present,
           )
@@ -271,8 +271,8 @@ optional arguments:
       res[:server_port] = 8080
       expect(res.provider).to receive(:exists?).and_call_original
       expect(res.provider).to receive(:config_help_options).and_return([
-        'server.port','server.insecure'
-        ])
+                                                                         'server.port', 'server.insecure'
+                                                                       ])
       expect(res.provider).to receive(:build_config_parameters).with(:remove).and_call_original
       expect(res.provider).to receive(:subscription_manager).with(
         'config', '--remove=server.insecure'
@@ -350,7 +350,7 @@ optional arguments:
     it 'returns nothing for garbage' do
       expect(provider.class.ini_parse('asdlk;j12349567[[]]')).to eq({})
     end
-    properties.keys.each do |key|
+    properties.each_key do |key|
       next if [:rhsm_repo_ca_cert, :name, :provider].include? key
       it "parse the #{key} property" do
         expect(provider.class.ini_parse(raw_data)[key]).to eq(raw_values[key])
@@ -490,7 +490,7 @@ optional arguments:
         provider: provider, name: title,
       )
       expect(provider.class).to receive(:subscription_manager).with(['config', '--help']).and_return('')
-      expect(resource.provider.config_help_options()).to eq([])
+      expect(resource.provider.config_help_options).to eq([])
     end
     it 'returns expected values for a given configuration' do
       resource = Puppet::Type.type(:rhsm_config).new(
@@ -498,7 +498,7 @@ optional arguments:
       )
       expect(provider.class).to receive(:subscription_manager).with(['config', '--help']).and_return(raw_help_data)
       expect(resource.provider).to receive(:conf_help_parse).and_return(help_values)
-      expect(resource.provider.config_help_options()).to eq(help_values)
+      expect(resource.provider.config_help_options).to eq(help_values)
     end
   end
 
@@ -549,8 +549,8 @@ optional arguments:
       expect(resource.provider).to receive(:resolve_value).with(:remove, :server_port, '').and_return(nil)
       expect(resource.provider).to receive(:resolve_value).with(:remove, :rhsm_ca_cert_dir, '').and_return(nil)
       expect(resource.provider).to receive(:config_help_options).and_return([
-        'server.insecure', 'server.port', 'rhsm.ca_cert_dir'
-        ])
+                                                                              'server.insecure', 'server.port', 'rhsm.ca_cert_dir'
+                                                                            ])
       result = resource.provider.build_config_parameters(:remove)
       expect(result).not_to eq(nil)
       expect(result.keys.sort).to eq([:apply, :remove])
@@ -559,7 +559,7 @@ optional arguments:
         ['--remove=server.insecure', '--remove=server.port', '--remove=rhsm.ca_cert_dir'].sort,
       )
     end
-    properties.keys.each do |key|
+    properties.each_key do |key|
       if [:provider, :name].include? key
         # provider is irrelevant to the operating system command
         # name is always passed in as name of the type
@@ -603,14 +603,14 @@ optional arguments:
       resource.provider.set(server_port: nil)
       resource.provider.set(rhsm_ca_cert_dir: '/etc/rhsm/ca/')
       expect(resource.provider).to receive(:config_help_options).and_return([
-        'rhsm.ca_cert_dir', 'server.insecure', 'server.port'
-         ])
+                                                                              'rhsm.ca_cert_dir', 'server.insecure', 'server.port'
+                                                                            ])
       combo = resource.provider.build_config_parameters(:apply)
       apply_expected = ['--rhsm.ca_cert_dir=/etc/rhsm/ca/',
                         '--server.insecure=0'].sort
       remove_expected = ['--remove=server.port']
-      expect((combo[:apply]).sort!).to eq(apply_expected)
-      expect((combo[:remove]).sort!).to eq(remove_expected)
+      expect(combo[:apply].sort!).to eq(apply_expected)
+      expect(combo[:remove].sort!).to eq(remove_expected)
     end
     it 'correctly combines several options into a command' do
       resource = Puppet::Type.type(:rhsm_config).new(
@@ -620,16 +620,16 @@ optional arguments:
       resource.provider.set(server_port: 443)
       resource.provider.set(rhsm_ca_cert_dir: '/etc/rhsm/ca/')
       expect(resource.provider).to receive(:config_help_options).and_return([
-        'server.port','rhsm.ca_cert_dir','server.insecure'
-        ])
+                                                                              'server.port', 'rhsm.ca_cert_dir', 'server.insecure'
+                                                                            ])
       apply = resource.provider.build_config_parameters(:apply)
       expect(apply[:apply].sort!).to eq([
         '--server.port=443', '--rhsm.ca_cert_dir=/etc/rhsm/ca/', '--server.insecure=0'
       ].sort!)
       expect(apply[:remove]).to eq(nil)
       expect(resource.provider).to receive(:config_help_options).and_return([
-        'server.port', 'rhsm.ca_cert_dir', 'server.insecure'
-        ])
+                                                                              'server.port', 'rhsm.ca_cert_dir', 'server.insecure'
+                                                                            ])
       remove = resource.provider.build_config_parameters(:remove)
       expect(remove[:apply]).to eq(nil)
       expect(remove[:remove].sort!).to eq([

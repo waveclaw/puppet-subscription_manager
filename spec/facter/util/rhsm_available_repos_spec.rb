@@ -19,7 +19,7 @@ describe Facter::Util::RhsmAvailableRepos, type: :puppet_function do
       Facter.clear
     end
     it_behaves_like 'rhsm repo command',
-                    Facter::Util::RhsmAvailableRepos, 'rhsm_available_repos', :available
+                    described_class, 'rhsm_available_repos', :available
   end
 
   context 'on an unsupported platform' do
@@ -29,13 +29,13 @@ describe Facter::Util::RhsmAvailableRepos, type: :puppet_function do
       ) { false }
     end
     it 'returns nothing' do
-      expect(Facter::Util::RhsmAvailableRepos.rhsm_available_repos).to eq([])
+      expect(described_class.rhsm_available_repos).to eq([])
     end
   end
 
   context 'when caching' do
     it_behaves_like 'cached rhsm repo command',
-                    Facter::Util::RhsmAvailableRepos,
+                    described_class,
                     'rhsm_available_repos',
                     :rhsm_available_repos,
                     Facter::Util::RhsmAvailableRepos::CACHE_FILE

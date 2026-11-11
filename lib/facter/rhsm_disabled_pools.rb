@@ -56,7 +56,7 @@ EOF
       )
       value = get_output(consumed)
     rescue UncaughtThrowError, Facter::Core::Execution::ExecutionFailure => e
-      if $ERROR_INFO !~ %r{This system is not yet registered}
+      unless $ERROR_INFO.include?('This system is not yet registered')
         Facter.debug("#{e.backtrace[0]}: #{$ERROR_INFO}.")
       end
     end

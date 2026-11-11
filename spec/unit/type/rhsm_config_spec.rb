@@ -38,7 +38,7 @@ describe described_class, '#rhsm_config.type' do
     expect(described_class.attrtype(:ensure)).to eq(:property)
   end
 
-  described_class.text_options.keys.each do |params|
+  described_class.text_options.each_key do |params|
     context "for #{params}" do
       it 'is of type property' do
         expect(described_class.attrtype(params)).to eq(:property)
@@ -84,7 +84,7 @@ describe described_class, '#rhsm_config.type' do
     end
   end
 
-  described_class.binary_options.keys.each do |binary_property|
+  described_class.binary_options.each_key do |binary_property|
     context "for #{binary_property}" do
       it 'is a property' do
         expect(described_class.attrtype(binary_property)).to eq(:property)

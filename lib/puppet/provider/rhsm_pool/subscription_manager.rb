@@ -119,7 +119,7 @@ Puppet::Type.type(:rhsm_pool).provide(:subscription_manager) do
 
   def self.prefetch(resources)
     pools = instances
-    resources.keys.each do |id|
+    resources.each_key do |id|
       provider = pools.find { |pool| pool.id == id }
       resources[id].provider = provider unless provider.nil?
     end

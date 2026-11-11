@@ -96,7 +96,7 @@ describe provider_class, '#rhsm_register.provider' do
   end
 
   [:create, :destroy, :exists?, :flush].each do |action|
-    it "should respond to #{action}" do
+    it "responds to #{action}" do
       expect(provider).to respond_to(action)
     end
   end
@@ -133,9 +133,9 @@ describe provider_class, '#rhsm_register.provider' do
     end
   end
 
-  [:instances, :prefetch].each do |action|
-    it "should respond to #{action}" do
-      expect(provider.class).to respond_to(action)
+  [:instances, :prefetch].each do |status|
+    it "responds to #{status}" do
+      expect(provider.class).to respond_to(status)
     end
   end
 
@@ -186,7 +186,7 @@ describe provider_class, '#rhsm_register.provider' do
         name: title,
         ensure: :present,
         activationkey: fake_key,
-        #:org => 'foo',
+        # :org => 'foo',
         servicelevel: 'STANDARD',
         autosubscribe: true,
         provider: :subscription_manager,

@@ -11,7 +11,7 @@
 
 # stub facter_cacheable
 module Facter::Util::FacterCacheable
-  class <<self
+  class << self
     def cached?; end
   end
 end
@@ -118,9 +118,9 @@ shared_examples_for 'rhsm repo command' do |mod, function, label|
     ) { throw Facter::Core::Execution::ExecutionFailure }
     expect(mod.send(function)).to eq([])
   end
-  repo_cases.keys.each do |key|
+  repo_cases.each_key do |key|
     desc = repo_cases[key][:desc]
-    it "should return results for #{desc}" do
+    it "returns results for #{desc}" do
       expect(Facter::Core::Execution).to receive(:execute).with(
         '/usr/sbin/subscription-manager repos',
         on_fail: :raise,

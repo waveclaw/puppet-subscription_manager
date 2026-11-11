@@ -36,25 +36,25 @@ describe Facter::Util::RhsmEnvironment, type: :fact do
     expect(Facter::Core::Execution).to receive(:execute)
       .with('/usr/sbin/subscription-manager environment',
             on_fail: Facter::Core::Execution::ExecutionFailure).and_return(raw_data1)
-    expect(Facter::Util::RhsmEnvironment.rhsm_environment).to eq(expected_data)
+    expect(described_class.rhsm_environment).to eq(expected_data)
   end
   it 'returns the expected data for new style' do
     expect(Facter::Core::Execution).to receive(:execute).and_return(raw_data2)
-    expect(Facter::Util::RhsmEnvironment.rhsm_environment).to eq(expected_data)
+    expect(described_class.rhsm_environment).to eq(expected_data)
   end
   it 'returns the nothing for no data' do
     expect(Facter::Core::Execution).to receive(:execute).and_return('')
-    expect(Facter::Util::RhsmEnvironment.rhsm_environment).to eq(nil)
+    expect(described_class.rhsm_environment).to eq(nil)
   end
   it 'returns the nothing for no command' do
     expect(Facter::Core::Execution).to receive(:execute).and_return(nil)
-    expect(Facter::Util::RhsmEnvironment.rhsm_environment).to eq(nil)
+    expect(described_class.rhsm_environment).to eq(nil)
   end
   it 'returns the nothing for an error' do
     expect(Facter::Core::Execution).to receive(:execute) {
       throw Facter::Core::Execution::ExecutionFailure
     }
     expect(Facter).to receive(:debug)
-    expect(Facter::Util::RhsmEnvironment.rhsm_environment).to eq(nil)
+    expect(described_class.rhsm_environment).to eq(nil)
   end
 end

@@ -32,7 +32,7 @@ describe Facter::Util::RhsmCaName, type: :fact do
     it 'returns nothing when there is an error' do
       expect(File).to receive(:exist?).with(cafile).and_return(true)
       expect(File).to receive(:open).with(cafile, 'r') { throw(IOError) }
-      expect(Facter::Util::RhsmCaName.rhsm_ca_name(cafile)).to eq(nil)
+      expect(described_class.rhsm_ca_name(cafile)).to eq(nil)
     end
     it 'returns the expected domain from normal Certificate subjects' do
       expect(File).to receive(:exist?).with(cafile).and_return(true)
@@ -41,14 +41,14 @@ describe Facter::Util::RhsmCaName, type: :fact do
       expect(cert).to receive(:subject).and_return(
         '/C=US/ST=Main/L=Hobokeen/O=Your Mama/CN=example.net',
       )
-      expect(Facter::Util::RhsmCaName.rhsm_ca_name(cafile)).to eq('example.net')
+      expect(described_class.rhsm_ca_name(cafile)).to eq('example.net')
     end
     it 'returns nothing for bad Certificate subjects' do
       expect(File).to receive(:exist?).with(cafile).and_return(true)
       expect(File).to receive(:open).with(cafile, 'r').and_return(fake_cert)
       expect(OpenSSL::X509::Certificate).to receive(:new).and_return(cert)
       expect(cert).to receive(:subject).and_return('random garbage')
-      expect(Facter::Util::RhsmCaName.rhsm_ca_name(cafile)).to eq(nil)
+      expect(described_class.rhsm_ca_name(cafile)).to eq(nil)
     end
   end
 
@@ -61,7 +61,7 @@ describe Facter::Util::RhsmCaName, type: :fact do
     end
   end
 
-  cafiles.keys.each do |key|
+  cafiles.each_key do |key|
     cafile = cafiles[key]
     context "with cafile #{cafile}" do
       it_behaves_like 'on a supported os', cafile

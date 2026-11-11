@@ -11,7 +11,7 @@
 
 # stub facter_cacheable
 module Facter::Util::FacterCacheable
-  class <<self
+  class << self
     def cached?; end
   end
 end
@@ -208,14 +208,14 @@ shared_examples_for 'consumed pools' do |mod, function, label|
     expect(Facter).to receive(:debug)
     expect(mod.send(function)).to eq([])
   end
-  consumed_cases.keys.each do |key|
+  consumed_cases.each_key do |key|
     desc = consumed_cases[key][:desc]
-    it "should process with get_input #{desc}" do
+    it "processes with get_input #{desc}" do
       expect(mod.send('get_output', consumed_cases[key][:data])).to eq(
         consumed_cases[key][:expected][label],
       )
     end
-    it "should return results for #{desc}" do
+    it "returns results for #{desc}" do
       expect(Facter::Core::Execution).to receive(:execute).with(
         '/usr/sbin/subscription-manager list --consumed',
         on_fail: :raise,

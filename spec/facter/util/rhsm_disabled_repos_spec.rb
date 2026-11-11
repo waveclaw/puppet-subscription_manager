@@ -18,7 +18,7 @@ describe Facter::Util::RhsmDisabledRepos, type: :fact do
       Facter.clear
     end
     it_behaves_like 'rhsm repo command',
-                    Facter::Util::RhsmDisabledRepos, 'rhsm_disabled_repos', :disabled
+                    described_class, 'rhsm_disabled_repos', :disabled
   end
 
   context 'on an unsupported platform' do
@@ -28,7 +28,7 @@ describe Facter::Util::RhsmDisabledRepos, type: :fact do
       ) { false }
     end
     it 'returns nothing' do
-      expect(Facter::Util::RhsmDisabledRepos.rhsm_disabled_repos).to eq([])
+      expect(described_class.rhsm_disabled_repos).to eq([])
     end
   end
 
@@ -37,7 +37,7 @@ describe Facter::Util::RhsmDisabledRepos, type: :fact do
       Facter.clear
     end
     it_behaves_like 'cached rhsm repo command',
-                    Facter::Util::RhsmDisabledRepos,
+                    described_class,
                     'rhsm_disabled_repos',
                     :rhsm_disabled_repos,
                     '/var/cache/rhsm/disabled_repos.yaml'

@@ -44,7 +44,7 @@ Puppet::Type.type(:rhsm_repo).provide(:subscription_manager) do
 
   def self.prefetch(resources)
     repos = instances
-    resources.keys.each do |name|
+    resources.each_key do |name|
       provider = repos.find { |repo| repo.name == name }
       if provider
         resources[name].provider = provider

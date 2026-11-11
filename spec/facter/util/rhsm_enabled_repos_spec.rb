@@ -19,7 +19,7 @@ describe Facter::Util::RhsmEnabledRepos, type: :fact do
       Facter.clear
     end
     it_behaves_like 'rhsm repo command',
-                    Facter::Util::RhsmEnabledRepos, 'rhsm_enabled_repos', :enabled
+                    described_class, 'rhsm_enabled_repos', :enabled
   end
 
   context 'on an unsupported platform' do
@@ -29,7 +29,7 @@ describe Facter::Util::RhsmEnabledRepos, type: :fact do
       ) { false }
     end
     it 'returns nothing' do
-      expect(Facter::Util::RhsmEnabledRepos.rhsm_enabled_repos).to eq([])
+      expect(described_class.rhsm_enabled_repos).to eq([])
     end
   end
 
@@ -38,7 +38,7 @@ describe Facter::Util::RhsmEnabledRepos, type: :fact do
       Facter.clear
     end
     it_behaves_like 'cached rhsm repo command',
-                    Facter::Util::RhsmEnabledRepos,
+                    described_class,
                     'rhsm_enabled_repos',
                     :rhsm_enabled_repos,
                     '/var/cache/rhsm/enabled_repos.yaml'

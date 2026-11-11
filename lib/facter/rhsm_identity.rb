@@ -35,15 +35,13 @@ EOF
         '/usr/sbin/subscription-manager identity',
         on_fail: Facter::Core::Execution::ExecutionFailure,
       )
-      unless output.nil?
-        output.split("\n").each do |line|
-          if line =~ %r{.* identity(?: is)?: (\S{8}\-\S{4}\-\S{4}\-\S{4}\-\S{12}).*}
-            value = Regexp.last_match(1)
-          end
+      output&.split("\n")&.each do |line|
+        if line =~ %r{.* identity(?: is)?: (\S{8}\-\S{4}\-\S{4}\-\S{4}\-\S{12}).*}
+          value = Regexp.last_match(1)
         end
       end
     rescue UncaughtThrowError, Facter::Core::Execution::ExecutionFailure => e
-      if $ERROR_INFO !~ %r{This system is not yet registered}
+      unless $ERROR_INFO.include?('This system is not yet registered')
         Facter.debug("#{e.backtrace[0]}: #{$ERROR_INFO}.")
       end
     end

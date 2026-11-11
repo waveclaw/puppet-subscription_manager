@@ -40,7 +40,7 @@ Puppet::Type.type(:rhsm_override).provide(:subscription_manager) do
 
   def self.prefetch(resources)
     repos = instances
-    resources.keys.each do |name|
+    resources.each_key do |name|
       provider = repos.find { |repo| repo.name == name }
       resources[name].provider = provider unless provider.nil?
     end
@@ -79,7 +79,9 @@ Puppet::Type.type(:rhsm_override).provide(:subscription_manager) do
   def self.content_overrides
     repo_file = '/var/lib/rhsm/cache/content_overrides.json'
     if File.exist?(repo_file)
-      File.open(repo_file).read
+      File.open(repo_file) do |repo|
+        repo.read
+      end
     else
       '[]'
     end
@@ -89,11 +91,9 @@ Puppet::Type.type(:rhsm_override).provide(:subscription_manager) do
   # @return String the content overrides
   # @api private
   def self.read_cache
-    repo_instances = []
     repos = JSON.parse(content_overrides)
-    repos.each do |repo|
-      repo_instances.push(parse_cache_repo(repo))
+    repos.map do |repo|
+      parse_cache_repo(repo)
     end
-    repo_instances
   end
 end

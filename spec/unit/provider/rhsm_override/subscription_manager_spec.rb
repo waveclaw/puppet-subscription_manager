@@ -76,7 +76,7 @@ EOT
   describe 'self.instances' do
     it { expect(provider.class).to respond_to(:instances) }
     context 'should parse the expected values for properties' do
-      properties.keys.each do |key|
+      properties.each_key do |key|
         it "such as the #{key} property" do
           expect(provider.class).to receive(:read_cache) { [properties] }
           pools = provider.class.instances

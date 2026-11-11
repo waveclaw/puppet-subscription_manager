@@ -78,7 +78,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     if exists?
       if identity.nil? || identity == :absent
         # no valid registration
-      elsif @property_hash[:name] && @property_hash[:name] != (@resource[:name])
+      elsif @property_hash[:name] && @property_hash[:name] != @resource[:name]
         # changing servers
         unregister
       elsif (@property_hash[:force].nil? || @property_hash[:force] == :absent ||
@@ -112,7 +112,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     registration = registration_settings
     # test for == :absent is to handle a specific Ruby issue for Puppet 4
     # NOT to test if the :ensure field is :absent
-    if registration.nil? || registration == :absent || registration == ({})
+    if registration.nil? || registration == :absent || registration == {}
       []
     else
       [new(registration)]
@@ -120,7 +120,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   end
 
   def self.prefetch(resources)
-    resources.keys.each do |name|
+    resources.each_key do |name|
       provider = instances.find { |instance| instance.name == name }
       if provider
         resources[name].provider = provider
@@ -159,7 +159,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
   # @param [string] item 1
   # @param [string] item 2
   # @api private
-  def bothset(a, b)
+  def bothset?(a, b)
     !(a.nil? || a == :absent || a == '') && !(b.nil? || b == :absent || b == '')
   end
 
@@ -174,7 +174,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
     if (user.nil? && key.nil?) || (user == :absent && key == :absent) || (user == '' && key == '')
       raise("Need an activation key or a username and password. Was given user '#{user}' and key '#{key}'")
     end
-    if bothset(user, key)
+    if bothset?(user, key)
       raise("Only provide an activation key or username and password not both. Was given user '#{user}' and key '#{key}'")
     end
     if @resource[:org].nil? || @resource[:org] == :absent
@@ -192,7 +192,7 @@ Puppet::Type.type(:rhsm_register).provide(:subscription_manager) do
       params << '--activationkey' << key
       # no autosubscribe with keys, see attach step instead
     end
-    if (!@resource[:lifecycleenv].nil? && !@resource[:lifecycleenv] == :absent) &&
+    if !@resource[:lifecycleenv].nil? && !@resource[:lifecycleenv] == :absent &&
        (@resource[:activationkey].nil? || @resource[:activationkey] == :absent)
       params << '--environment' << @resource[:lifecycleenv]
     end

@@ -94,14 +94,14 @@ describe provider_class, '#rhsm_pool.provider' do
   end
 
   [:create, :destroy, :exists?].each do |action|
-    it "should respond to #{action}" do
+    it "responds to #{action}" do
       expect(provider).to respond_to(action)
     end
   end
 
-  [:consumed_pools, :instances, :prefetch].each do |action|
-    it "should respond to #{action}" do
-      expect(provider.class).to respond_to(action)
+  [:consumed_pools, :instances, :prefetch].each do |topic|
+    it "responds to #{topic}" do
+      expect(provider.class).to respond_to(topic)
     end
   end
 
@@ -136,7 +136,7 @@ describe provider_class, '#rhsm_pool.provider' do
       expect(pools[1].id).to eq(title2)
     end
     context 'should parse the expected values for properties' do
-      properties.keys.each do |key|
+      properties.each_key do |key|
         it "such as the #{key} property" do
           expect(provider.class).to receive(:subscription_manager).with(
             'list', '--consumed'
