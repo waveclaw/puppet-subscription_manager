@@ -36,8 +36,13 @@ EOF
         on_fail: Facter::Core::Execution::ExecutionFailure,
       )
       output&.split("\n")&.each do |line|
-        if line =~ %r{.* environment name(?: is)?: (.+)(?:/.*)?}
+        if line =~ %r{Current environment is: (.+)/(.+)}
           value = Regexp.last_match(1)
+          break
+        end
+        if line =~ %r{environment name: (.+)/(.+)}
+          value = Regexp.last_match(1)
+          break
         end
       end
     rescue UncaughtThrowError, Facter::Core::Execution::ExecutionFailure => e

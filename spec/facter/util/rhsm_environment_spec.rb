@@ -34,7 +34,7 @@ describe Facter::Util::RhsmEnvironment, type: :fact do
   end
   it 'returns the expected data for old style return' do
     expect(Facter::Core::Execution).to receive(:execute)
-      .with('/usr/sbin/subscription-manager environment',
+      .with('/usr/sbin/subscription-manager identity',
             on_fail: Facter::Core::Execution::ExecutionFailure).and_return(raw_data1)
     expect(described_class.rhsm_environment).to eq(expected_data)
   end
