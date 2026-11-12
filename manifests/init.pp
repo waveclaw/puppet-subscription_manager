@@ -125,11 +125,11 @@
 # Copyright 2015 Gaël Chamoulaud <gchamoul@redhat.com>
 #
 class subscription_manager (
-  Variant[String, Class] $repo,
-  Optional[String] $username,
-  Optional[String] $password,
-  String $activationkey,
-  String $pool,
+  Variant[String, Class] $repo = '',
+  Optional[String] $username = '',
+  Optional[String] $password = '',
+  String $activationkey = '',
+  String $pool = '',
   Array[String] $package_names = ['subscription-manager'],
   Boolean $ca_package = true,
   String $ca_package_prefix = 'katello-ca-consumer-',
@@ -142,7 +142,7 @@ class subscription_manager (
   String $org = 'Default_Organization',
   Hash $config_hash = {},
   String $servicelevel = 'Standard',
-  String $release = Undef,
+  String $release = '',
 ) {
   # limit use to supported Operating Systems
   case $::facts['os']['family'] {

@@ -121,14 +121,14 @@ Puppet::Type.type(:rhsm_config).provide(:subscription_manager) do
     # config --list command typically has a variable expansion for repo_ca_cert
     value = nil
     begin
-      File.open(configname) do |on_disk|
-        on_disk.readlines.each do |line|
-          m = line.match(%r{[^#]*repo_ca_cert = (.+)})
-          unless m.nil?
-            value = m[1].strip
-          end
+      on_disk = File.open(configname)
+      on_disk.readlines.each do |line|
+        m = line.match(%r{[^#]*repo_ca_cert = (.+)})
+        unless m.nil?
+          value = m[1].strip
         end
       end
+      on_disk.close
     rescue StandardError => e
       Puppet.debug("on_disk_configuration failed to parse repo_ca_cert: #{e}")
     end
