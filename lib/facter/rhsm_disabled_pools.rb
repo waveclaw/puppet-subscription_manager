@@ -56,7 +56,7 @@ EOF
       )
       value = get_output(consumed)
     rescue UncaughtThrowError, Facter::Core::Execution::ExecutionFailure => e
-     Facter.debug("#{e.backtrace[0]}: #{$ERROR_INFO}.")
+      Facter.debug("#{e.backtrace[0]}: #{$ERROR_INFO}.")
     end
     value
   end
