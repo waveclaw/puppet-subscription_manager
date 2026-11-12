@@ -24,12 +24,12 @@ EOF
     ca = nil
     if File.exist?(cafile)
       begin
-        File.open(cafile, 'r') do |rawcert|
-          cert = OpenSSL::X509::Certificate.new(rawcert.read)
-          if cert.subject.to_s =~ %r{.+CN=(.+)}
+        rawcert = File.read(cafile)
+        cert = OpenSSL::X509::Certificate.new(rawcert)
+        if cert.subject.to_s =~ %r{.+CN=(.+)}
             ca = Regexp.last_match(1).chomp
-          end
         end
+        cafile.close()
       rescue StandardError => e
         Facter.debug("#{e.backtrace[0]}: #{$ERROR_INFO}.") unless $ERROR_INFO.nil?
       end
