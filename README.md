@@ -276,7 +276,9 @@ Register clients to RedHat Subscription Management using an activation key:
 
 ```puppet
 rhsm_register { 'satellite.example.com':
+  ensure          => present,
   activationkey   => '1-myactivationkey',
+  org             => 'my_fancy_org_name', # (This is the label)
 }
 ```
 
@@ -284,6 +286,7 @@ Register clients to RedHat Subscription management using a username and password
 
 ```puppet
 rhsm_register { 'subscription.rhn.example.com':
+  ensure          => present,
   username        => 'myusername',
   password        => 'mypassword',
   autosubscribe   => true,
@@ -295,6 +298,7 @@ Register clients to RedHat Subscription management and attach to a specific lice
 
 ```puppet
 rhsm_register { 'subscription.rhn.example.com':
+  ensure    => present,
   username  => 'myusername',
   password  => 'mypassword',
   pool      => 'mypoolid',
