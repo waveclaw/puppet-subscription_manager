@@ -270,7 +270,7 @@ register.  Both cannot be provided and will cause an error.
 - **release**: The release command sets a sticky OS version to use when installing or updating packages. This sets a preference for the minor version of the OS, such as 6.2 or 6.3. This can prevent unplanned or unsupported operating system version upgrades when an IT environment must maintain a certified configuration.  
 - **force**: Should the registration be forced. Use this option with caution, setting it true will cause the system to be unregistered before running 'subscription-manager register'. Default value `false`.
 
-### rhsm_register Examples
+### rhsm_register Example
 
 Register clients to RedHat Subscription Management using an activation key:
 
@@ -336,14 +336,14 @@ Do know the supported options to the specific version of `subscription-manager c
 As a resource, the format of `[section]` and `section.key` is transformed into the puppet language compatible `section_key`.
 
 ```puppet
-rhsm_config { 'katello.example.com':
+rhsm_config { '/path/to/rhsm.conf':
     server_hostname              => 'katello.example.com',
     server_insecure              => false,
     server_port                  => 443,
     server_prefix                => '/rhsm',
     server_ssl_verify_depth      => 3,
     rhsm_baseurl                 => 'https://katello.example.com/pulp/repos',
-    rhsm_ca_cert_dir             => '/etc/rhsm/ca/',Code without any tests will be rejected.
+    rhsm_ca_cert_dir             => '/etc/rhsm/ca/',
     rhsm_consumercertdir         => '/etc/pki/consumer',
     rhsm_entitlementcertdir      => '/etc/pki/entitlement',
     rhsm_full_refresh_on_yum     => true,
@@ -580,6 +580,8 @@ For Pull Requests please:
 * provide rSpec tests if possible: code that sets tests on fire won't be merged
 * Follow the module style naming standards
 * Add your name to CONTRIBUTORS if you are new
+
+Code without any tests will be rejected.
 
 For a bug report please include or link as much as you can:
 
