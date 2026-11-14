@@ -276,7 +276,6 @@ Register clients to RedHat Subscription Management using an activation key:
 
 ```puppet
 rhsm_register { 'satellite.example.com':
-  server_hostname => 'satellite.example.com',
   activationkey   => '1-myactivationkey',
 }
 ```
